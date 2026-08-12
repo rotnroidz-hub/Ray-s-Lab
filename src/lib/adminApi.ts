@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Banner, Category, Product } from './types'
+import type { Banner, Brand, Category, Product } from './types'
 
 // ---------------------------------------------------------------------------
 // Admin-only data access. These still go through RLS: every write below
@@ -7,12 +7,29 @@ import type { Banner, Category, Product } from './types'
 // request is rejected by Postgres regardless of what this code does.
 // ---------------------------------------------------------------------------
 
+// --- Brand capability (see api.ts): brands are an additive migration. ------
+let brandsChecked = false
+let brandsCapable = false
+
+async function ensureBrandsCapability() {
+  if (brandsChecked) return
+  brandsChecked = true
+  const { error } = await supabase.from('brands').select('id').limit(1)
+  brandsCapable = !error
+}
+
+const productSelect = (): string =>
+  brandsCapable
+    ? '*, categories(id, name, slug), brands(id, name, slug)'
+    : '*, categories(id, name, slug)'
+
 export interface AdminProductInput {
   name: string
   slug: string
   description: string
   price: number
   category_id: string | null
+  brand_id: string | null
   stock_status: 'available' | 'no_stock'
   is_active: boolean
   images: string[]
@@ -20,22 +37,24 @@ export interface AdminProductInput {
 }
 
 export async function listProductsAdmin(): Promise<Product[]> {
+  await ensureBrandsCapability()
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(id, name, slug)')
+    .select(productSelect())
     .order('created_at', { ascending: false })
   if (error) throw new Error(error.message)
-  return (data ?? []).map((r) => ({ ...r, price: Number(r.price) }))
+  return ((data as unknown as Product[]) ?? []).map((r) => ({ ...r, price: Number(r.price) }))
 }
 
 export async function getProductAdmin(id: string): Promise<Product | null> {
+  await ensureBrandsCapability()
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(id, name, slug)')
+    .select(productSelect())
     .eq('id', id)
     .maybeSingle()
   if (error) throw new Error(error.message)
-  return data ? { ...data, price: Number(data.price) } : null
+  return data ? { ...(data as unknown as Product), price: Number((data as unknown as Product).price) } : null
 }
 
 export async function createProductAdmin(input: AdminProductInput): Promise<Product> {
@@ -94,6 +113,41 @@ export async function deleteCategoryAdmin(id: string): Promise<void> {
 export async function reorderCategoriesAdmin(orderedIds: string[]): Promise<void> {
   const updates = orderedIds.map((id, sort_order) => ({ id, sort_order }))
   const { error } = await supabase.from('categories').upsert(updates)
+  if (error) throw new Error(error.message)
+}
+
+// --- Brands -----------------------------------------------------------------
+
+export async function listBrandsAdmin(): Promise<Brand[]> {
+  await ensureBrandsCapability()
+  if (!brandsCapable) return []
+  const { data, error } = await supabase
+    .from('brands')
+    .select('*')
+    .order('sort_order', { ascending: true })
+  if (error) throw new Error(error.message)
+  return data ?? []
+}
+
+export async function createBrandAdmin(input: Omit<Brand, 'id' | 'created_at' | 'updated_at'>): Promise<Brand> {
+  const { data, error } = await supabase.from('brands').insert(input).select().single()
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function updateBrandAdmin(id: string, input: Partial<Brand>): Promise<void> {
+  const { error } = await supabase.from('brands').update(input).eq('id', id)
+  if (error) throw new Error(error.message)
+}
+
+export async function deleteBrandAdmin(id: string): Promise<void> {
+  const { error } = await supabase.from('brands').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+}
+
+export async function reorderBrandsAdmin(orderedIds: string[]): Promise<void> {
+  const updates = orderedIds.map((id, sort_order) => ({ id, sort_order }))
+  const { error } = await supabase.from('brands').upsert(updates)
   if (error) throw new Error(error.message)
 }
 

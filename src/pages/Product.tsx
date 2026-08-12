@@ -168,6 +168,14 @@ export function Product() {
               {product.categories.name}
             </Link>
           )}
+          {product.brands && (
+            <Link
+              to={`/brand/${product.brands.slug}`}
+              className="eyebrow uppercase transition-colors hover:text-brass-dark"
+            >
+              {product.brands.name}
+            </Link>
+          )}
           <h1 className="mt-2 font-display text-3xl font-semibold text-ink sm:text-4xl">
             {product.name}
           </h1>

@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { listCategoriesAdmin, listProductsAdmin } from '../../lib/adminApi'
+import { listBrandsAdmin, listCategoriesAdmin, listProductsAdmin } from '../../lib/adminApi'
 import { useSeo } from '../../lib/seo'
 import { IconArrowRight, IconTag } from '../../components/ui/Icons'
 
 function statCards(
   productCount: number | null,
   categoryCount: number | null,
+  brandCount: number | null,
 ) {
   return [
     { label: 'Products', value: productCount ?? '—', to: '/admin/products' },
     { label: 'Categories', value: categoryCount ?? '—', to: '/admin/categories' },
+    { label: 'Brands', value: brandCount ?? '—', to: '/admin/brands' },
   ]
 }
 
@@ -18,10 +20,12 @@ export default function Dashboard() {
   useSeo({ title: 'Dashboard', robots: 'noindex,follow' })
   const [products, setProducts] = useState<number | null>(null)
   const [categories, setCategories] = useState<number | null>(null)
+  const [brands, setBrands] = useState<number | null>(null)
 
   useEffect(() => {
     listProductsAdmin().then((p) => setProducts(p.length)).catch(() => setProducts(null))
     listCategoriesAdmin().then((c) => setCategories(c.length)).catch(() => setCategories(null))
+    listBrandsAdmin().then((b) => setBrands(b.length)).catch(() => setBrands(null))
   }, [])
 
   return (
@@ -33,7 +37,7 @@ export default function Dashboard() {
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {statCards(products, categories).map((s) => (
+        {statCards(products, categories, brands).map((s) => (
           <Link
             key={s.label}
             to={s.to}

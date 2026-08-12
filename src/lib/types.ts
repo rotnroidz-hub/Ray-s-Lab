@@ -10,9 +10,20 @@ export interface Category {
   updated_at?: string
 }
 
+export interface Brand {
+  id: string
+  name: string
+  slug: string
+  image_url: string | null
+  sort_order: number
+  created_at?: string
+  updated_at?: string
+}
+
 export interface Product {
   id: string
   category_id: string | null
+  brand_id: string | null
   name: string
   slug: string
   description: string
@@ -24,6 +35,7 @@ export interface Product {
   created_at?: string
   updated_at?: string
   categories?: Pick<Category, 'id' | 'name' | 'slug'> | null
+  brands?: Pick<Brand, 'id' | 'name' | 'slug'> | null
 }
 
 export interface Banner {

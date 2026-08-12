@@ -15,6 +15,26 @@
   body {
     @apply bg-canvas text-ink font-sans antialiased;
     text-rendering: optimizeLegibility;
+    /* Soft, warm depth instead of a flat cream fill. The gradient is barely
+       there — just enough that large areas never read as one flat colour. */
+    background-image:
+      radial-gradient(1200px 720px at 12% -6%, rgba(240, 228, 199, 0.55), transparent 60%),
+      radial-gradient(1000px 720px at 92% 108%, rgba(222, 204, 172, 0.42), transparent 55%),
+      linear-gradient(180deg, #f8f4ec 0%, #f3eee0 100%);
+    background-attachment: fixed;
+  }
+
+  /* Fine film grain over the whole viewport — subtle, never busy. Sits above
+     page content but below sticky chrome (header, drawers) and never blocks
+     interaction. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   ::selection {
@@ -67,6 +87,28 @@
   /* Product image treatment: soft click-through frame. */
   .media-frame {
     @apply overflow-hidden rounded-2xl bg-pine-soft;
+  }
+
+  /* Alternating section tone: slightly deeper "parchment" band used to create
+     visual rhythm as the user scrolls, instead of one flat colour. */
+  .section-band {
+    @apply bg-canvas-deep/60;
+  }
+  .section-band + .section-band {
+    @apply bg-transparent;
+  }
+
+  /* Textured layered backdrop for tiles/photography that lack an image:
+     warm gradient + grain so placeholders feel designed, not empty. */
+  .tile-texture {
+    background-image: linear-gradient(160deg, rgba(176, 125, 63, 0.22) 0%, rgba(47, 74, 60, 0.3) 55%, rgba(24, 37, 31, 0.55) 100%);
+  }
+  .tile-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23t)' opacity='0.35'/%3E%3C/svg%3E");
   }
 }
 

@@ -47,8 +47,9 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
   return (
     <motion.article
       layout
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.45, delay: Math.min(index * 0.05, 0.3), ease: [0.22, 1, 0.36, 1] }}
       className="product-card group relative"
@@ -76,8 +77,15 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
 
         <div className="mt-3 flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate text-[15px] font-semibold text-ink">{product.name}</h3>
-            <p className="mt-0.5 text-sm font-medium text-ink-muted">{formatPrice(product.price)}</p>
+            {product.brands?.name && (
+              <p className="text-[11px] font-semibold uppercase tracking-wide2 text-brass">
+                {product.brands.name}
+              </p>
+            )}
+            <h3 className="line-clamp-2 text-[15px] leading-snug font-semibold text-ink">
+              {product.name}
+            </h3>
+            <p className="mt-1 text-sm font-medium text-ink-muted">{formatPrice(product.price)}</p>
           </div>
           <StockBadge status={product.stock_status} />
         </div>

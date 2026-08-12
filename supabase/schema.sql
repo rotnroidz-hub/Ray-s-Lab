@@ -19,9 +19,20 @@ create table if not exists categories (
   updated_at  timestamptz not null default now()
 );
 
+create table if not exists brands (
+  id          uuid primary key default gen_random_uuid(),
+  name        text not null,
+  slug        text not null unique,
+  image_url   text,
+  sort_order  integer not null default 0,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
 create table if not exists products (
   id           uuid primary key default gen_random_uuid(),
   category_id  uuid references categories(id) on delete set null,
+  brand_id     uuid references brands(id) on delete set null,
   name         text not null,
   slug         text not null unique,
   description  text not null default '',
@@ -62,6 +73,11 @@ $$;
 drop trigger if exists trg_categories_updated_at on categories;
 create trigger trg_categories_updated_at
   before update on categories
+  for each row execute function set_updated_at();
+
+drop trigger if exists trg_brands_updated_at on brands;
+create trigger trg_brands_updated_at
+  before update on brands
   for each row execute function set_updated_at();
 
 drop trigger if exists trg_products_updated_at on products;
@@ -125,16 +141,21 @@ create policy "profiles self read"
 -- ----------------------------------------------------------------------------
 
 alter table categories enable row level security;
+alter table brands     enable row level security;
 alter table products  enable row level security;
 alter table banners   enable row level security;
 
 -- Storefront: anyone may read active products / all categories / live banners.
 drop policy if exists "categories public read"   on categories;
+drop policy if exists "brands public read"       on brands;
 drop policy if exists "products public read"     on products;
 drop policy if exists "banners public read"      on banners;
 
 create policy "categories public read"
   on categories for select using (true);
+
+create policy "brands public read"
+  on brands for select using (true);
 
 create policy "products public read"
   on products for select using (is_active = true);
@@ -149,11 +170,17 @@ create policy "banners public read"
 -- NEVER evaluates the is_admin() expression on reads (that would otherwise
 -- demand EXECUTE on is_admin() from the anon role and fail).
 drop policy if exists "categories admin all" on categories;
+drop policy if exists "brands admin all"     on brands;
 drop policy if exists "products admin all"   on products;
 drop policy if exists "banners admin all"    on banners;
 
 create policy "categories admin all"
   on categories for all to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+create policy "brands admin all"
+  on brands for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
 
@@ -206,5 +233,7 @@ create policy "product-images admin delete"
 -- ----------------------------------------------------------------------------
 
 create index if not exists products_category_idx on products (category_id);
+create index if not exists products_brand_idx on products (brand_id);
 create index if not exists products_slug_idx on products (slug);
 create index if not exists categories_slug_idx on categories (slug);
+create index if not exists brands_slug_idx on brands (slug);

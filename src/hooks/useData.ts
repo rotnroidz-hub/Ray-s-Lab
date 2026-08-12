@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchBanners, fetchCategories, fetchProducts, fetchRelatedProducts, fetchProductBySlug } from '../lib/api'
-import type { Banner, Category, Product } from '../lib/types'
+import { fetchBanners, fetchBrands, fetchCategories, fetchProducts, fetchRelatedProducts, fetchProductBySlug } from '../lib/api'
+import type { Banner, Brand, Category, Product } from '../lib/types'
 import type { ProductPage } from '../lib/api'
 
 interface AsyncState<T> {
@@ -39,6 +39,10 @@ export function useCategories() {
   return useAsync<Category[]>(fetchCategories, [], [])
 }
 
+export function useBrands() {
+  return useAsync<Brand[]>(fetchBrands, [], [])
+}
+
 export interface ProductList {
   data: Product[]
   count: number
@@ -50,18 +54,18 @@ export interface ProductList {
 
 const emptyPage: ProductPage = { products: [], count: 0 }
 
-export function useProducts(categorySlug?: string, search?: string, pageSize = 12): ProductList {
+export function useProducts(categorySlug?: string, search?: string, pageSize = 12, brandSlug?: string): ProductList {
   const [page, setPage] = useState(1)
   const result = useAsync<ProductPage>(
-    () => fetchProducts({ categorySlug, search, page, pageSize }),
-    [categorySlug, search, page, pageSize],
+    () => fetchProducts({ categorySlug, search, page, pageSize, brandSlug }),
+    [categorySlug, search, page, pageSize, brandSlug],
     emptyPage,
   )
 
   // Reset pagination whenever the query itself changes.
   useEffect(() => {
     setPage(1)
-  }, [categorySlug, search, pageSize])
+  }, [categorySlug, search, pageSize, brandSlug])
 
   const products = result.data.products
   const count = result.data.count

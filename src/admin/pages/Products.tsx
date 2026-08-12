@@ -105,6 +105,7 @@ export default function Products() {
               </p>
               <p className="mt-0.5 text-xs text-ink-muted">
                 {formatPrice(p.price)}
+                {p.brands ? ` · ${p.brands.name}` : ''}
                 {p.categories ? ` · ${p.categories.name}` : ''}
               </p>
             </div>

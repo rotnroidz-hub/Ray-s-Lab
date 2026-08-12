@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { SITE_NAME, SITE_URL } from './constants'
+import { SITE_NAME, SITE_TAGLINE, SITE_URL } from './constants'
 import type { Product } from './types'
 
 function upsertMeta(attr: 'name' | 'property', key: string, value: string) {
@@ -40,27 +40,40 @@ export interface SeoOptions {
   jsonLd?: unknown
 }
 
+/** Branded default description — what the shop actually sells. */
+const DEFAULT_DESCRIPTION =
+  'Ray BodyLab curates premium audio, wearables and everyday accessories. ' +
+  'Browse the catalog, build your order and check out directly over WhatsApp.'
+
 /** Applies SEO side-effects immediately (used on non-React entry too if needed). */
 export function applySeo({ title, description, canonicalPath, robots, ogImage, jsonLd }: SeoOptions) {
-  document.title = title ? `${title} — ${SITE_NAME}` : SITE_NAME
+  // Home gets "Ray BodyLab | [tagline]", subpages get "[Page] | Ray BodyLab".
+  const documentTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | ${SITE_TAGLINE}`
+  document.title = documentTitle
 
-  const defaultDescription =
-    'Browse the catalog, build your order, and check out directly over WhatsApp.'
-  const desc = description || defaultDescription
+  const desc = description || DEFAULT_DESCRIPTION
+  const url = canonicalPath && SITE_URL ? `${SITE_URL}${canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\//, '')}`}` : null
+
+  // Standard SEO
   upsertMeta('name', 'description', desc)
-  upsertMeta('property', 'og:description', desc)
-  upsertMeta('property', 'og:title', document.title)
-  upsertMeta('property', 'og:type', 'website')
+  if (robots) upsertMeta('name', 'robots', robots)
+  if (url) upsertCanonical(url)
 
-  if (robots) {
-    upsertMeta('name', 'robots', robots)
-  }
+  // Open Graph — social sharing previews
+  upsertMeta('property', 'og:site_name', SITE_NAME)
+  upsertMeta('property', 'og:title', documentTitle)
+  upsertMeta('property', 'og:description', desc)
+  upsertMeta('property', 'og:type', 'website')
+  upsertMeta('property', 'og:locale', 'en_US')
+  if (url) upsertMeta('property', 'og:url', url)
   if (ogImage) {
     upsertMeta('property', 'og:image', ogImage)
+    upsertMeta('name', 'twitter:image', ogImage)
   }
-  if (canonicalPath && SITE_URL) {
-    upsertCanonical(`${SITE_URL}${canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\//, '')}`}`)
-  }
+  upsertMeta('name', 'twitter:card', 'summary_large_image')
+  upsertMeta('name', 'twitter:title', documentTitle)
+  upsertMeta('name', 'twitter:description', desc)
+
   if (jsonLd) upsertJsonLd(jsonLd)
 }
 

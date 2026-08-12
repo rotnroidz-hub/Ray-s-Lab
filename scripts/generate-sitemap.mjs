@@ -38,9 +38,10 @@ function esc(text) {
 }
 
 async function main() {
-  const [{ data: products }, { data: categories }] = await Promise.all([
+  const [{ data: products }, { data: categories }, { data: brands }] = await Promise.all([
     supabase.from('products').select('slug, updated_at').eq('is_active', true),
     supabase.from('categories').select('slug'),
+    supabase.from('brands').select('slug'),
   ])
 
   const urls = [
@@ -50,6 +51,9 @@ async function main() {
 
   for (const c of categories ?? []) {
     urls.push({ loc: `${siteUrl}/category/${esc(c.slug)}`, priority: '0.8' })
+  }
+  for (const b of brands ?? []) {
+    urls.push({ loc: `${siteUrl}/brand/${esc(b.slug)}`, priority: '0.7' })
   }
   for (const p of products ?? []) {
     urls.push({

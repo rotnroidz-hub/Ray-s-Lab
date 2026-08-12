@@ -9,7 +9,7 @@ for (const line of readFileSync('.env', 'utf8').split('\n')) {
 
 const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
 
-for (const table of ['categories', 'products', 'banners']) {
+for (const table of ['categories', 'brands', 'products', 'banners']) {
   const { data, error } = await supabase.from(table).select('*').limit(50)
   if (error) console.log(table, 'ERROR', error.code, error.message)
   else console.log(table, 'OK rows=', Array.isArray(data) ? data.length : 0)

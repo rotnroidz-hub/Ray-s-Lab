@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom'
 import {
   createProductAdmin,
   getProductAdmin,
+  listBrandsAdmin,
   listCategoriesAdmin,
   updateProductAdmin,
   deleteProductAdmin,
@@ -10,7 +11,7 @@ import {
 } from '../../lib/adminApi'
 import { useSeo } from '../../lib/seo'
 import { slugify } from '../../lib/utils'
-import type { Category, Product, StockStatus } from '../../lib/types'
+import type { Brand, Category, Product, StockStatus } from '../../lib/types'
 import { Field, Toggle, inputClass } from '../components/Fields'
 import { ImageDropzone } from '../components/ImageDropzone'
 import { Button } from '../../components/ui/Button'
@@ -22,6 +23,7 @@ interface FormState {
   description: string
   price: string
   category_id: string
+  brand_id: string
   stock_status: StockStatus
   is_active: boolean
   images: string[]
@@ -34,6 +36,7 @@ const emptyForm: FormState = {
   description: '',
   price: '',
   category_id: '',
+  brand_id: '',
   stock_status: 'available', // default to "Available Stock" per requirements
   is_active: true,
   images: [],
@@ -47,6 +50,7 @@ export default function ProductForm() {
 
   const [form, setForm] = useState<FormState>(emptyForm)
   const [categories, setCategories] = useState<Category[]>([])
+  const [brands, setBrands] = useState<Brand[]>([])
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(isEditing)
   const [saving, setSaving] = useState(false)
@@ -63,6 +67,10 @@ export default function ProductForm() {
   }, [])
 
   useEffect(() => {
+    listBrandsAdmin().then(setBrands).catch((e) => setError((e as Error).message))
+  }, [])
+
+  useEffect(() => {
     if (!isEditing) return
     getProductAdmin(id!)
       .then((p) => {
@@ -74,6 +82,7 @@ export default function ProductForm() {
           description: p.description,
           price: String(p.price),
           category_id: p.category_id ?? '',
+          brand_id: p.brand_id ?? '',
           stock_status: p.stock_status,
           is_active: p.is_active,
           images: p.images,
@@ -104,6 +113,7 @@ export default function ProductForm() {
       description: form.description.trim(),
       price: Math.max(0, Number(form.price) || 0),
       category_id: form.category_id || null,
+      brand_id: form.brand_id || null,
       stock_status: form.stock_status,
       is_active: form.is_active,
       images: form.images,
@@ -211,6 +221,20 @@ export default function ProductForm() {
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Brand" hint="Filter facet + landing page." className="sm:col-span-2">
+              <select
+                className={inputClass}
+                value={form.brand_id}
+                onChange={(e) => set('brand_id', e.target.value)}
+              >
+                <option value="">No brand</option>
+                {brands.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
                   </option>
                 ))}
               </select>

@@ -1,18 +1,29 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import { useBanners, useCategories, useProducts } from '../hooks/useData'
 import { useSeo } from '../lib/seo'
 import { responsiveImage } from '../lib/image'
 import { LinkButton } from '../components/ui/Button'
 import { ProductCard } from '../components/catalog/ProductCard'
+import { CategoryTile } from '../components/catalog/CategoryTile'
 import { ProductGridSkeleton } from '../components/ui/Skeleton'
+import { Reveal } from '../components/ui/Reveal'
 import { IconArrowRight, IconChevronLeft, IconChevronRight } from '../components/ui/Icons'
 
 function HeroCarousel() {
   const { data: banners } = useBanners()
   const [index, setIndex] = useState(0)
   const [dir, setDir] = useState(1)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  // Subtle parallax: the banner image drifts up slightly slower than the page.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  })
+  const imageY = useTransform(scrollYProgress, [0, 1], [0, 48])
+  const scrimY = useTransform(scrollYProgress, [0, 1], [0, -24])
 
   useEffect(() => {
     if (banners.length < 2) return
@@ -25,7 +36,10 @@ function HeroCarousel() {
 
   if (banners.length === 0) {
     return (
-      <section className="media-frame relative aspect-[4/3] max-h-[70vh] w-full bg-pine-deep sm:aspect-[21/9]">
+      <section
+        ref={sectionRef}
+        className="media-frame relative aspect-[4/3] max-h-[70vh] w-full bg-pine-deep sm:aspect-[21/9]"
+      >
         <div className="absolute inset-0 grid place-items-center p-8 text-center">
           <div>
             <p className="eyebrow text-canvas/70">The catalog</p>
@@ -44,7 +58,11 @@ function HeroCarousel() {
   }
 
   return (
-    <section className="group relative overflow-hidden rounded-3xl bg-pine-deep" aria-roledescription="carousel">
+    <section
+      ref={sectionRef}
+      className="group relative overflow-hidden rounded-3xl bg-pine-deep"
+      aria-roledescription="carousel"
+    >
       <div className="relative aspect-[4/3] max-h-[70vh] w-full sm:aspect-[21/9]">
         <AnimatePresence initial={false} custom={dir} mode="popLayout">
           <motion.div
@@ -56,13 +74,18 @@ function HeroCarousel() {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="absolute inset-0"
           >
-            <img
+            {/* Slight overscan so the parallax drift never reveals an edge. */}
+            <motion.img
               src={responsiveImage(banners[index].image_url, 1600)}
               alt=""
               loading="eager"
-              className="h-full w-full object-cover"
+              style={{ y: imageY }}
+              className="h-[112%] w-full -translate-y-[6%] scale-[1.02] object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-pine-deep/90 via-pine-deep/30 to-transparent" />
+            <motion.div
+              style={{ y: scrimY }}
+              className="absolute inset-0 bg-gradient-to-t from-pine-deep/90 via-pine-deep/30 to-transparent"
+            />
             <div className="absolute inset-x-0 bottom-0 p-6 sm:p-10">
               <motion.p
                 className="eyebrow text-canvas/80"
@@ -137,16 +160,18 @@ export function Home() {
         <HeroCarousel />
       </section>
 
-      <section className="pb-16">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="eyebrow">Featured</p>
-            <h2 className="mt-1 font-display text-2xl sm:text-3xl">New arrivals</h2>
+      <section className="section-band -mx-4 rounded-2xl px-4 py-10 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 sm:py-14">
+        <Reveal>
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="eyebrow">Featured</p>
+              <h2 className="mt-1 font-display text-2xl sm:text-3xl">New arrivals</h2>
+            </div>
+            <LinkButton to="/catalog" variant="ghost" className="text-sm">
+              View all <IconArrowRight className="h-4 w-4" />
+            </LinkButton>
           </div>
-          <LinkButton to="/catalog" variant="ghost" className="text-sm">
-            View all <IconArrowRight className="h-4 w-4" />
-          </LinkButton>
-        </div>
+        </Reveal>
         <div className="mt-6">
           {products.loading ? (
             <ProductGridSkeleton count={4} />
@@ -160,43 +185,21 @@ export function Home() {
         </div>
       </section>
 
-      <section className="pb-20">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="eyebrow">Browse</p>
-            <h2 className="mt-1 font-display text-2xl sm:text-3xl">Shop by category</h2>
+      <section className="py-16 sm:py-20">
+        <Reveal>
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="eyebrow">Browse</p>
+              <h2 className="mt-1 font-display text-2xl sm:text-3xl">Shop by category</h2>
+            </div>
+            <LinkButton to="/catalog" variant="ghost" className="text-sm">
+              All products <IconArrowRight className="h-4 w-4" />
+            </LinkButton>
           </div>
-          <LinkButton to="/catalog" variant="ghost" className="text-sm">
-            All products <IconArrowRight className="h-4 w-4" />
-          </LinkButton>
-        </div>
+        </Reveal>
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {categories.map((c) => (
-            <Link
-              key={c.id}
-              to={`/category/${c.slug}`}
-              className="group relative overflow-hidden rounded-2xl bg-pine-deep"
-            >
-              <div className="aspect-[4/5]">
-                {c.image_url ? (
-                  <img
-                    src={responsiveImage(c.image_url, 600)}
-                    alt={c.name}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
-                  />
-                ) : (
-                  <div className="grid h-full w-full place-items-center bg-pine-soft">
-                    <span className="font-display text-3xl text-pine">·</span>
-                  </div>
-                )}
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-pine-deep/85 via-transparent to-transparent" />
-              <p className="absolute inset-x-0 bottom-0 flex items-center justify-between p-4 font-display text-lg font-semibold text-canvas">
-                {c.name}
-                <IconArrowRight className="h-4 w-4 translate-x-0 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
-              </p>
-            </Link>
+          {categories.map((c, i) => (
+            <CategoryTile key={c.id} category={c} index={i} />
           ))}
         </div>
       </section>

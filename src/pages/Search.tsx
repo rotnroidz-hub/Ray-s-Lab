@@ -45,7 +45,7 @@ export function Search() {
 
   useSeo({
     title: debounced.trim() ? `Search: ${debounced.trim()}` : 'Search',
-    description: 'Search the catalog by name, description or tag.',
+    description: 'Search the catalog by name, description, brand or tag.',
     canonicalPath: '/search',
     robots: 'noindex,follow',
   })
