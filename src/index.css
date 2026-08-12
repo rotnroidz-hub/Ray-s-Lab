@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-brass/30 text-ink;
+  }
+
+  /* Accessible focus ring for keyboard users, subtle for mouse. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brass;
+  }
+
+  /* Thin, quiet scrollbars to match the palette. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-ink/15 border-2 border-canvas;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ink/30;
+  }
+}
+
+@layer components {
+  /* Shared page container. */
+  .container-site {
+    @apply mx-auto w-full max-w-site px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Small caps label used above headings across the site. */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-wide2 text-brass;
+  }
+
+  /* Display heading used on pages/sections. */
+  .display {
+    @apply font-display text-3xl leading-[1.05] font-medium sm:text-4xl lg:text-5xl;
+  }
+
+  /* Visually-hidden utility for icons-only labels. */
+  .sr-only {
+    @apply absolute w-px h-px -m-px p-0 overflow-hidden whitespace-nowrap border-0;
+    clip: rect(0 0 0 0);
+  }
+
+  /* Product image treatment: soft click-through frame. */
+  .media-frame {
+    @apply overflow-hidden rounded-2xl bg-pine-soft;
+  }
+}
+
+/* Nudge Fraunces optical sizing for display sizes. */
+.font-display {
+  font-optical-sizing: auto;
+  font-variation-settings: 'opsz' 60;
+}
