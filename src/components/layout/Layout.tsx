@@ -6,6 +6,7 @@ import { Footer } from './Footer'
 import { CartDrawer } from '../cart/CartDrawer'
 import { CheckoutModal } from '../checkout/CheckoutModal'
 import { FlyToCartProvider } from '../cart/FlyToCart'
+import { ToastProvider } from '../ui/Toast'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -45,18 +46,20 @@ function AnimatedOutlet() {
 
 export function Layout() {
   return (
-    <FlyToCartProvider>
-      <div className="tex-layer tex-emboss" aria-hidden />
-      <div className="tex-layer tex-tint" aria-hidden />
-      <div className="tex-layer tex-grain" aria-hidden />
-      <div className="relative z-[1]">
-        <ScrollToTop />
-        <Header />
-        <AnimatedOutlet />
-        <Footer />
-        <CartDrawer />
-        <CheckoutModal />
-      </div>
-    </FlyToCartProvider>
+    <ToastProvider>
+      <FlyToCartProvider>
+        <div className="tex-layer tex-emboss" aria-hidden />
+        <div className="tex-layer tex-tint" aria-hidden />
+        <div className="tex-layer tex-grain" aria-hidden />
+        <div className="relative z-[1]">
+          <ScrollToTop />
+          <Header />
+          <AnimatedOutlet />
+          <Footer />
+          <CartDrawer />
+          <CheckoutModal />
+        </div>
+      </FlyToCartProvider>
+    </ToastProvider>
   )
 }

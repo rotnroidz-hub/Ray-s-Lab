@@ -20,9 +20,10 @@ export function StockBadge({ status, className }: StockBadgeProps) {
       animate={{ scale: [1, 1.06, 1] }}
       transition={{ duration: 0.5, times: [0, 0.5, 1] }}
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold',
+        'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px]',
+        'font-mono uppercase tracking-[0.08em]',
         'transition-colors duration-500',
-        available ? 'bg-paper-2 text-ink-2' : 'bg-stock-no/15 text-stock-no',
+        available ? 'bg-stock-ok-soft text-stock-ok' : 'bg-stock-no-soft text-stock-no',
         className,
       )}
     >
@@ -30,7 +31,7 @@ export function StockBadge({ status, className }: StockBadgeProps) {
         <span
           className={cn(
             'inline-flex h-1.5 w-1.5 rounded-full transition-colors duration-500',
-            available ? 'bg-ink' : 'bg-stock-no',
+            available ? 'bg-stock-ok' : 'bg-stock-no',
           )}
         />
       </span>

@@ -2,26 +2,28 @@ import { forwardRef, type ButtonHTMLAttributes, type AnchorHTMLAttributes, type 
 import { Link } from 'react-router-dom'
 import { cn } from '../../lib/utils'
 
-type Variant = 'primary' | 'outline' | 'ghost' | 'danger' | 'whatsapp'
+type Variant = 'primary' | 'dark' | 'outline' | 'ghost' | 'ghost-dark' | 'danger' | 'whatsapp'
 type Size = 'sm' | 'md' | 'lg'
 
 const base =
-  'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all duration-200 select-none disabled:pointer-events-none disabled:opacity-40 whitespace-nowrap'
+  'inline-flex items-center justify-center gap-2 rounded-full font-sans text-[14.5px] font-medium ' +
+  'whitespace-nowrap transition-all duration-200 active:translate-y-[1px] ' +
+  'select-none disabled:pointer-events-none disabled:opacity-40'
 
 const variants: Record<Variant, string> = {
-  primary:
-    'bg-ink text-paper hover:bg-ink-2 active:scale-[0.98] shadow-[0_8px_20px_-10px_rgba(47,74,60,0.6)]',
-  outline:
-    'border border-ink/20 bg-transparent text-ink hover:border-ink/50 hover:bg-paper-2 active:scale-[0.98]',
-  ghost: 'text-ink hover:bg-ink/5 active:scale-[0.98]',
-  danger: 'bg-stock-no text-paper hover:brightness-95 active:scale-[0.98]',
-  whatsapp: 'bg-[#1FA559] text-white hover:brightness-95 active:scale-[0.98]',
+  primary: 'bg-blue text-white hover:bg-[#0a9ff5] shadow-[0_6px_20px_rgba(0,144,230,0.28)]',
+  dark: 'bg-ink text-paper-2 hover:bg-ink-2',
+  outline: 'bg-card text-ink border border-line hover:border-ink',
+  ghost: 'text-ink hover:bg-ink/5',
+  'ghost-dark': 'bg-transparent text-paper-2 border border-white/30 hover:border-paper-2',
+  danger: 'bg-stock-no text-paper hover:brightness-95',
+  whatsapp: 'bg-[#1FA559] text-white hover:brightness-95',
 }
 
 const sizes: Record<Size, string> = {
-  sm: 'text-sm px-4 py-2',
-  md: 'text-sm px-6 py-3',
-  lg: 'text-base px-8 py-4',
+  sm: 'h-10 px-4 max-md:min-h-[44px]',
+  md: 'h-12 px-6',
+  lg: 'h-[54px] px-8',
 }
 
 interface CommonProps {
