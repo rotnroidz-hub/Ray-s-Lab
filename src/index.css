@@ -12,31 +12,6 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  body {
-    @apply bg-paper text-ink font-sans antialiased;
-    text-rendering: optimizeLegibility;
-    /* Soft, warm depth instead of a flat cream fill. The gradient is barely
-       there — just enough that large areas never read as one flat colour. */
-    background-image:
-      radial-gradient(1200px 720px at 12% -6%, rgba(240, 228, 199, 0.55), transparent 60%),
-      radial-gradient(1000px 720px at 92% 108%, rgba(222, 204, 172, 0.42), transparent 55%),
-      linear-gradient(180deg, #f8f4ec 0%, #f3eee0 100%);
-    background-attachment: fixed;
-  }
-
-  /* Fine film grain over the whole viewport — subtle, never busy. Sits above
-     page content but below sticky chrome (header, drawers) and never blocks
-     interaction. */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 10;
-    pointer-events: none;
-    opacity: 0.05;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
   ::selection {
     @apply bg-blue-deep/30 text-ink;
   }
@@ -60,6 +35,71 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-ink/30;
   }
+}
+
+@layer base {
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    position: relative;
+  }
+
+  .tex-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* embossed hexagon paper */
+  .tex-emboss {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2713.86%27%20height%3D%2724.0%27%20viewBox%3D%270%200%2013.86%2024.0%27%3E%3Cpolygon%20points%3D%276.93%2C-1.2%2013.86%2C2.8%2013.86%2C10.8%206.93%2C14.8%200.0%2C10.8%200.0%2C2.8%27%20fill%3D%27none%27%20stroke%3D%27%230E1013%27%20stroke-opacity%3D%270.16%27%20stroke-width%3D%270.6%27%2F%3E%3Cpolygon%20points%3D%276.93%2C22.8%2013.86%2C26.8%2013.86%2C34.8%206.93%2C38.8%200.0%2C34.8%200.0%2C26.8%27%20fill%3D%27none%27%20stroke%3D%27%230E1013%27%20stroke-opacity%3D%270.16%27%20stroke-width%3D%270.6%27%2F%3E%3Cpolygon%20points%3D%270%2C10.8%206.93%2C14.8%206.93%2C22.8%200%2C26.8%20-6.93%2C22.8%20-6.93%2C14.8%27%20fill%3D%27none%27%20stroke%3D%27%230E1013%27%20stroke-opacity%3D%270.16%27%20stroke-width%3D%270.6%27%2F%3E%3Cpolygon%20points%3D%2713.86%2C10.8%2020.79%2C14.8%2020.79%2C22.8%2013.86%2C26.8%206.93%2C22.8%206.93%2C14.8%27%20fill%3D%27none%27%20stroke%3D%27%230E1013%27%20stroke-opacity%3D%270.16%27%20stroke-width%3D%270.6%27%2F%3E%3Cpolygon%20points%3D%276.93%2C-2.0%2013.86%2C2.0%2013.86%2C10.0%206.93%2C14.0%200.0%2C10.0%200.0%2C2.0%27%20fill%3D%27none%27%20stroke%3D%27%23FFFFFF%27%20stroke-opacity%3D%270.95%27%20stroke-width%3D%270.7%27%2F%3E%3Cpolygon%20points%3D%276.93%2C22.0%2013.86%2C26.0%2013.86%2C34.0%206.93%2C38.0%200.0%2C34.0%200.0%2C26.0%27%20fill%3D%27none%27%20stroke%3D%27%23FFFFFF%27%20stroke-opacity%3D%270.95%27%20stroke-width%3D%270.7%27%2F%3E%3Cpolygon%20points%3D%270%2C10.0%206.93%2C14.0%206.93%2C22.0%200%2C26.0%20-6.93%2C22.0%20-6.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23FFFFFF%27%20stroke-opacity%3D%270.95%27%20stroke-width%3D%270.7%27%2F%3E%3Cpolygon%20points%3D%2713.86%2C10.0%2020.79%2C14.0%2020.79%2C22.0%2013.86%2C26.0%206.93%2C22.0%206.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23FFFFFF%27%20stroke-opacity%3D%270.95%27%20stroke-width%3D%270.7%27%2F%3E%3C%2Fsvg%3E");
+    background-size: 13.86px 24px;
+  }
+
+  /* gradient tint masked to the hexagon outlines, desktop only */
+  .tex-tint {
+    background: linear-gradient(135deg, #0090E6 0%, #5EC2FF 18%, #0B5FA8 42%, #0E1013 68%, #0090E6 100%);
+    background-size: 180% 180%;
+    opacity: 0.22;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2713.86%27%20height%3D%2724.0%27%20viewBox%3D%270%200%2013.86%2024.0%27%3E%3Cpolygon%20points%3D%276.93%2C-2.0%2013.86%2C2.0%2013.86%2C10.0%206.93%2C14.0%200.0%2C10.0%200.0%2C2.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.8%27%2F%3E%3Cpolygon%20points%3D%276.93%2C22.0%2013.86%2C26.0%2013.86%2C34.0%206.93%2C38.0%200.0%2C34.0%200.0%2C26.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.8%27%2F%3E%3Cpolygon%20points%3D%270%2C10.0%206.93%2C14.0%206.93%2C22.0%200%2C26.0%20-6.93%2C22.0%20-6.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.8%27%2F%3E%3Cpolygon%20points%3D%2713.86%2C10.0%2020.79%2C14.0%2020.79%2C22.0%2013.86%2C26.0%206.93%2C22.0%206.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.8%27%2F%3E%3C%2Fsvg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2713.86%27%20height%3D%2724.0%27%20viewBox%3D%270%200%2013.86%2024.0%27%3E%3Cpolygon%20points%3D%276.93%2C-2.0%2013.86%2C2.0%2013.86%2C10.0%206.93%2C14.0%200.0%2C10.0%200.0%2C2.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.8%27%2F%3E%3Cpolygon%20points%3D%276.93%2C22.0%2013.86%2C26.0%2013.86%2C34.0%206.93%2C38.0%200.0%2C34.0%200.0%2C26.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.8%27%2F%3E%3Cpolygon%20points%3D%270%2C10.0%206.93%2C14.0%206.93%2C22.0%200%2C26.0%20-6.93%2C22.0%20-6.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.8%27%2F%3E%3Cpolygon%20points%3D%2713.86%2C10.0%2020.79%2C14.0%2020.79%2C22.0%2013.86%2C26.0%206.93%2C22.0%206.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.8%27%2F%3E%3C%2Fsvg%3E");
+    -webkit-mask-size: 13.86px 24px;
+            mask-size: 13.86px 24px;
+  }
+
+  /* PERFORMANCE: the masked layer repaints on scroll on mid-range Android.
+     Below 640px it is switched off entirely and the emboss carries the texture. */
+  @media (max-width: 639px) {
+    .tex-tint { display: none; }
+    .tex-emboss { opacity: 0.85; }
+  }
+
+  .tex-grain {
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* dark surfaces that carry NO photo: banner copy panel, footer */
+  .tex-dark {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2713.86%27%20height%3D%2724.0%27%20viewBox%3D%270%200%2013.86%2024.0%27%3E%3Cpolygon%20points%3D%276.93%2C-1.2%2013.86%2C2.8%2013.86%2C10.8%206.93%2C14.8%200.0%2C10.8%200.0%2C2.8%27%20fill%3D%27none%27%20stroke%3D%27%23FFFFFF%27%20stroke-opacity%3D%270.12%27%20stroke-width%3D%270.6%27%2F%3E%3Cpolygon%20points%3D%276.93%2C22.8%2013.86%2C26.8%2013.86%2C34.8%206.93%2C38.8%200.0%2C34.8%200.0%2C26.8%27%20fill%3D%27none%27%20stroke%3D%27%23FFFFFF%27%20stroke-opacity%3D%270.12%27%20stroke-width%3D%270.6%27%2F%3E%3Cpolygon%20points%3D%270%2C10.8%206.93%2C14.8%206.93%2C22.8%200%2C26.8%20-6.93%2C22.8%20-6.93%2C14.8%27%20fill%3D%27none%27%20stroke%3D%27%23FFFFFF%27%20stroke-opacity%3D%270.12%27%20stroke-width%3D%270.6%27%2F%3E%3Cpolygon%20points%3D%2713.86%2C10.8%2020.79%2C14.8%2020.79%2C22.8%2013.86%2C26.8%206.93%2C22.8%206.93%2C14.8%27%20fill%3D%27none%27%20stroke%3D%27%23FFFFFF%27%20stroke-opacity%3D%270.12%27%20stroke-width%3D%270.6%27%2F%3E%3Cpolygon%20points%3D%276.93%2C-2.0%2013.86%2C2.0%2013.86%2C10.0%206.93%2C14.0%200.0%2C10.0%200.0%2C2.0%27%20fill%3D%27none%27%20stroke%3D%27%23000000%27%20stroke-opacity%3D%270.5%27%20stroke-width%3D%270.7%27%2F%3E%3Cpolygon%20points%3D%276.93%2C22.0%2013.86%2C26.0%2013.86%2C34.0%206.93%2C38.0%200.0%2C34.0%200.0%2C26.0%27%20fill%3D%27none%27%20stroke%3D%27%23000000%27%20stroke-opacity%3D%270.5%27%20stroke-width%3D%270.7%27%2F%3E%3Cpolygon%20points%3D%270%2C10.0%206.93%2C14.0%206.93%2C22.0%200%2C26.0%20-6.93%2C22.0%20-6.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23000000%27%20stroke-opacity%3D%270.5%27%20stroke-width%3D%270.7%27%2F%3E%3Cpolygon%20points%3D%2713.86%2C10.0%2020.79%2C14.0%2020.79%2C22.0%2013.86%2C26.0%206.93%2C22.0%206.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23000000%27%20stroke-opacity%3D%270.5%27%20stroke-width%3D%270.7%27%2F%3E%3C%2Fsvg%3E");
+    background-size: 13.86px 24px;
+  }
+
+  .tex-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(135deg, #0090E6 0%, #5EC2FF 22%, transparent 55%);
+    opacity: 0.3;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2713.86%27%20height%3D%2724.0%27%20viewBox%3D%270%200%2013.86%2024.0%27%3E%3Cpolygon%20points%3D%276.93%2C-2.0%2013.86%2C2.0%2013.86%2C10.0%206.93%2C14.0%200.0%2C10.0%200.0%2C2.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.85%27%2F%3E%3Cpolygon%20points%3D%276.93%2C22.0%2013.86%2C26.0%2013.86%2C34.0%206.93%2C38.0%200.0%2C34.0%200.0%2C26.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.85%27%2F%3E%3Cpolygon%20points%3D%270%2C10.0%206.93%2C14.0%206.93%2C22.0%200%2C26.0%20-6.93%2C22.0%20-6.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.85%27%2F%3E%3Cpolygon%20points%3D%2713.86%2C10.0%2020.79%2C14.0%2020.79%2C22.0%2013.86%2C26.0%206.93%2C22.0%206.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.85%27%2F%3E%3C%2Fsvg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2713.86%27%20height%3D%2724.0%27%20viewBox%3D%270%200%2013.86%2024.0%27%3E%3Cpolygon%20points%3D%276.93%2C-2.0%2013.86%2C2.0%2013.86%2C10.0%206.93%2C14.0%200.0%2C10.0%200.0%2C2.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.85%27%2F%3E%3Cpolygon%20points%3D%276.93%2C22.0%2013.86%2C26.0%2013.86%2C34.0%206.93%2C38.0%200.0%2C34.0%200.0%2C26.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.85%27%2F%3E%3Cpolygon%20points%3D%270%2C10.0%206.93%2C14.0%206.93%2C22.0%200%2C26.0%20-6.93%2C22.0%20-6.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.85%27%2F%3E%3Cpolygon%20points%3D%2713.86%2C10.0%2020.79%2C14.0%2020.79%2C22.0%2013.86%2C26.0%206.93%2C22.0%206.93%2C14.0%27%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-opacity%3D%271%27%20stroke-width%3D%270.85%27%2F%3E%3C%2Fsvg%3E");
+    -webkit-mask-size: 13.86px 24px;
+            mask-size: 13.86px 24px;
+  }
+  @media (max-width: 639px) { .tex-glow { display: none; } }
 }
 
 @layer components {
@@ -98,18 +138,26 @@
     @apply bg-transparent;
   }
 
-  /* Textured layered backdrop for tiles/photography that lack an image:
-     warm gradient + grain so placeholders feel designed, not empty. */
-  .tile-texture {
-    background-image: linear-gradient(160deg, rgba(176, 125, 63, 0.22) 0%, rgba(47, 74, 60, 0.3) 55%, rgba(24, 37, 31, 0.55) 100%);
-  }
-  .tile-texture::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23t)' opacity='0.35'/%3E%3C/svg%3E");
-  }
+.edge { position: relative; }
+.edge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg,
+    rgba(0,144,230,0.85) 0%,
+    rgba(94,194,255,0.35) 22%,
+    rgba(14,16,19,0.10) 55%,
+    rgba(11,95,168,0.55) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.75;
+  transition: opacity 0.25s;
+}
+.edge:hover::after { opacity: 1; }
 }
 
 /* Nudge the display font's optical sizing axis for display sizes. */

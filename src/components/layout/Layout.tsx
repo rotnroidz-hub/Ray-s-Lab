@@ -36,7 +36,7 @@ function AnimatedOutlet() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-[70vh]"
+      className="relative z-[1] min-h-[70vh]"
     >
       <Outlet />
     </motion.main>
@@ -46,12 +46,17 @@ function AnimatedOutlet() {
 export function Layout() {
   return (
     <FlyToCartProvider>
-      <ScrollToTop />
-      <Header />
-      <AnimatedOutlet />
-      <Footer />
-      <CartDrawer />
-      <CheckoutModal />
+      <div className="tex-layer tex-emboss" aria-hidden />
+      <div className="tex-layer tex-tint" aria-hidden />
+      <div className="tex-layer tex-grain" aria-hidden />
+      <div className="relative z-[1]">
+        <ScrollToTop />
+        <Header />
+        <AnimatedOutlet />
+        <Footer />
+        <CartDrawer />
+        <CheckoutModal />
+      </div>
     </FlyToCartProvider>
   )
 }
