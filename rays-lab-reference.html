@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<!--
+  REFERENCE ONLY. DO NOT COPY THIS CODE INTO THE REPO.
+
+  This is a static vanilla HTML/CSS mockup showing the approved look and behaviour.
+  The repo is React 19 + Tailwind 3.4. Implement from RAY_BODYLAB_V2_SPEC.md instead,
+  which contains the real tokens, file paths, component names and column names.
+  Use this file only to see what the result should look like and how it should move.
+-->
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ray BodyLab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --ink:#0E1013; --ink-2:#1B1E23; --ink-soft:#5B6169; --ink-faint:#8A9099;
+  --paper:#F5F4EF; --paper-2:#FAF9F5; --card:#FFFFFF;
+  --blue:#0090E6; --blue-deep:#0B5FA8; --blue-lite:#5EC2FF;
+  --line:rgba(14,16,19,.12); --line-soft:rgba(14,16,19,.07);
+  --r-card:14px; --r-tile:14px; --r-pill:999px;
+  --pad:clamp(18px,4vw,56px);
+  --edge:linear-gradient(140deg,rgba(0,144,230,.85) 0%,rgba(94,194,255,.35) 22%,rgba(14,16,19,.10) 55%,rgba(11,95,168,.55) 100%);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Geist',system-ui,sans-serif;color:var(--ink);background:var(--paper);
+  -webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+body.locked{overflow:hidden}
+.layer{position:fixed;inset:0;pointer-events:none;z-index:0}
+.layer.emboss{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='24' viewBox='0 0 14 24'%3E%3Cpolygon points='7,0.9 13.4,4.6 13.4,12 7,15.7 0.6,12 0.6,4.6' fill='none' stroke='%230E1013' stroke-opacity='0.2' stroke-width='0.6'/%3E%3Cpolygon points='7,0 13.4,3.7 13.4,11.1 7,14.8 0.6,11.1 0.6,3.7' fill='none' stroke='%23FFFFFF' stroke-opacity='1' stroke-width='0.7'/%3E%3C/svg%3E");
+  background-size:14px 24px}
+.layer.tint{
+  background:linear-gradient(135deg,#0090E6 0%,#5EC2FF 18%,#0B5FA8 42%,#0E1013 68%,#0090E6 100%);
+  background-size:180% 180%;opacity:.22;
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='24' viewBox='0 0 14 24'%3E%3Cpolygon points='7,0.45 13.4,4.15 13.4,11.55 7,15.25 0.6,11.55 0.6,4.15' fill='none' stroke='%23fff' stroke-width='0.85'/%3E%3C/svg%3E");
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='24' viewBox='0 0 14 24'%3E%3Cpolygon points='7,0.45 13.4,4.15 13.4,11.55 7,15.25 0.6,11.55 0.6,4.15' fill='none' stroke='%23fff' stroke-width='0.85'/%3E%3C/svg%3E");
+  -webkit-mask-size:14px 24px;mask-size:14px 24px}
+.layer.grain{opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.tex-dark{position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='24' viewBox='0 0 14 24'%3E%3Cpolygon points='7,0.9 13.4,4.6 13.4,12 7,15.7 0.6,12 0.6,4.6' fill='none' stroke='%23FFFFFF' stroke-opacity='0.14' stroke-width='0.6'/%3E%3Cpolygon points='7,0 13.4,3.7 13.4,11.1 7,14.8 0.6,11.1 0.6,3.7' fill='none' stroke='%23000000' stroke-opacity='0.55' stroke-width='0.7'/%3E%3C/svg%3E");
+  background-size:14px 24px}
+.tex-glow{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,var(--blue) 0%,var(--blue-lite) 22%,transparent 55%);opacity:.5;
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='24' viewBox='0 0 14 24'%3E%3Cpolygon points='7,0.45 13.4,4.15 13.4,11.55 7,15.25 0.6,11.55 0.6,4.15' fill='none' stroke='%23fff' stroke-width='0.9'/%3E%3C/svg%3E");
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='24' viewBox='0 0 14 24'%3E%3Cpolygon points='7,0.45 13.4,4.15 13.4,11.55 7,15.25 0.6,11.55 0.6,4.15' fill='none' stroke='%23fff' stroke-width='0.9'/%3E%3C/svg%3E");
+  -webkit-mask-size:14px 24px;mask-size:14px 24px}
+.shell{max-width:1400px;margin:0 auto;padding:0 var(--pad);position:relative;z-index:1}
+.disp{font-family:'Bricolage Grotesque','Geist',sans-serif;font-weight:800;letter-spacing:-.035em;line-height:.98}
+.mono{font-family:'Geist Mono',ui-monospace,monospace}
+
+.rv{opacity:0;transform:translateY(24px);
+  transition:opacity .65s cubic-bezier(.19,1,.22,1),transform .65s cubic-bezier(.19,1,.22,1)}
+.rv.in{opacity:1;transform:none}
+.edge{position:relative}
+.edge::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:var(--edge);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.75;transition:opacity .25s}
+.edge:hover::after{opacity:1}
+
+header{position:sticky;top:0;z-index:60;background:rgba(245,244,239,.9);backdrop-filter:saturate(160%) blur(10px);
+  border-bottom:1px solid transparent;transition:border-color .25s,box-shadow .25s}
+header.stuck{border-bottom-color:var(--line);box-shadow:0 6px 26px rgba(14,16,19,.06)}
+.bar{display:flex;align-items:center;gap:26px;height:78px}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);flex-shrink:0}
+.logo img{height:46px;width:auto;display:block}
+.logo .wm{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.02em;line-height:1.02}
+.logo .wm em{font-style:normal;color:var(--blue)}
+nav.main{display:flex;gap:4px}
+.navitem{position:relative}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:var(--ink);
+  padding:9px 16px;border-radius:var(--r-pill);border:1px solid transparent;background:transparent;cursor:pointer;
+  transition:background .18s,border-color .18s;font-family:inherit;text-decoration:none}
+.pill:hover,.navitem:hover .pill{background:var(--card);border-color:var(--line)}
+.navitem:hover .pill i.chev{transform:rotate(180deg)}
+.pill i.chev{transition:transform .2s;font-size:15px}
+.tools{margin-left:auto;display:flex;align-items:center;gap:10px}
+.search{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);
+  padding:0 16px;height:42px;border-radius:var(--r-pill);width:236px}
+.search input{border:0;background:transparent;outline:0;font-family:inherit;font-size:13.5px;color:var(--ink);width:100%}
+.search input::placeholder{color:var(--ink-faint)}
+.search i{color:var(--ink-soft);font-size:16px}
+.icobtn{width:42px;height:42px;border-radius:var(--r-pill);border:1px solid var(--line);background:var(--card);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;color:var(--ink);font-size:17px}
+.icobtn.solid{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
+.badge{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:var(--r-pill);
+  background:var(--blue);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.burger{display:none}
+
+.mega{position:absolute;top:calc(100% + 12px);left:0;width:640px;background:var(--paper-2);
+  border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;display:grid;grid-template-columns:206px 1fr;
+  opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .18s,transform .18s,visibility .18s;
+  box-shadow:0 22px 54px rgba(14,16,19,.14)}
+.navitem:hover .mega,.mega:hover,.navitem:focus-within .mega{opacity:1;visibility:visible;transform:none}
+.mega-l{border-right:1px solid var(--line-soft);padding:8px;background:rgba(14,16,19,.02)}
+.brandbtn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;
+  border:0;background:transparent;border-radius:9px;cursor:pointer;font-family:inherit;font-size:14px;
+  color:var(--ink);text-align:left;transition:background .14s,color .14s}
+.brandbtn .n{font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--ink-faint)}
+.brandbtn:hover{background:rgba(14,16,19,.05)}
+.brandbtn[aria-current="true"]{background:var(--ink);color:var(--paper-2)}
+.brandbtn[aria-current="true"] .n{color:var(--blue)}
+.mega-r{padding:18px 20px}
+.mega-r h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.03em}
+.mega-r .sub{font-size:12.5px;color:var(--ink-soft);margin:3px 0 14px}
+.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.catlink{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid var(--line-soft);border-radius:9px;
+  background:var(--card);text-decoration:none;color:var(--ink);font-size:13.5px;transition:border-color .15s,transform .15s}
+.catlink:hover{border-color:var(--blue);transform:translateX(2px)}
+.catlink i{font-size:16px;color:var(--blue-deep)}
+.catlink .n{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--ink-faint)}
+
+.banner{position:relative;margin-top:14px;border-radius:18px;overflow:hidden;background:var(--ink);min-height:520px;display:flex}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s;
+  display:grid;grid-template-columns:1.05fr .95fr}
+.slide.on{opacity:1;visibility:visible;position:relative}
+.slide-copy{overflow:hidden;padding:clamp(30px,4.4vw,62px);display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.slide-copy>*:not(.tex-dark):not(.tex-glow){position:relative;z-index:2}
+.slide-copy .eyebrow{font-family:'Geist Mono',monospace;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--blue-lite);margin-bottom:18px}
+.slide-copy h1{color:var(--paper-2);font-size:clamp(32px,4.3vw,56px);max-width:15ch;margin-bottom:18px}
+.slide-copy p{color:rgba(250,249,245,.66);font-size:15.5px;line-height:1.6;max-width:42ch;margin-bottom:28px}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.slide-media{position:relative;overflow:hidden}
+.slide-media img{width:100%;height:100%;object-fit:cover;display:block}
+.slide-media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--ink) 0%,rgba(14,16,19,.35) 45%,transparent 100%)}
+.bglow{position:absolute;width:520px;height:520px;border-radius:50%;top:-140px;right:18%;z-index:1;pointer-events:none;
+  background:radial-gradient(circle,rgba(0,144,230,.42),transparent 68%);filter:blur(10px)}
+.bnav{position:absolute;left:clamp(30px,4.4vw,62px);bottom:26px;z-index:5;display:flex;align-items:center;gap:14px}
+.dots{display:flex;gap:7px}
+.dot{width:8px;height:8px;padding:0;border:0;border-radius:var(--r-pill);background:rgba(250,249,245,.32);cursor:pointer;transition:width .3s,background .3s}
+.dot[aria-current="true"]{width:26px;background:var(--blue)}
+.arrows{display:flex;gap:7px}
+.arrow{width:36px;height:36px;border-radius:var(--r-pill);border:1px solid rgba(250,249,245,.26);background:rgba(250,249,245,.07);
+  color:var(--paper-2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:background .18s}
+.arrow:hover{background:rgba(250,249,245,.18)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 26px;border-radius:var(--r-pill);
+  border:1px solid transparent;font-family:inherit;font-size:14.5px;font-weight:500;cursor:pointer;text-decoration:none;
+  white-space:nowrap;transition:transform .16s,background .16s,border-color .16s,box-shadow .16s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:#0a9ff5;box-shadow:0 6px 20px rgba(0,144,230,.28)}
+.btn-dark{background:var(--ink);color:var(--paper-2)}
+.btn-dark:hover{background:#22262c}
+.btn-ghost-dark{background:transparent;color:var(--paper-2);border-color:rgba(250,249,245,.3)}
+.btn-ghost-dark:hover{border-color:var(--paper-2)}
+.btn-quiet{background:var(--card);color:var(--ink);border-color:var(--line)}
+.btn-quiet:hover{border-color:var(--ink)}
+.btn.sm{height:40px;padding:0 16px;font-size:13px}
+
+section{padding:clamp(54px,7vw,90px) 0;position:relative;z-index:1}
+.plate{position:relative;background:var(--paper-2);border-radius:var(--r-card);padding:26px 28px 22px;overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 1px 2px rgba(14,16,19,.04)}
+.plate .brk{position:absolute;width:14px;height:14px;border:1.5px solid var(--blue);opacity:0;z-index:2}
+.plate .brk.tl{top:10px;left:10px;border-right:0;border-bottom:0}
+.plate .brk.br{bottom:10px;right:10px;border-left:0;border-top:0}
+.plate .sweep{position:absolute;top:0;bottom:0;width:80px;left:-100px;z-index:1;
+  background:linear-gradient(90deg,transparent,rgba(0,144,230,.13),transparent)}
+.plate .kicker{font-family:'Geist Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--blue-deep);margin-bottom:12px;position:relative;z-index:2}
+.plate-top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;position:relative;z-index:2}
+.plate h2{font-size:clamp(30px,4vw,46px)}
+.plate .m{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.1em}
+.plate .m>span{display:inline-block;transform:translateY(112%)}
+.plate .count{text-align:right;flex-shrink:0}
+.plate .count b{font-family:'Geist Mono',monospace;font-size:30px;font-weight:500;line-height:1;display:block}
+.plate .count small{font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--ink-soft);letter-spacing:.08em;display:block;margin-top:4px}
+.plate .rule{height:1px;background:var(--line);margin:18px 0 16px;transform:scaleX(0);transform-origin:left;position:relative;z-index:2}
+.plate .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:relative;z-index:2}
+.chip{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 16px;border-radius:var(--r-pill);
+  border:1px solid var(--line);background:var(--card);font-family:inherit;font-size:13.5px;color:var(--ink);
+  cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper-2)}
+.chip .n{font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--ink-faint)}
+.chip[aria-pressed="true"] .n{color:var(--blue)}
+.sortwrap{margin-left:auto}
+.plate.in .brk{animation:brk .38s ease .3s both}
+.plate.in .sweep{animation:sweep 1.05s cubic-bezier(.4,0,.2,1) .35s both}
+.plate.in .m>span{animation:rise .72s cubic-bezier(.19,1,.22,1) both}
+.plate.in .rule{animation:rule .6s cubic-bezier(.19,1,.22,1) .26s both}
+.plate.in .m:nth-child(1)>span{animation-delay:.06s}
+.plate.in .m:nth-child(2)>span{animation-delay:.15s}
+.plate.in .m:nth-child(3)>span{animation-delay:.24s}
+@keyframes brk{from{opacity:0;transform:scale(.35)}to{opacity:1;transform:none}}
+@keyframes sweep{to{left:110%}}
+@keyframes rise{to{transform:none}}
+@keyframes rule{to{transform:scaleX(1)}}
+
+.spot{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-top:22px}
+.spotcard{position:relative;border-radius:var(--r-tile);overflow:hidden;min-height:440px;display:flex;flex-direction:column;
+  justify-content:flex-end;padding:30px;color:var(--paper-2);isolation:isolate;cursor:pointer}
+.spotcard img.bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s}
+.spotcard:hover img.bgimg{transform:scale(1.04)}
+.spotcard::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(14,16,19,.28) 0%,rgba(14,16,19,.62) 48%,rgba(14,16,19,.96) 100%)}
+.spotcard .brandline{font-family:'Geist Mono',monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(250,249,245,.72);margin-bottom:9px;position:relative}
+.spotcard h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.03em;
+  font-size:clamp(23px,2.4vw,30px);line-height:1.05;margin-bottom:8px;position:relative}
+.spotcard p{font-size:14.5px;line-height:1.55;color:rgba(250,249,245,.72);max-width:36ch;margin-bottom:18px;position:relative}
+.spotcard .acts{position:relative}
+.spotcard .price{position:absolute;top:26px;right:26px;font-family:'Geist Mono',monospace;font-size:16px;font-weight:500;
+  background:rgba(250,249,245,.14);border:1px solid rgba(250,249,245,.26);padding:7px 13px;border-radius:var(--r-pill);backdrop-filter:blur(6px)}
+
+.bento{display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:1fr 1fr;gap:14px;height:470px;margin-top:22px}
+.bcell{position:relative;border-radius:var(--r-tile);overflow:hidden;display:flex;align-items:flex-end;padding:24px;
+  color:var(--paper-2);text-decoration:none;isolation:isolate;cursor:pointer}
+.bcell:first-child{grid-row:span 2}
+.bcell img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s}
+.bcell:hover img{transform:scale(1.05)}
+.bcell::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(14,16,19,.18) 0%,rgba(14,16,19,.5) 45%,rgba(14,16,19,.9) 100%)}
+.bcell h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.03em;position:relative}
+.bcell .n{font-family:'Geist Mono',monospace;font-size:12px;color:var(--blue-lite);margin-top:3px;position:relative}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.card{background:var(--card);border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column;cursor:pointer;
+  opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease,box-shadow .25s}
+.card.in{opacity:1;transform:none}
+.card:hover{box-shadow:0 10px 30px rgba(14,16,19,.08)}
+.thumb{aspect-ratio:4/3;background:var(--paper);overflow:hidden;position:relative}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s}
+.card:hover .thumb img{transform:scale(1.05)}
+.stock{position:absolute;top:11px;left:11px;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;background:rgba(250,249,245,.92);color:var(--ink);padding:5px 9px;border-radius:var(--r-pill)}
+.stock.low{background:var(--blue);color:#fff}
+.cbody{padding:15px 16px 17px;display:flex;flex-direction:column;gap:5px;flex:1}
+.cbrand{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.cname{font-size:14.5px;font-weight:500;line-height:1.3}
+.cprice{font-family:'Geist Mono',monospace;font-size:16px;font-weight:500;margin-top:6px}
+.cacts{margin-top:13px;display:grid;grid-template-columns:1fr auto;gap:7px}
+.more{display:flex;justify-content:center;margin-top:34px}
+.empty{padding:56px 0;text-align:center;color:var(--ink-soft);font-size:14.5px;display:none}
+
+.arrow.dk{border-color:var(--line);background:var(--card);color:var(--ink)}
+.arrow.dk:hover{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
+.rail{display:flex;gap:14px;margin-top:22px;overflow-x:auto;scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;padding-bottom:8px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rcard{flex:0 0 300px;scroll-snap-align:start;background:var(--card);border-radius:var(--r-card);overflow:hidden;
+  cursor:pointer;display:flex;flex-direction:column;transition:box-shadow .25s}
+.rcard:hover{box-shadow:0 10px 30px rgba(14,16,19,.08)}
+.rthumb{position:relative;aspect-ratio:1;overflow:hidden;background:var(--paper)}
+.rthumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s}
+.rcard:hover .rthumb img{transform:scale(1.05)}
+.rank{position:absolute;left:14px;top:10px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+  font-size:54px;line-height:1;color:var(--paper-2);letter-spacing:-.05em;text-shadow:0 2px 18px rgba(14,16,19,.5)}
+.rbody{padding:15px 17px 18px;display:flex;flex-direction:column;gap:4px;flex:1}
+.rbody .cacts{margin-top:auto}
+
+footer{background:var(--ink);color:var(--paper-2);position:relative;z-index:1;overflow:hidden}
+footer .tex-dark{opacity:.85}
+footer .tex-glow{opacity:.22}
+.fmain{position:relative;z-index:2;padding:64px 0 40px;display:grid;grid-template-columns:1.2fr 2fr;gap:48px}
+.fbrand img{height:132px;width:auto;display:block;margin-bottom:20px}
+.fbrand p{font-size:14px;line-height:1.65;color:rgba(250,249,245,.6);max-width:38ch}
+.fsocial{display:flex;gap:9px;margin-top:20px}
+.fsocial a{width:40px;height:40px;border-radius:var(--r-pill);border:1px solid rgba(250,249,245,.22);
+  display:flex;align-items:center;justify-content:center;color:var(--paper-2);font-size:17px;text-decoration:none;transition:background .18s,border-color .18s}
+.fsocial a:hover{background:var(--blue);border-color:var(--blue)}
+.fnav{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.fcol h5{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--blue-lite);margin-bottom:14px}
+.fcol a{display:block;font-size:14px;color:rgba(250,249,245,.66);text-decoration:none;padding:5px 0;transition:color .15s}
+.fcol a:hover{color:var(--paper-2)}
+.fbot{position:relative;z-index:2;border-top:1px solid rgba(250,249,245,.14);padding:22px 0 30px;
+  text-align:center;font-size:13px;color:rgba(250,249,245,.5)}
+
+.scrim{position:fixed;inset:0;z-index:90;background:rgba(14,16,19,.55);backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+.scrim.open{opacity:1;visibility:visible}
+.sheet{position:fixed;z-index:100;background:var(--paper-2);overflow-y:auto;transition:transform .32s cubic-bezier(.19,1,.22,1)}
+#pdp{inset:36px;border-radius:18px;transform:translateY(24px) scale(.985);opacity:0;visibility:hidden;
+  transition:transform .32s cubic-bezier(.19,1,.22,1),opacity .25s,visibility .25s}
+#pdp.open{transform:none;opacity:1;visibility:visible}
+.pdp-close{position:absolute;top:18px;right:18px;z-index:6}
+.pdp-in{display:grid;grid-template-columns:1.05fr 1fr;min-height:100%}
+.pdp-media{background:var(--paper);padding:clamp(20px,3vw,40px);display:flex;flex-direction:column;gap:12px}
+.pdp-hero{border-radius:var(--r-card);overflow:hidden;aspect-ratio:4/3;background:var(--card)}
+.pdp-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.pdp-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pdp-thumbs button{padding:0;border:1px solid var(--line-soft);border-radius:10px;overflow:hidden;aspect-ratio:1;
+  background:var(--card);cursor:pointer;transition:border-color .18s}
+.pdp-thumbs button[aria-current="true"]{border-color:var(--blue)}
+.pdp-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.pdp-info{padding:clamp(24px,3vw,46px) clamp(22px,3vw,44px)}
+.crumb{font-family:'Geist Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:16px}
+.crumb b{color:var(--blue-deep);font-weight:400}
+.pdp-info h2{font-size:clamp(26px,2.9vw,38px);margin-bottom:10px}
+.pdp-price{display:flex;align-items:baseline;gap:12px;margin:18px 0 6px}
+.pdp-price .now{font-family:'Geist Mono',monospace;font-size:28px;font-weight:500}
+.pdp-price .was{font-family:'Geist Mono',monospace;font-size:15px;color:var(--ink-faint);text-decoration:line-through}
+.pdp-stock{font-size:13px;color:var(--ink-soft);margin-bottom:22px}
+.pdp-stock b{color:var(--blue-deep);font-weight:500}
+.pdp-lead{font-size:15px;line-height:1.68;color:var(--ink-soft);margin-bottom:24px;max-width:48ch}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-pill);height:48px;background:var(--card)}
+.qty button{width:44px;height:100%;border:0;background:transparent;cursor:pointer;font-size:17px;color:var(--ink);font-family:inherit}
+.qty span{min-width:34px;text-align:center;font-family:'Geist Mono',monospace;font-size:15px}
+.pdp-acts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+.pdp-acts .btn{flex:1;min-width:150px}
+.pblock{border-top:1px solid var(--line);padding:20px 0}
+.pblock:last-of-type{padding-bottom:0}
+.pblock h5{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:10px}
+.pblock h5 em{font-style:normal;text-transform:none;letter-spacing:.02em;color:var(--blue-deep)}
+.pblock p{font-size:14.5px;line-height:1.68;color:var(--ink-soft);max-width:48ch}
+.pblock ul{margin:0;padding-left:18px}
+.pblock li{font-size:14.5px;line-height:1.68;color:var(--ink-soft);margin-bottom:6px}
+.pblock .blank{color:var(--ink-faint);font-style:italic;font-size:13.5px}
+
+#cart{top:0;right:0;bottom:0;width:min(420px,100%);transform:translateX(100%);display:flex;flex-direction:column}
+#cart.open{transform:none}
+.cart-top{display:flex;align-items:center;justify-content:space-between;padding:24px;border-bottom:1px solid var(--line)}
+.cart-top h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;letter-spacing:-.03em}
+.cart-items{flex:1;overflow-y:auto;padding:16px 24px}
+.citem{display:grid;grid-template-columns:64px 1fr auto;gap:13px;padding:14px 0;align-items:center}
+.citem+.citem{border-top:1px solid var(--line-soft)}
+.citem img{width:64px;height:64px;object-fit:cover;border-radius:10px;display:block}
+.citem .nm{font-size:14px;font-weight:500;line-height:1.3}
+.citem .mt{font-family:'Geist Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+.citem .rm{border:0;background:transparent;cursor:pointer;color:var(--ink-faint);font-size:17px;padding:6px}
+.citem .rm:hover{color:var(--ink)}
+.cart-bot{padding:22px 24px 26px;border-top:1px solid var(--line);background:var(--card)}
+.cart-line{display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px;color:var(--ink-soft)}
+.cart-line.total{font-size:17px;color:var(--ink);margin-bottom:18px}
+.cart-line.total b{font-family:'Geist Mono',monospace;font-weight:500}
+.cart-empty{text-align:center;color:var(--ink-soft);font-size:14px;padding:60px 20px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);z-index:120;background:var(--ink);color:var(--paper-2);
+  padding:14px 22px;border-radius:var(--r-pill);font-size:14px;display:flex;align-items:center;gap:9px;
+  opacity:0;visibility:hidden;transition:opacity .25s,transform .25s,visibility .25s;box-shadow:0 12px 34px rgba(14,16,19,.24)}
+.toast.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.toast i{color:var(--blue-lite);font-size:18px}
+
+@media (max-width:1080px){
+  .grid,  .slide{grid-template-columns:1fr}
+  .slide-media{display:none}
+  .banner{min-height:440px}
+  .spot{grid-template-columns:1fr}
+  .bento{grid-template-columns:1fr;grid-template-rows:repeat(3,190px);height:auto}
+  .bcell:first-child{grid-row:span 1}
+  .pdp-in{grid-template-columns:1fr}
+  .fmain{grid-template-columns:1fr;gap:36px}
+  #pdp{inset:14px}
+}
+@media (max-width:760px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  nav.main,.search{display:none}
+  .burger{display:flex}
+    .fnav{grid-template-columns:1fr 1fr}
+  .plate-top{flex-direction:column;align-items:flex-start;gap:12px}
+  .plate .count{text-align:left}
+  .sortwrap{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .plate .m>span{transform:none}.plate .rule{transform:scaleX(1)}.plate .brk{opacity:1}
+  .card{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="layer emboss"></div>
+<div class="layer tint"></div>
+<div class="layer grain"></div>
+
+<header id="hdr">
+  <div class="shell bar">
+    <a class="logo" href="#top">
+      <img src="/logo-mark.png" alt="Ray BodyLab">
+      <span class="wm">RAY<br>BODY<em>LAB</em></span>
+    </a>
+    <nav class="main">
+      <div class="navitem">
+        <button class="pill" aria-haspopup="true">Brands <i class="ti ti-chevron-down chev" aria-hidden="true"></i></button>
+        <div class="mega">
+          <div class="mega-l" id="brandlist"></div>
+          <div class="mega-r" id="brandpanel"></div>
+        </div>
+      </div>
+      <a class="pill" href="#catalog">All products</a>
+      <a class="pill" href="#best">Best sellers</a>
+    </nav>
+    <div class="tools">
+      <label class="search">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <input type="search" placeholder="Search earbuds, watches, cables" aria-label="Search products">
+      </label>
+      <button class="icobtn burger" aria-label="Open menu"><i class="ti ti-menu-2" aria-hidden="true"></i></button>
+      <button class="icobtn solid" id="cartBtn" aria-label="Open cart">
+        <i class="ti ti-shopping-bag" aria-hidden="true"></i><span class="badge" id="cartCount">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+<div id="sentinel" style="height:1px"></div>
+
+<div class="shell" id="top">
+  <div class="banner" id="banner">
+    <div class="bglow"></div>
+    <div class="slide on">
+      <div class="slide-copy"><div class="tex-dark" style="opacity:.9"></div><div class="tex-glow" style="opacity:.32"></div>
+        <p class="eyebrow">Field tested essentials</p>
+        <h1 class="disp">Your headline goes here.</h1>
+        <p>Swap this line, the image and the buttons for your own. Each banner slide is one block in the admin.</p>
+        <div class="acts">
+          <a class="btn btn-primary" href="#catalog">Shop the catalogue <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
+          <a class="btn btn-ghost-dark" href="#best">Secondary button</a>
+        </div>
+      </div>
+      <div class="slide-media"><img src="https://picsum.photos/seed/raybodylab-banner-workbench/1200/900" alt="Audio gear on a workbench"></div>
+    </div>
+    <div class="slide">
+      <div class="slide-copy"><div class="tex-dark" style="opacity:.9"></div><div class="tex-glow" style="opacity:.32"></div>
+        <p class="eyebrow">Second slide</p>
+        <h1 class="disp">A second banner, same block.</h1>
+        <p>Add as many slides as you want. They rotate on their own and stop when someone hovers.</p>
+        <div class="acts">
+          <a class="btn btn-primary" href="#catalog">Primary button <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <div class="slide-media"><img src="https://picsum.photos/seed/raybodylab-banner-watches/1200/900" alt="Smart watches"></div>
+    </div>
+    <div class="slide">
+      <div class="slide-copy"><div class="tex-dark" style="opacity:.9"></div><div class="tex-glow" style="opacity:.32"></div>
+        <p class="eyebrow">Third slide</p>
+        <h1 class="disp">Third banner, your words.</h1>
+        <p>Upload a photo, write a headline, pick where the buttons go. Nothing else to set up.</p>
+        <div class="acts">
+          <a class="btn btn-primary" href="#catalog">Primary button <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <div class="slide-media"><img src="https://picsum.photos/seed/raybodylab-banner-delivery/1200/900" alt="Parcels ready for delivery"></div>
+    </div>
+    <div class="bnav">
+      <div class="dots" id="dots"></div>
+      <div class="arrows">
+        <button class="arrow" id="prev" aria-label="Previous banner"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+        <button class="arrow" id="next" aria-label="Next banner"><i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="shell">
+    <div class="plate edge" data-plate>
+      <span class="brk tl"></span><span class="brk br"></span><span class="sweep"></span>
+      <p class="kicker">Handpicked this week</p>
+      <div class="plate-top">
+        <h2 class="disp"><span class="m"><span>Chosen,</span></span> <span class="m"><span>not</span></span> <span class="m"><span>churned.</span></span></h2>
+        <div class="count"><b data-count="2">0</b><small>picks</small></div>
+      </div>
+      <div class="rule"></div>
+      <div class="row">
+        <span style="font-size:14px;color:var(--ink-soft);max-width:52ch">The two pieces our customers message about most, week after week.</span>
+        <a class="btn btn-quiet sortwrap" href="#catalog">See all 42 <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
+      </div>
+    </div>
+    <div class="spot">
+      <article class="spotcard rv" data-open="2">
+        <img class="bgimg" src="https://picsum.photos/seed/raybodylab-garmin-forerunner/1100/900" alt="Running watch">
+        <span class="price">RM 1099</span>
+        <p class="brandline">Garmin, wearables</p>
+        <h3>The one people ask about most.</h3>
+        <p>Forerunner 165. Eleven days of battery, and the strap survives a wet ride home.</p>
+        <div class="acts"><button class="btn btn-primary" data-open="2">View product <i class="ti ti-arrow-right" aria-hidden="true"></i></button></div>
+      </article>
+      <article class="spotcard rv" data-open="0">
+        <img class="bgimg" src="https://picsum.photos/seed/raybodylab-go4-speaker/900/1000" alt="Portable speaker">
+        <span class="price">RM 119</span>
+        <p class="brandline">JBL, audio</p>
+        <h3>Small speaker, loud room.</h3>
+        <p>Go 4. Fits a jacket pocket, fills a shoplot.</p>
+        <div class="acts"><button class="btn btn-primary" data-open="0">View product <i class="ti ti-arrow-right" aria-hidden="true"></i></button></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="catalog" style="padding-top:0">
+  <div class="shell">
+    <div class="plate edge" data-plate>
+      <span class="brk tl"></span><span class="brk br"></span><span class="sweep"></span>
+      <div class="plate-top">
+        <h2 class="disp"><span class="m"><span>All</span></span> <span class="m"><span>products</span></span></h2>
+        <div class="count"><b data-count="42" id="liveCount">0</b><small>in stock now</small></div>
+      </div>
+      <div class="rule"></div>
+      <div class="row">
+        <button class="chip" data-cat="all" aria-pressed="true">All <span class="n">42</span></button>
+        <button class="chip" data-cat="Audio" aria-pressed="false"><i class="ti ti-headphones" aria-hidden="true"></i>Audio <span class="n">14</span></button>
+        <button class="chip" data-cat="Wearables" aria-pressed="false"><i class="ti ti-device-watch" aria-hidden="true"></i>Wearables <span class="n">19</span></button>
+        <button class="chip" data-cat="Accessories" aria-pressed="false"><i class="ti ti-plug" aria-hidden="true"></i>Accessories <span class="n">9</span></button>
+        <button class="btn btn-quiet sortwrap" id="sortBtn">Sort: featured <i class="ti ti-selector" aria-hidden="true"></i></button>
+      </div>
+    </div>
+
+    <div class="bento">
+      <a class="bcell rv" href="#catalog" data-cat="Audio"><img src="https://picsum.photos/seed/raybodylab-cat-audio/900/1200" alt="Headphones"><div><h3>Audio</h3><p class="n">14 items</p></div></a>
+      <a class="bcell rv" href="#catalog" data-cat="Wearables"><img src="https://picsum.photos/seed/raybodylab-cat-wear/900/600" alt="Smart watch"><div><h3>Wearables</h3><p class="n">19 items</p></div></a>
+      <a class="bcell rv" href="#catalog" data-cat="Accessories"><img src="https://picsum.photos/seed/raybodylab-cat-acc/900/600" alt="Cables and chargers"><div><h3>Accessories</h3><p class="n">9 items</p></div></a>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty">Nothing in that category right now. Message us and we will source it.</p>
+    <div class="more"><button class="btn btn-quiet" id="loadMore">Load 6 more <i class="ti ti-arrow-down" aria-hidden="true"></i></button></div>
+  </div>
+</section>
+
+<section class="best" id="best">
+  <div class="shell">
+    <div class="plate edge" data-plate>
+      <span class="brk tl"></span><span class="brk br"></span><span class="sweep"></span>
+      <p class="kicker">Moving fastest right now</p>
+      <div class="plate-top">
+        <h2 class="disp"><span class="m"><span>Best</span></span> <span class="m"><span>sellers</span></span></h2>
+        <div class="count"><b data-count="6">0</b><small>this month</small></div>
+      </div>
+      <div class="rule"></div>
+      <div class="row">
+        <span style="font-size:14px;color:var(--ink-soft);max-width:52ch">Ranked by what actually left the shelf over the last thirty days.</span>
+        <div class="sortwrap" style="display:flex;gap:7px">
+          <button class="arrow dk" id="bPrev" aria-label="Scroll best sellers left"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+          <button class="arrow dk" id="bNext" aria-label="Scroll best sellers right"><i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="rail" id="rail"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="tex-dark"></div><div class="tex-glow"></div>
+  <div class="shell">
+    <div class="fmain">
+      <div class="fbrand rv">
+        <img src="/logo-full-white.png" alt="Ray BodyLab">
+        <p>Stocked, checked and supported by us. Order online or reach out and we will help you pick.</p>
+        <div class="fsocial">
+          <a href="#" aria-label="WhatsApp"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Instagram"><i class="ti ti-brand-instagram" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Facebook"><i class="ti ti-brand-facebook" aria-hidden="true"></i></a>
+          <a href="#" aria-label="TikTok"><i class="ti ti-brand-tiktok" aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <div class="fnav">
+        <div class="fcol rv"><h5>Shop</h5><a href="#catalog">All products</a><a href="#catalog">Audio</a><a href="#catalog">Wearables</a><a href="#catalog">Accessories</a><a href="#catalog">New arrivals</a></div>
+        <div class="fcol rv"><h5>Brands</h5><a href="#">JBL</a><a href="#">Garmin</a><a href="#">Anker</a><a href="#">Xiaomi</a><a href="#">Sony</a></div>
+        <div class="fcol rv"><h5>Support</h5><a href="#best">Best sellers</a><a href="#">Track an order</a><a href="#">FAQ</a><a href="#">Contact us</a></div>
+      </div>
+    </div>
+    <div class="fbot">
+      <span>Copyright 2026 Ray BodyLab. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+
+<aside class="sheet" id="pdp" role="dialog" aria-modal="true" aria-label="Product details">
+  <button class="icobtn pdp-close" id="pdpClose" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
+  <div class="pdp-in" id="pdpIn"></div>
+</aside>
+
+<aside class="sheet" id="cart" role="dialog" aria-modal="true" aria-label="Cart">
+  <div class="cart-top">
+    <h3>Your cart</h3>
+    <button class="icobtn" id="cartClose" aria-label="Close cart"><i class="ti ti-x" aria-hidden="true"></i></button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-bot" id="cartBot"></div>
+</aside>
+
+<div class="toast" id="toast"><i class="ti ti-circle-check" aria-hidden="true"></i><span id="toastMsg">Added to cart</span></div>
+
+<script>
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const BRANDS=[
+ {b:"JBL",n:13,note:"mostly audio",c:[["Earbuds","ti-ear-scan",5],["Speakers","ti-device-speaker",4],["Headphones","ti-headphones",3],["Party boxes","ti-box",1]]},
+ {b:"Sony",n:11,note:"mostly audio",c:[["Earbuds","ti-ear-scan",4],["Headphones","ti-headphones",5],["Soundbars","ti-device-tv",2]]},
+ {b:"Garmin",n:9,note:"mostly wearables",c:[["Sport watches","ti-clock-hour-4",5],["Straps","ti-line-dashed",3],["Chargers","ti-plug",1]]},
+ {b:"Anker",n:12,note:"mostly accessories",c:[["Power banks","ti-battery-3",5],["Chargers","ti-plug",4],["Cables","ti-cable",3]]},
+ {b:"Bose",n:7,note:"mostly audio",c:[["Earbuds","ti-ear-scan",3],["Headphones","ti-headphones",3],["Speakers","ti-device-speaker",1]]},
+ {b:"Xiaomi",n:14,note:"wearables and cables",c:[["Smart bands","ti-activity",6],["Watches","ti-device-watch",4],["Scales","ti-scale",2],["Cables","ti-cable",2]]},
+ {b:"Fitbit",n:6,note:"mostly wearables",c:[["Trackers","ti-activity",4],["Straps","ti-line-dashed",2]]},
+ {b:"Logitech",n:8,note:"mostly accessories",c:[["Keyboards","ti-keyboard",3],["Mice","ti-mouse",3],["Webcams","ti-camera",2]]}
+];
+const list=document.getElementById("brandlist"),panel=document.getElementById("brandpanel");
+list.innerHTML=BRANDS.map((x,i)=>`<button class="brandbtn" data-i="${i}" aria-current="${i===0}">${x.b}<span class="n">${x.n}</span></button>`).join("");
+function paintBrand(i){const x=BRANDS[i];
+  panel.innerHTML=`<h3>${x.b}</h3><p class="sub">${x.n} items in stock, ${x.note}</p><div class="catgrid">`+
+   x.c.map(c=>`<a class="catlink" href="#catalog"><i class="ti ${c[1]}" aria-hidden="true"></i>${c[0]}<span class="n">${c[2]}</span></a>`).join("")+`</div>`;
+  list.querySelectorAll(".brandbtn").forEach((b,j)=>b.setAttribute("aria-current",String(j===i)));}
+list.querySelectorAll(".brandbtn").forEach(b=>{const i=+b.dataset.i;
+  ["mouseenter","focus","click"].forEach(ev=>b.addEventListener(ev,()=>paintBrand(i)));});
+paintBrand(0);
+
+const P=[
+ {b:"JBL",n:"Go 4 portable speaker",c:"Audio",p:119,was:149,s:"go4",st:8,d:"Pocket sized, properly loud. Seven hours of playback, and it shrugs off a splash at the pool or a sudden downpour on the way home.",sp:[["Battery","7 hours"],["Water rating","IP67"],["Weight","190 g"],["Bluetooth","5.3"]]},
+ {b:"Sony",n:"WF-C710N earbuds",c:"Audio",p:349,was:399,s:"sonywf",st:5,d:"Noise cancelling that actually helps on the KTM. Thirty hours total with the case, and the fit stays put on a run.",sp:[["Battery","8 h, 30 h with case"],["Noise cancelling","Yes"],["Water rating","IPX4"],["Charging","USB C"]]},
+ {b:"Garmin",n:"Forerunner 165",c:"Wearables",p:1099,was:0,s:"garmin165",st:3,d:"A running watch that does not need babysitting. Eleven days on a charge in smartwatch mode, and the AMOLED screen is readable in full Malaysian sun.",sp:[["Battery","11 days"],["Display","AMOLED"],["GPS","Multi band"],["Water rating","5 ATM"]]},
+ {b:"Anker",n:"622 MagGo power bank",c:"Accessories",p:189,was:0,s:"anker622",st:12,d:"Snaps onto the back of a phone and folds out into a stand. Enough for a full recharge plus a bit spare.",sp:[["Capacity","5000 mAh"],["Output","7.5 W magnetic"],["Stand","Built in"],["Weight","141 g"]]},
+ {b:"Xiaomi",n:"Smart Band 9",c:"Wearables",p:179,was:199,s:"band9",st:15,d:"The easy recommendation. Three weeks between charges, sleep tracking that is close enough to be useful, and a strap that does not stink after the gym.",sp:[["Battery","21 days"],["Display","1.62 in AMOLED"],["Water rating","5 ATM"],["Sensors","Heart rate, SpO2"]]},
+ {b:"Bose",n:"SoundLink Flex",c:"Audio",p:649,was:0,s:"boseflex",st:4,d:"The one to bring when the room is bigger than you expected. Floats if it goes in the water, and sounds right whichever way it lands.",sp:[["Battery","12 hours"],["Water rating","IP67"],["Weight","589 g"],["Floats","Yes"]]},
+ {b:"Logitech",n:"MX Master 3S",c:"Accessories",p:429,was:459,s:"mxmaster",st:6,d:"Quiet clicks and a scroll wheel that spins for days. If you sit at a desk all day this is the upgrade you feel first.",sp:[["Sensor","8000 DPI"],["Battery","70 days"],["Devices","3 paired"],["Clicks","Silent"]]},
+ {b:"Samsung",n:"Galaxy Buds3",c:"Audio",p:599,was:0,s:"buds3",st:7,d:"Neat with a Galaxy phone, fine with anything else. The stem design makes them easier to seat than the old bean shape.",sp:[["Battery","6 h, 30 h with case"],["Noise cancelling","Yes"],["Water rating","IP57"],["Charging","USB C, wireless"]]},
+ {b:"Fitbit",n:"Inspire 3 tracker",c:"Wearables",p:329,was:0,s:"inspire3",st:9,d:"Light enough that you forget it is on. Ten days of battery and a screen that stays legible outdoors.",sp:[["Battery","10 days"],["Display","Colour AMOLED"],["Water rating","5 ATM"],["Weight","17.7 g"]]},
+ {b:"Anker",n:"737 power bank",c:"Accessories",p:549,was:0,s:"anker737",st:2,d:"Charges a laptop, not just a phone. Heavy for a pocket, right for a bag on a long travel day.",sp:[["Capacity","24000 mAh"],["Output","140 W"],["Ports","2 USB C, 1 USB A"],["Display","Digital"]]},
+ {b:"JBL",n:"Tune 720BT headphones",c:"Audio",p:219,was:249,s:"jbl720",st:11,d:"Seventy six hours of battery. Fold them flat, throw them in a bag, forget to charge them for a month.",sp:[["Battery","76 hours"],["Type","Over ear"],["Folding","Yes"],["Weight","220 g"]]},
+ {b:"Xiaomi",n:"Watch S4",c:"Wearables",p:699,was:0,s:"watchs4",st:5,d:"Looks like a normal watch from across the table. Fifteen days of battery and swappable bezels if you get bored.",sp:[["Battery","15 days"],["Display","1.43 in AMOLED"],["Water rating","5 ATM"],["Bezel","Swappable"]]},
+ {b:"Garmin",n:"Venu 3 strap",c:"Wearables",p:139,was:0,s:"garminstrap",st:14,d:"Quick release silicone in three colours. Swaps in about ten seconds, no tools.",sp:[["Fit","22 mm"],["Material","Silicone"],["Release","Quick pin"],["Colours","3"]]},
+ {b:"Sony",n:"ULT Field 1",c:"Audio",p:549,was:0,s:"sonyult",st:4,d:"There is a button on it labelled ULT and it does exactly what you think. Bass you can feel through a table.",sp:[["Battery","12 hours"],["Water rating","IP67"],["Weight","640 g"],["Strap","Included"]]},
+ {b:"Logitech",n:"Pebble Keys 2",c:"Accessories",p:189,was:0,s:"pebble",st:8,d:"Slim, silent, and it runs three years on one AAA. Pairs with a phone, tablet and laptop at once.",sp:[["Battery","3 years"],["Devices","3 paired"],["Profile","Slim"],["Keys","Silent"]]},
+ {b:"Xiaomi",n:"Smart Scale 2",c:"Wearables",p:119,was:0,s:"scale2",st:10,d:"Steps on, syncs over Bluetooth, recognises up to sixteen people. Tempered glass top wipes clean.",sp:[["Capacity","150 kg"],["Precision","50 g"],["Users","16"],["Power","4 AAA"]]},
+ {b:"Anker",n:"Nano 3 charger",c:"Accessories",p:89,was:0,s:"nano3",st:20,d:"Smaller than the block that came in the box and twice as fast. The plug folds flat.",sp:[["Output","30 W"],["Port","USB C"],["Folding plug","Yes"],["Weight","46 g"]]},
+ {b:"Bose",n:"QuietComfort earbuds",c:"Audio",p:899,was:999,s:"boseqc",st:2,d:"Still the benchmark for shutting out an aeroplane cabin. Adjustable levels if full silence feels odd.",sp:[["Battery","6 h, 24 h with case"],["Noise cancelling","Adjustable"],["Water rating","IPX4"],["Tips","3 sizes"]]}
+];
+const img=(s,i,w,h)=>`https://picsum.photos/seed/raybodylab-${s}-${i}/${w}/${h}`;
+const grid=document.getElementById("grid"),empty=document.getElementById("empty"),
+      loadMore=document.getElementById("loadMore"),liveCount=document.getElementById("liveCount");
+let cat="all",shown=12,order=P.slice();
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(reduce){e.target.classList.add("in");return}
+  e.target.classList.toggle("in",e.isIntersecting);
+}),{threshold:.12,rootMargin:"0px 0px -4% 0px"});
+function filtered(){return order.filter(p=>cat==="all"||p.c===cat)}
+function render(){
+  const items=filtered().slice(0,shown);
+  grid.innerHTML=items.map((p,i)=>`
+    <article class="card edge" data-open="${P.indexOf(p)}" style="transition-delay:${(i%4)*55}ms">
+      <div class="thumb">
+        <img src="${img(p.s,1,600,450)}" alt="${p.n}" loading="lazy">
+        ${p.st<=4?`<span class="stock low">only ${p.st} left</span>`:`<span class="stock">in stock</span>`}
+      </div>
+      <div class="cbody">
+        <span class="cbrand">${p.b}</span>
+        <span class="cname">${p.n}</span>
+        <span class="cprice">RM ${p.p}</span>
+        <div class="cacts">
+          <button class="btn btn-dark sm" data-buy="${P.indexOf(p)}">Buy now</button>
+          <button class="btn btn-quiet sm" data-add="${P.indexOf(p)}" aria-label="Add ${p.n} to cart"><i class="ti ti-shopping-bag-plus" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </article>`).join("");
+  grid.querySelectorAll(".card").forEach(c=>io.observe(c));
+  const total=filtered().length;
+  empty.style.display=total?"none":"block";
+  loadMore.style.display=shown<total?"inline-flex":"none";
+}
+document.querySelectorAll(".chip").forEach(chip=>chip.addEventListener("click",()=>setCat(chip.dataset.cat)));
+document.querySelectorAll(".bcell").forEach(b=>b.addEventListener("click",e=>{e.preventDefault();setCat(b.dataset.cat);
+  document.getElementById("catalog").scrollIntoView({behavior:"smooth"})}));
+function setCat(c){
+  cat=c;shown=12;render();
+  document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.cat===c)));
+  tick(liveCount,c==="all"?42:{Audio:14,Wearables:19,Accessories:9}[c]);
+}
+loadMore.addEventListener("click",()=>{shown+=6;render()});
+render();
+
+document.getElementById("sortBtn").addEventListener("click",e=>{
+  const b=e.currentTarget,opts=["featured","price low to high","price high to low"];
+  const cur=b.textContent.trim().replace("Sort: ",""),next=opts[(opts.indexOf(cur)+1)%opts.length];
+  b.innerHTML=`Sort: ${next} <i class="ti ti-selector" aria-hidden="true"></i>`;
+  order=next==="featured"?P.slice():P.slice().sort((x,y)=>next==="price low to high"?x.p-y.p:y.p-x.p);
+  render();
+});
+
+const scrim=document.getElementById("scrim"),pdp=document.getElementById("pdp"),pdpIn=document.getElementById("pdpIn"),
+      cartEl=document.getElementById("cart"),toast=document.getElementById("toast"),toastMsg=document.getElementById("toastMsg");
+let qty=1,current=null,cart=[];
+function openSheet(el){scrim.classList.add("open");el.classList.add("open");document.body.classList.add("locked")}
+function closeAll(){scrim.classList.remove("open");pdp.classList.remove("open");cartEl.classList.remove("open");document.body.classList.remove("locked")}
+scrim.addEventListener("click",closeAll);
+document.getElementById("pdpClose").addEventListener("click",closeAll);
+document.getElementById("cartClose").addEventListener("click",closeAll);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAll()});
+
+function openPDP(i){
+  current=i;qty=1;const p=P[i];
+  pdpIn.innerHTML=`
+    <div class="pdp-media">
+      <div class="pdp-hero"><img id="pdpHero" src="${img(p.s,1,1000,750)}" alt="${p.n}"></div>
+      <div class="pdp-thumbs">
+        ${[1,2,3].map((k,j)=>`<button data-th="${k}" aria-current="${j===0}"><img src="${img(p.s,k,300,300)}" alt=""></button>`).join("")}
+      </div>
+    </div>
+    <div class="pdp-info">
+      <p class="crumb">All products / <b>${p.c}</b> / ${p.b}</p>
+      <h2 class="disp">${p.n}</h2>
+      <div class="pdp-price"><span class="now">RM ${p.p}</span>${p.was?`<span class="was">RM ${p.was}</span>`:""}</div>
+      <p class="pdp-stock">${p.st<=4?`<b>Only ${p.st} left</b> in stock`:`<b>In stock</b>, ${p.st} units available`}</p>
+      <p class="pdp-lead">${p.d}</p>
+      <div class="pdp-acts">
+        <div class="qty">
+          <button id="qMinus" aria-label="Decrease quantity">-</button><span id="qVal">1</span><button id="qPlus" aria-label="Increase quantity">+</button>
+        </div>
+        <button class="btn btn-primary" id="buyNow">Buy now</button>
+        <button class="btn btn-quiet" id="addCart"><i class="ti ti-shopping-bag-plus" aria-hidden="true"></i> Add to cart</button>
+      </div>
+      <div class="pblock">
+        <h5>Benefits</h5>
+        <p class="blank">Not filled in yet. Add this from the admin.</p>
+      </div>
+      <div class="pblock">
+        <h5>Dos and cycle <em>(for reference only)</em></h5>
+        <p class="blank">Not filled in yet. Add this from the admin.</p>
+      </div>
+      <div class="pblock">
+        <h5>Note</h5>
+        <p class="blank">Not filled in yet. Add this from the admin.</p>
+      </div>
+    </div>`;
+  pdpIn.querySelectorAll("[data-th]").forEach(btn=>btn.addEventListener("click",()=>{
+    document.getElementById("pdpHero").src=img(p.s,btn.dataset.th,1000,750);
+    pdpIn.querySelectorAll("[data-th]").forEach(b2=>b2.setAttribute("aria-current",String(b2===btn)));
+  }));
+  const qv=document.getElementById("qVal");
+  document.getElementById("qMinus").addEventListener("click",()=>{qty=Math.max(1,qty-1);qv.textContent=qty});
+  document.getElementById("qPlus").addEventListener("click",()=>{qty=Math.min(p.st,qty+1);qv.textContent=qty});
+  document.getElementById("addCart").addEventListener("click",()=>{addToCart(i,qty);showToast(`${p.n} added to cart`)});
+  document.getElementById("buyNow").addEventListener("click",()=>{addToCart(i,qty);closeAll();setTimeout(()=>openSheet(cartEl),260)});
+  pdp.scrollTop=0;openSheet(pdp);
+}
+document.addEventListener("click",e=>{
+  const add=e.target.closest("[data-add]"),buy=e.target.closest("[data-buy]"),open=e.target.closest("[data-open]");
+  if(add){e.preventDefault();e.stopPropagation();addToCart(+add.dataset.add,1);showToast(`${P[+add.dataset.add].n} added to cart`);return}
+  if(buy){e.preventDefault();e.stopPropagation();addToCart(+buy.dataset.buy,1);openSheet(cartEl);return}
+  if(open){e.preventDefault();openPDP(+open.dataset.open)}
+});
+
+function addToCart(i,q){
+  const row=cart.find(r=>r.i===i);
+  if(row)row.q=Math.min(P[i].st,row.q+q);else cart.push({i,q});
+  paintCart();
+}
+function paintCart(){
+  const n=cart.reduce((a,r)=>a+r.q,0);
+  document.getElementById("cartCount").textContent=n;
+  const items=document.getElementById("cartItems"),bot=document.getElementById("cartBot");
+  if(!cart.length){
+    items.innerHTML=`<p class="cart-empty">Your cart is empty. Browse the catalogue and add something.</p>`;
+    bot.innerHTML=`<a class="btn btn-quiet" href="#catalog" style="width:100%" onclick="document.getElementById('scrim').click()">Browse products</a>`;
+    return;
+  }
+  items.innerHTML=cart.map(r=>{const p=P[r.i];return `
+    <div class="citem">
+      <img src="${img(p.s,1,160,160)}" alt="${p.n}">
+      <div><p class="nm">${p.n}</p><p class="mt">RM ${p.p} x ${r.q}</p></div>
+      <button class="rm" data-rm="${r.i}" aria-label="Remove ${p.n}"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>`}).join("");
+  const sub=cart.reduce((a,r)=>a+P[r.i].p*r.q,0);
+  bot.innerHTML=`
+    <div class="cart-line"><span>Subtotal</span><span>RM ${sub}</span></div>
+    <div class="cart-line"><span>Delivery</span><span>Calculated at checkout</span></div>
+    <div class="cart-line total"><span>Total</span><b>RM ${sub}</b></div>
+    <button class="btn btn-primary" style="width:100%">Checkout</button>`;
+  items.querySelectorAll("[data-rm]").forEach(b=>b.addEventListener("click",()=>{
+    cart=cart.filter(r=>r.i!==+b.dataset.rm);paintCart()}));
+}
+paintCart();
+document.getElementById("cartBtn").addEventListener("click",()=>openSheet(cartEl));
+let tt;function showToast(m){toastMsg.textContent=m;toast.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove("show"),2400)}
+
+function watchReveals(scope){
+  const groups=new Map();
+  (scope||document).querySelectorAll(".rv").forEach(el=>{
+    const key=el.parentElement;
+    const arr=groups.get(key)||[];arr.push(el);groups.set(key,arr);
+  });
+  groups.forEach(arr=>arr.forEach((el,i)=>{
+    el.style.transitionDelay=(i%4)*70+"ms";
+    io.observe(el);
+  }));
+}
+
+const rail=document.getElementById("rail"),BEST=[4,2,0,10,3,8];
+rail.innerHTML=BEST.map((idx,r)=>{const p=P[idx];return `
+  <article class="rcard edge rv" data-open="${idx}">
+    <div class="rthumb"><img src="${img(p.s,2,600,600)}" alt="${p.n}" loading="lazy"><span class="rank">${r+1}</span></div>
+    <div class="rbody">
+      <span class="cbrand">${p.b}</span>
+      <span class="cname">${p.n}</span>
+      <span class="cprice">RM ${p.p}</span>
+      <div class="cacts">
+        <button class="btn btn-dark sm" data-buy="${idx}">Buy now</button>
+        <button class="btn btn-quiet sm" data-add="${idx}" aria-label="Add ${p.n} to cart"><i class="ti ti-shopping-bag-plus" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </article>`}).join("");
+watchReveals(rail);
+document.getElementById("bNext").addEventListener("click",()=>rail.scrollBy({left:314,behavior:"smooth"}));
+document.getElementById("bPrev").addEventListener("click",()=>rail.scrollBy({left:-314,behavior:"smooth"}));
+
+const slides=[...document.querySelectorAll(".slide")],dots=document.getElementById("dots");
+let si=0,timer;
+dots.innerHTML=slides.map((_,i)=>`<button class="dot" data-s="${i}" aria-current="${i===0}" aria-label="Banner ${i+1}"></button>`).join("");
+function go(i){si=(i+slides.length)%slides.length;
+  slides.forEach((s,j)=>s.classList.toggle("on",j===si));
+  dots.querySelectorAll(".dot").forEach((d,j)=>d.setAttribute("aria-current",String(j===si)));}
+function play(){if(reduce)return;clearInterval(timer);timer=setInterval(()=>go(si+1),6500)}
+dots.querySelectorAll(".dot").forEach(d=>d.addEventListener("click",()=>{go(+d.dataset.s);play()}));
+document.getElementById("next").addEventListener("click",()=>{go(si+1);play()});
+document.getElementById("prev").addEventListener("click",()=>{go(si-1);play()});
+const banner=document.getElementById("banner");
+banner.addEventListener("mouseenter",()=>clearInterval(timer));
+banner.addEventListener("mouseleave",play);
+play();
+
+function tick(el,target){let n=0;clearInterval(el._t);
+  if(reduce){el.textContent=target;return}
+  el._t=setInterval(()=>{n+=Math.max(1,Math.ceil((target-n)/5));if(n>=target){n=target;clearInterval(el._t)}el.textContent=n},40)}
+const plateIO=new IntersectionObserver(es=>es.forEach(e=>{
+  const c=e.target.querySelector("[data-count]");
+  if(reduce){e.target.classList.add("in");if(c)c.textContent=c.dataset.count;return}
+  if(e.isIntersecting){
+    e.target.classList.remove("in");
+    void e.target.offsetWidth;
+    e.target.classList.add("in");
+    if(c)tick(c,+c.dataset.count);
+  }else{
+    e.target.classList.remove("in");
+    if(c){clearInterval(c._t);c.textContent="0"}
+  }
+}),{threshold:.35});
+document.querySelectorAll("[data-plate]").forEach(p=>plateIO.observe(p));
+watchReveals();
+
+const hdr=document.getElementById("hdr");
+new IntersectionObserver(([e])=>hdr.classList.toggle("stuck",!e.isIntersecting),{threshold:1}).observe(document.getElementById("sentinel"));
+</script>
+</body>
+</html>

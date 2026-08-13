@@ -42,6 +42,11 @@ create table if not exists products (
   is_active    boolean not null default true,
   images       text[] not null default '{}',
   tags         text[] not null default '{}',
+  benefits     text,
+  dosage_cycle text,
+  product_note text,
+  is_featured  boolean not null default false,
+  featured_order integer not null default 0,
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
@@ -52,6 +57,10 @@ create table if not exists banners (
   title       text not null default '',
   subtitle    text not null default '',
   link_url    text not null default '',
+  eyebrow     text,
+  cta_label   text,
+  cta2_label  text,
+  cta2_url    text,
   sort_order  integer not null default 0,
   is_active   boolean not null default true,
   created_at  timestamptz not null default now(),
@@ -237,3 +246,59 @@ create index if not exists products_brand_idx on products (brand_id);
 create index if not exists products_slug_idx on products (slug);
 create index if not exists categories_slug_idx on categories (slug);
 create index if not exists brands_slug_idx on brands (slug);
+create index if not exists products_featured_idx on products (is_featured, featured_order);
+
+-- ----------------------------------------------------------------------------
+-- Checkout event log (data source for best sellers)
+-- ----------------------------------------------------------------------------
+
+create table if not exists checkout_events (
+  id         uuid primary key default gen_random_uuid(),
+  product_id uuid references products(id) on delete set null,
+  qty        integer not null check (qty > 0 and qty <= 99),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists checkout_events_created_at_idx
+  on checkout_events (created_at desc);
+create index if not exists checkout_events_product_idx
+  on checkout_events (product_id);
+
+alter table checkout_events enable row level security;
+
+-- Anonymous storefront may INSERT only. It can never read the table.
+drop policy if exists "checkout_events_insert_public" on checkout_events;
+create policy "checkout_events_insert_public"
+  on checkout_events for insert
+  to anon, authenticated
+  with check (qty > 0 and qty <= 99);
+
+-- Admins may read the raw log.
+drop policy if exists "checkout_events_select_admin" on checkout_events;
+create policy "checkout_events_select_admin"
+  on checkout_events for select
+  to authenticated
+  using (public.is_admin());
+
+-- Aggregation function. SECURITY DEFINER because anon cannot select the table.
+create or replace function public.best_sellers(
+  p_days  integer default 7,
+  p_limit integer default 6
+)
+returns table (pid uuid, total_qty bigint)
+language sql
+security definer
+set search_path = ''
+as $$
+  select e.product_id as pid, sum(e.qty)::bigint as total_qty
+  from public.checkout_events e
+  join public.products p on p.id = e.product_id
+  where e.created_at >= now() - make_interval(days => p_days)
+    and p.is_active = true
+  group by e.product_id
+  order by total_qty desc, max(e.created_at) desc
+  limit p_limit;
+$$;
+
+revoke all on function public.best_sellers(integer, integer) from public;
+grant execute on function public.best_sellers(integer, integer) to anon, authenticated;
