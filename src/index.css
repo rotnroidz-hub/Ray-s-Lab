@@ -13,7 +13,7 @@
   }
 
   body {
-    @apply bg-canvas text-ink font-sans antialiased;
+    @apply bg-paper text-ink font-sans antialiased;
     text-rendering: optimizeLegibility;
     /* Soft, warm depth instead of a flat cream fill. The gradient is barely
        there — just enough that large areas never read as one flat colour. */
@@ -38,12 +38,12 @@
   }
 
   ::selection {
-    @apply bg-brass/30 text-ink;
+    @apply bg-blue-deep/30 text-ink;
   }
 
   /* Accessible focus ring for keyboard users, subtle for mouse. */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-brass;
+    @apply outline-2 outline-offset-2 outline-blue-deep;
   }
 
   /* Thin, quiet scrollbars to match the palette. */
@@ -55,7 +55,7 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-ink/15 border-2 border-canvas;
+    @apply rounded-full bg-ink/15 border-2 border-paper;
   }
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-ink/30;
@@ -70,7 +70,7 @@
 
   /* Small caps label used above headings across the site. */
   .eyebrow {
-    @apply text-[11px] font-semibold uppercase tracking-wide2 text-brass;
+    @apply text-[11px] font-semibold uppercase tracking-wide2 text-blue-deep;
   }
 
   /* Display heading used on pages/sections. */
@@ -86,13 +86,13 @@
 
   /* Product image treatment: soft click-through frame. */
   .media-frame {
-    @apply overflow-hidden rounded-2xl bg-pine-soft;
+    @apply overflow-hidden rounded-2xl bg-paper-2;
   }
 
   /* Alternating section tone: slightly deeper "parchment" band used to create
      visual rhythm as the user scrolls, instead of one flat colour. */
   .section-band {
-    @apply bg-canvas-deep/60;
+    @apply bg-paper-2/60;
   }
   .section-band + .section-band {
     @apply bg-transparent;
@@ -112,7 +112,7 @@
   }
 }
 
-/* Nudge Fraunces optical sizing for display sizes. */
+/* Nudge the display font's optical sizing axis for display sizes. */
 .font-display {
   font-optical-sizing: auto;
   font-variation-settings: 'opsz' 60;

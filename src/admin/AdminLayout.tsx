@@ -23,11 +23,11 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-canvas lg:flex-row">
+    <div className="flex min-h-screen flex-col bg-paper lg:flex-row">
       <aside className="flex items-center justify-between gap-4 border-b border-ink/8 px-5 py-4 lg:min-h-screen lg:w-60 lg:flex-col lg:items-stretch lg:justify-start lg:border-b-0 lg:border-r lg:px-0 lg:py-8">
         <Link to="/admin/products" className="lg:px-6">
           <span className="font-display text-lg font-semibold text-ink">Admin</span>
-          <span className="ml-2 hidden text-xs text-ink-muted lg:inline">/ control room</span>
+          <span className="ml-2 hidden text-xs text-ink-faint lg:inline">/ control room</span>
         </Link>
 
         <nav className="flex items-center gap-1 lg:mt-8 lg:flex-col lg:items-stretch" aria-label="Admin">
@@ -39,7 +39,7 @@ export function AdminLayout() {
               className={({ isActive }) =>
                 cn(
                   'rounded-xl px-3 py-2 text-sm font-semibold transition-colors',
-                  isActive ? 'bg-pine text-canvas' : 'text-ink-soft hover:bg-ink/5 hover:text-ink',
+                  isActive ? 'bg-ink text-paper' : 'text-ink-soft hover:bg-ink/5 hover:text-ink',
                   'lg:mx-3',
                 )
               }
@@ -61,7 +61,7 @@ export function AdminLayout() {
           <button
             type="button"
             onClick={() => void signOut()}
-            className="flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-clay transition-colors hover:bg-clay/10"
+            className="flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-stock-no transition-colors hover:bg-stock-no/10"
           >
             <IconLogOut className="h-4 w-4" /> Sign out
           </button>

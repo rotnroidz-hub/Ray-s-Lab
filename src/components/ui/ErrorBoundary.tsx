@@ -35,13 +35,13 @@ export class ErrorBoundary extends Component<Props, State> {
     if (!error) return this.props.children
 
     return (
-      <main className="grid min-h-screen place-items-center bg-canvas px-6 py-16">
+      <main className="grid min-h-screen place-items-center bg-paper px-6 py-16">
         <div className="w-full max-w-md text-center">
           <p className="eyebrow">Something went wrong</p>
           <h1 className="mt-2 font-display text-3xl font-semibold text-ink">
             The page hit a snag
           </h1>
-          <p className="mt-3 text-sm text-ink-muted">
+          <p className="mt-3 text-sm text-ink-faint">
             An unexpected error interrupted the page. Reload to get back to shopping — your cart is
             safe.
           </p>
@@ -53,7 +53,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <button
             type="button"
             onClick={this.reset}
-            className="mt-6 inline-flex items-center justify-center rounded-full bg-pine px-8 py-3 text-sm font-semibold text-canvas transition-all hover:bg-pine-dark active:scale-[0.98]"
+            className="mt-6 inline-flex items-center justify-center rounded-full bg-ink px-8 py-3 text-sm font-semibold text-paper transition-all hover:bg-ink-2 active:scale-[0.98]"
           >
             Reload page
           </button>

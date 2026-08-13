@@ -37,7 +37,7 @@ export function Category() {
 
   return (
     <div className="container-site pb-20">
-      <nav aria-label="Breadcrumb" className="pt-6 text-xs text-ink-muted">
+      <nav aria-label="Breadcrumb" className="pt-6 text-xs text-ink-faint">
         <ol className="flex items-center gap-1.5">
           <li>
             <Link to="/" className="hover:text-ink">Home</Link>
@@ -134,7 +134,7 @@ function CategoryEmpty({ title }: { title: string }) {
       <p className="font-display text-xl text-ink">{title}</p>
       <Link
         to="/catalog"
-        className="mt-4 inline-flex items-center gap-2 rounded-full border border-ink/20 px-6 py-3 text-sm font-semibold text-ink transition-all hover:border-ink hover:bg-ink hover:text-canvas"
+        className="mt-4 inline-flex items-center gap-2 rounded-full border border-ink/20 px-6 py-3 text-sm font-semibold text-ink transition-all hover:border-ink hover:bg-ink hover:text-paper"
       >
         Browse all products
       </Link>

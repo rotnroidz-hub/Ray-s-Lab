@@ -49,10 +49,10 @@ export function Product() {
     return (
       <div className="container-site py-28 text-center">
         <h1 className="font-display text-2xl text-ink">Product not found</h1>
-        <p className="mt-2 text-sm text-ink-muted">It may have been removed or renamed.</p>
+        <p className="mt-2 text-sm text-ink-faint">It may have been removed or renamed.</p>
         <Link
           to="/catalog"
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-ink/20 px-6 py-3 text-sm font-semibold text-ink transition-all hover:border-ink hover:bg-ink hover:text-canvas"
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-ink/20 px-6 py-3 text-sm font-semibold text-ink transition-all hover:border-ink hover:bg-ink hover:text-paper"
         >
           <IconChevronLeft className="h-4 w-4" /> Back to catalog
         </Link>
@@ -86,7 +86,7 @@ export function Product() {
 
   return (
     <div className="container-site pb-20">
-      <nav aria-label="Breadcrumb" className="pt-6 text-xs text-ink-muted">
+      <nav aria-label="Breadcrumb" className="pt-6 text-xs text-ink-faint">
         <ol className="flex items-center gap-1.5">
           <li>
             <Link to="/" className="hover:text-ink">Home</Link>
@@ -143,14 +143,14 @@ export function Product() {
                   className={
                     'h-20 w-16 shrink-0 overflow-hidden rounded-xl border-2 transition-all ' +
                     (i === activeImage
-                      ? 'border-pine shadow-card'
+                      ? 'border-ink shadow-card'
                       : 'border-transparent opacity-60 hover:opacity-100')
                   }
                 >
                   {src ? (
                     <img src={responsiveImage(src, 200)} alt="" loading="lazy" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="grid h-full w-full place-items-center bg-pine-soft"><IconImage className="h-5 w-5 text-pine" /></span>
+                    <span className="grid h-full w-full place-items-center bg-paper-2"><IconImage className="h-5 w-5 text-ink" /></span>
                   )}
                 </button>
               ))}
@@ -163,7 +163,7 @@ export function Product() {
           {product.categories && (
             <Link
               to={`/category/${product.categories.slug}`}
-              className="eyebrow uppercase transition-colors hover:text-brass-dark"
+              className="eyebrow uppercase transition-colors hover:text-blue-deep"
             >
               {product.categories.name}
             </Link>
@@ -171,7 +171,7 @@ export function Product() {
           {product.brands && (
             <Link
               to={`/brand/${product.brands.slug}`}
-              className="eyebrow uppercase transition-colors hover:text-brass-dark"
+              className="eyebrow uppercase transition-colors hover:text-blue-deep"
             >
               {product.brands.name}
             </Link>
@@ -180,7 +180,7 @@ export function Product() {
             {product.name}
           </h1>
           <div className="mt-4 flex items-center gap-3">
-            <span className="font-display text-2xl text-pine">{formatPrice(product.price)}</span>
+            <span className="font-display text-2xl text-ink">{formatPrice(product.price)}</span>
             <StockBadge status={product.stock_status} />
           </div>
 
@@ -195,7 +195,7 @@ export function Product() {
               {product.tags.map((t) => (
                 <span
                   key={t}
-                  className="rounded-full bg-canvas-deep px-3 py-1 text-xs font-medium text-ink-soft"
+                  className="rounded-full bg-paper-2 px-3 py-1 text-xs font-medium text-ink-soft"
                 >
                   {t}
                 </span>
@@ -224,7 +224,7 @@ export function Product() {
             </Button>
           )}
 
-          <p className="mt-8 text-xs leading-relaxed text-ink-muted">
+          <p className="mt-8 text-xs leading-relaxed text-ink-faint">
             Checkout happens over WhatsApp — add items to your basket, send your order, and we'll
             confirm price, availability and delivery in chat. No online payment.
           </p>

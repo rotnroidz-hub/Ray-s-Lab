@@ -29,8 +29,8 @@ export function ProtectedRoute() {
 
   if (state === 'loading') {
     return (
-      <div className="grid min-h-screen place-items-center bg-canvas">
-        <IconCart className="h-8 w-8 animate-pulse text-pine" />
+      <div className="grid min-h-screen place-items-center bg-paper">
+        <IconCart className="h-8 w-8 animate-pulse text-ink" />
       </div>
     )
   }

@@ -69,7 +69,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
               className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
             />
           ) : (
-            <div className="grid h-full w-full place-items-center bg-pine-soft text-ink/25">
+            <div className="grid h-full w-full place-items-center bg-paper-2 text-ink/25">
               <span className="font-display text-4xl">·</span>
             </div>
           )}
@@ -78,14 +78,14 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         <div className="mt-3 flex items-start justify-between gap-3">
           <div className="min-w-0">
             {product.brands?.name && (
-              <p className="text-[11px] font-semibold uppercase tracking-wide2 text-brass">
+              <p className="text-[11px] font-semibold uppercase tracking-wide2 text-blue-deep">
                 {product.brands.name}
               </p>
             )}
             <h3 className="line-clamp-2 text-[15px] leading-snug font-semibold text-ink">
               {product.name}
             </h3>
-            <p className="mt-1 text-sm font-medium text-ink-muted">{formatPrice(product.price)}</p>
+            <p className="mt-1 text-sm font-medium text-ink-faint">{formatPrice(product.price)}</p>
           </div>
           <StockBadge status={product.stock_status} />
         </div>
@@ -96,7 +96,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         onClick={handleAdd}
         disabled={outOfStock}
         aria-label={outOfStock ? `${product.name} is out of stock` : `Add ${product.name} to cart`}
-        className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-canvas/95 text-ink shadow-card backdrop-blur transition-all duration-200 hover:bg-pine hover:text-canvas active:scale-95 disabled:pointer-events-none disabled:opacity-50"
+        className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-paper/95 text-ink shadow-card backdrop-blur transition-all duration-200 hover:bg-ink hover:text-paper active:scale-95 disabled:pointer-events-none disabled:opacity-50"
       >
         {outOfStock ? <IconPlus className="h-5 w-5" /> : <IconCart className="h-5 w-5" />}
       </button>

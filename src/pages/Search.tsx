@@ -58,7 +58,7 @@ export function Search() {
       </header>
 
       {/* Sticky search input on mobile too. */}
-      <div className="sticky top-16 z-30 -mx-4 mb-8 bg-canvas/90 px-4 py-3 backdrop-blur sm:top-20">
+      <div className="sticky top-16 z-30 -mx-4 mb-8 bg-paper/90 px-4 py-3 backdrop-blur sm:top-20">
         <div className="relative mx-auto max-w-2xl">
           <input
             type="search"
@@ -67,13 +67,13 @@ export function Search() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Search name, description or tag…"
             aria-label="Search products"
-            className="w-full rounded-full border border-ink/15 bg-canvas-deep py-4 pl-12 pr-5 text-base text-ink placeholder:text-ink-muted focus:border-pine focus:bg-canvas"
+            className="w-full rounded-full border border-ink/15 bg-paper-2 py-4 pl-12 pr-5 text-base text-ink placeholder:text-ink-faint focus:border-ink focus:bg-paper"
           />
-          <IconSearch className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-muted" />
+          <IconSearch className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-faint" />
         </div>
       </div>
 
-      {summary && <p className="mb-6 text-sm text-ink-muted">{summary}</p>}
+      {summary && <p className="mb-6 text-sm text-ink-faint">{summary}</p>}
 
       <ProductGrid
         products={results.data}
@@ -84,18 +84,18 @@ export function Search() {
 
       {!results.loading && debounced.trim() && results.data.length === 0 && (
         <div className="py-24 text-center">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-canvas-deep">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-paper-2">
             <IconSearch className="h-7 w-7 text-ink/30" />
           </div>
           <p className="mt-4 font-display text-xl text-ink">No results for “{debounced.trim()}”</p>
-          <p className="mx-auto mt-2 max-w-sm text-sm text-ink-muted">
+          <p className="mx-auto mt-2 max-w-sm text-sm text-ink-faint">
             Try a different spelling, or browse the whole catalog instead.
           </p>
         </div>
       )}
 
       {!debounced.trim() && (
-        <div className="py-24 text-center text-sm text-ink-muted">
+        <div className="py-24 text-center text-sm text-ink-faint">
           Type a keyword above to search the catalog.
         </div>
       )}

@@ -121,7 +121,7 @@ export default function Categories() {
         <div>
           <p className="eyebrow">Navigation</p>
           <h1 className="mt-1 font-display text-3xl font-semibold text-ink">Categories</h1>
-          <p className="mt-1 text-sm text-ink-muted">
+          <p className="mt-1 text-sm text-ink-faint">
             Order here controls the nav menu and home page.
           </p>
         </div>
@@ -131,13 +131,13 @@ export default function Categories() {
       </div>
 
       {error && (
-        <p role="alert" className="mt-6 rounded-2xl bg-clay/10 px-4 py-3 text-sm text-clay">
+        <p role="alert" className="mt-6 rounded-2xl bg-stock-no/10 px-4 py-3 text-sm text-stock-no">
           {error}
         </p>
       )}
 
       {adding && (
-        <div className="mt-6 rounded-3xl border border-pine/30 bg-canvas-deep p-5">
+        <div className="mt-6 rounded-3xl border border-ink/30 bg-paper-2 p-5">
           <h2 className="font-display text-lg font-semibold text-ink">New category</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Field label="Name" required>
@@ -189,7 +189,7 @@ export default function Categories() {
           return (
             <li
               key={c.id}
-              className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-canvas-deep p-3"
+              className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-paper-2 p-3"
             >
               <div className="flex flex-col">
                 <button
@@ -197,7 +197,7 @@ export default function Categories() {
                   onClick={() => move(i, -1)}
                   disabled={i === 0 || busy}
                   aria-label="Move up"
-                  className="grid h-6 w-8 place-items-center rounded text-ink-muted hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                  className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
                 >
                   <IconChevronUp className="h-4 w-4" />
                 </button>
@@ -206,7 +206,7 @@ export default function Categories() {
                   onClick={() => move(i, 1)}
                   disabled={i === (categories?.length ?? 0) - 1 || busy}
                   aria-label="Move down"
-                  className="grid h-6 w-8 place-items-center rounded text-ink-muted hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                  className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
                 >
                   <IconChevronDown className="h-4 w-4" />
                 </button>
@@ -237,11 +237,11 @@ export default function Categories() {
                     {c.image_url ? (
                       <img src={c.image_url} alt="" className="h-12 w-12 rounded-xl object-cover" />
                     ) : (
-                      <span className="grid h-12 w-12 place-items-center rounded-xl bg-pine-soft text-pine">·</span>
+                      <span className="grid h-12 w-12 place-items-center rounded-xl bg-paper-2 text-ink">·</span>
                     )}
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-ink">{c.name}</p>
-                      <p className="truncate text-xs text-ink-muted">/category/{c.slug}</p>
+                      <p className="truncate text-xs text-ink-faint">/category/{c.slug}</p>
                     </div>
                   </div>
                   <button
@@ -256,7 +256,7 @@ export default function Categories() {
                     type="button"
                     onClick={() => void remove(c.id)}
                     disabled={busy}
-                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-clay/10 hover:text-clay disabled:opacity-40"
+                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no disabled:opacity-40"
                     aria-label={`Delete ${c.name}`}
                   >
                     <IconTrash className="h-4 w-4" />

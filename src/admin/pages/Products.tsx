@@ -49,14 +49,14 @@ export default function Products() {
         </div>
         <Link
           to="/admin/products/new"
-          className="inline-flex items-center gap-2 rounded-full bg-pine px-5 py-3 text-sm font-semibold text-canvas transition-all hover:bg-pine-dark active:scale-[0.98]"
+          className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition-all hover:bg-ink-2 active:scale-[0.98]"
         >
           <IconPlus className="h-4 w-4" /> New product
         </Link>
       </div>
 
       {error && (
-        <p role="alert" className="mt-6 rounded-2xl bg-clay/10 px-4 py-3 text-sm text-clay">
+        <p role="alert" className="mt-6 rounded-2xl bg-stock-no/10 px-4 py-3 text-sm text-stock-no">
           {error} — check your session and RLS policies.
         </p>
       )}
@@ -71,7 +71,7 @@ export default function Products() {
         )}
 
         {products?.length === 0 && (
-          <p className="rounded-2xl border border-ink/10 p-10 text-center text-sm text-ink-muted">
+          <p className="rounded-2xl border border-ink/10 p-10 text-center text-sm text-ink-faint">
             No products yet — create your first one.
           </p>
         )}
@@ -79,7 +79,7 @@ export default function Products() {
         {products?.map((p) => (
           <div
             key={p.id}
-            className="flex flex-wrap items-center gap-4 rounded-2xl border border-ink/10 bg-canvas-deep p-3 transition-colors hover:border-pine/30"
+            className="flex flex-wrap items-center gap-4 rounded-2xl border border-ink/10 bg-paper-2 p-3 transition-colors hover:border-ink/30"
           >
             {p.images[0] ? (
               <img
@@ -88,7 +88,7 @@ export default function Products() {
                 className="h-14 w-14 rounded-xl object-cover"
               />
             ) : (
-              <span className="grid h-14 w-14 place-items-center rounded-xl bg-pine-soft text-pine">·</span>
+              <span className="grid h-14 w-14 place-items-center rounded-xl bg-paper-2 text-ink">·</span>
             )}
 
             <div className="min-w-0 flex-1">
@@ -97,13 +97,13 @@ export default function Products() {
                 <span
                   className={cn(
                     'rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide',
-                    p.is_active ? 'bg-pine-soft text-pine-dark' : 'bg-ink/10 text-ink-muted',
+                    p.is_active ? 'bg-paper-2 text-ink-2' : 'bg-ink/10 text-ink-faint',
                   )}
                 >
                   {p.is_active ? 'Live' : 'Hidden'}
                 </span>
               </p>
-              <p className="mt-0.5 text-xs text-ink-muted">
+              <p className="mt-0.5 text-xs text-ink-faint">
                 {formatPrice(p.price)}
                 {p.brands ? ` · ${p.brands.name}` : ''}
                 {p.categories ? ` · ${p.categories.name}` : ''}
@@ -124,7 +124,7 @@ export default function Products() {
                 type="button"
                 onClick={() => void remove(p.id)}
                 disabled={deletingId === p.id}
-                className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-clay/10 hover:text-clay disabled:opacity-40"
+                className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-stock-no/10 hover:text-stock-no disabled:opacity-40"
                 aria-label={`Delete ${p.name}`}
               >
                 <IconTrash className="h-4 w-4" />

@@ -4,7 +4,7 @@ import { IconCart } from './Icons'
 export function PageLoader() {
   return (
     <div className="flex min-h-[60vh] items-center justify-center" aria-busy>
-      <IconCart className="h-8 w-8 animate-pulse text-pine" />
+      <IconCart className="h-8 w-8 animate-pulse text-ink" />
     </div>
   )
 }

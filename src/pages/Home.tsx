@@ -38,12 +38,12 @@ function HeroCarousel() {
     return (
       <section
         ref={sectionRef}
-        className="media-frame relative aspect-[4/3] max-h-[70vh] w-full bg-pine-deep sm:aspect-[21/9]"
+        className="media-frame relative aspect-[4/3] max-h-[70vh] w-full bg-ink sm:aspect-[21/9]"
       >
         <div className="absolute inset-0 grid place-items-center p-8 text-center">
           <div>
-            <p className="eyebrow text-canvas/70">The catalog</p>
-            <h1 className="mt-2 font-display text-3xl font-semibold text-canvas sm:text-5xl">
+            <p className="eyebrow text-paper/70">The catalog</p>
+            <h1 className="mt-2 font-display text-3xl font-semibold text-paper sm:text-5xl">
               Add a hero banner in the admin
             </h1>
           </div>
@@ -60,7 +60,7 @@ function HeroCarousel() {
   return (
     <section
       ref={sectionRef}
-      className="group relative overflow-hidden rounded-3xl bg-pine-deep"
+      className="group relative overflow-hidden rounded-3xl bg-ink"
       aria-roledescription="carousel"
     >
       <div className="relative aspect-[4/3] max-h-[70vh] w-full sm:aspect-[21/9]">
@@ -84,24 +84,24 @@ function HeroCarousel() {
             />
             <motion.div
               style={{ y: scrimY }}
-              className="absolute inset-0 bg-gradient-to-t from-pine-deep/90 via-pine-deep/30 to-transparent"
+              className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/30 to-transparent"
             />
             <div className="absolute inset-x-0 bottom-0 p-6 sm:p-10">
               <motion.p
-                className="eyebrow text-canvas/80"
+                className="eyebrow text-paper/80"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
                 {banners[index].subtitle}
               </motion.p>
-              <h2 className="mt-2 font-display text-3xl font-semibold text-canvas sm:text-5xl">
+              <h2 className="mt-2 font-display text-3xl font-semibold text-paper sm:text-5xl">
                 {banners[index].title}
               </h2>
               {(banners[index].link_url || '').trim() ? (
                 <Link
                   to={banners[index].link_url}
-                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-canvas px-6 py-3 text-sm font-semibold text-pine transition-transform hover:scale-[1.03] active:scale-95"
+                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-paper px-6 py-3 text-sm font-semibold text-ink transition-transform hover:scale-[1.03] active:scale-95"
                 >
                   Shop now <IconArrowRight className="h-4 w-4" />
                 </Link>
@@ -118,7 +118,7 @@ function HeroCarousel() {
             type="button"
             aria-label="Previous slide"
             onClick={() => navigate(index - 1)}
-            className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-canvas/80 text-pine opacity-0 backdrop-blur transition-opacity duration-300 hover:bg-canvas group-hover:opacity-100 max-sm:opacity-100"
+            className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-paper/80 text-ink opacity-0 backdrop-blur transition-opacity duration-300 hover:bg-paper group-hover:opacity-100 max-sm:opacity-100"
           >
             <IconChevronLeft className="h-5 w-5" />
           </button>
@@ -126,7 +126,7 @@ function HeroCarousel() {
             type="button"
             aria-label="Next slide"
             onClick={() => navigate(index + 1)}
-            className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-canvas/80 text-pine opacity-0 backdrop-blur transition-opacity duration-300 hover:bg-canvas group-hover:opacity-100 max-sm:opacity-100"
+            className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-paper/80 text-ink opacity-0 backdrop-blur transition-opacity duration-300 hover:bg-paper group-hover:opacity-100 max-sm:opacity-100"
           >
             <IconChevronRight className="h-5 w-5" />
           </button>
@@ -138,7 +138,7 @@ function HeroCarousel() {
                 aria-label={`Go to slide ${i + 1}`}
                 aria-current={i === index}
                 onClick={() => navigate(i)}
-                className="h-1.5 rounded-full bg-canvas/40 transition-all duration-300 aria-[current=true]:w-6 aria-[current=true]:bg-canvas"
+                className="h-1.5 rounded-full bg-paper/40 transition-all duration-300 aria-[current=true]:w-6 aria-[current=true]:bg-paper"
                 style={{ width: i === index ? 24 : 6 }}
               />
             ))}

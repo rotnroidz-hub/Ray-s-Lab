@@ -33,7 +33,7 @@ export function Brand() {
 
   return (
     <div className="container-site pb-20">
-      <nav aria-label="Breadcrumb" className="pt-6 text-xs text-ink-muted">
+      <nav aria-label="Breadcrumb" className="pt-6 text-xs text-ink-faint">
         <ol className="flex items-center gap-1.5">
           <li>
             <Link to="/" className="hover:text-ink">Home</Link>
@@ -64,7 +64,7 @@ export function Brand() {
           <h1 className="mt-2 font-display text-3xl font-semibold sm:text-4xl">
             {brand?.name ?? 'Brand'}
           </h1>
-          <p className="mt-3 max-w-xl text-sm text-ink-muted">
+          <p className="mt-3 max-w-xl text-sm text-ink-faint">
             Every {brand?.name ?? 'this brand'} product we currently carry.
           </p>
         </Reveal>

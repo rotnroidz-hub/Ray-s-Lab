@@ -14,9 +14,11 @@
     "test:nav": "node scripts/nav-test.mjs"
   },
   "dependencies": {
-    "@fontsource/fraunces": "^5.2.5",
-    "@fontsource/manrope": "^5.2.5",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
     "@supabase/supabase-js": "^2.49.4",
+    "@tabler/icons-react": "^3.46.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.12.1",
     "react": "^19.1.0",

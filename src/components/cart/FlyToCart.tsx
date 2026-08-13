@@ -83,7 +83,7 @@ export function FlyToCartProvider({ children }: { children: ReactNode }) {
                   draggable={false}
                 />
               ) : (
-                <div className="h-full w-full rounded-lg bg-pine shadow-card" />
+                <div className="h-full w-full rounded-lg bg-ink shadow-card" />
               )}
             </motion.div>
           ))}

@@ -22,7 +22,7 @@ export function StockBadge({ status, className }: StockBadgeProps) {
       className={cn(
         'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold',
         'transition-colors duration-500',
-        available ? 'bg-pine-soft text-pine-dark' : 'bg-clay/15 text-clay',
+        available ? 'bg-paper-2 text-ink-2' : 'bg-stock-no/15 text-stock-no',
         className,
       )}
     >
@@ -30,7 +30,7 @@ export function StockBadge({ status, className }: StockBadgeProps) {
         <span
           className={cn(
             'inline-flex h-1.5 w-1.5 rounded-full transition-colors duration-500',
-            available ? 'bg-pine' : 'bg-clay',
+            available ? 'bg-ink' : 'bg-stock-no',
           )}
         />
       </span>

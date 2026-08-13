@@ -11,11 +11,11 @@ import { IconArrowRight, IconCart, IconClose, IconTrash } from '../ui/Icons'
 function EmptyCart() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
-      <span className="grid h-16 w-16 place-items-center rounded-full bg-canvas-deep text-ink/40">
+      <span className="grid h-16 w-16 place-items-center rounded-full bg-paper-2 text-ink/40">
         <IconCart className="h-8 w-8" />
       </span>
       <p className="font-display text-xl text-ink">Your basket is empty</p>
-      <p className="max-w-xs text-sm text-ink-muted">
+      <p className="max-w-xs text-sm text-ink-faint">
         Browse the catalog and add a few things you like, then send the order to us in one tap.
       </p>
       <LinkButton to="/catalog" size="lg" className="w-full">
@@ -59,11 +59,11 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 34 }}
-            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-canvas shadow-lift"
+            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-paper shadow-lift"
           >
             <div className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
               <h2 className="font-display text-lg font-semibold text-ink">
-                Your basket <span className="text-sm font-normal text-ink-muted">({totalQty})</span>
+                Your basket <span className="text-sm font-normal text-ink-faint">({totalQty})</span>
               </h2>
               <button
                 type="button"
@@ -99,7 +99,7 @@ export function CartDrawer() {
                               className="h-20 w-16 rounded-xl object-cover"
                             />
                           ) : (
-                            <span className="block h-20 w-16 rounded-xl bg-pine-soft" />
+                            <span className="block h-20 w-16 rounded-xl bg-paper-2" />
                           )}
                         </Link>
                         <div className="flex min-w-0 flex-1 flex-col">
@@ -107,20 +107,20 @@ export function CartDrawer() {
                             <Link
                               to={`/product/${item.slug}`}
                               onClick={closeCart}
-                              className="truncate text-sm font-semibold text-ink hover:text-pine"
+                              className="truncate text-sm font-semibold text-ink hover:text-ink"
                             >
                               {item.name}
                             </Link>
                             <button
                               type="button"
                               onClick={() => removeItem(item.product_id)}
-                              className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-ink-muted transition-colors hover:bg-clay/10 hover:text-clay"
+                              className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-ink-faint transition-colors hover:bg-stock-no/10 hover:text-stock-no"
                               aria-label={`Remove ${item.name}`}
                             >
                               <IconTrash className="h-4 w-4" />
                             </button>
                           </div>
-                          <p className="mt-0.5 text-sm text-ink-muted">{formatPrice(item.price)}</p>
+                          <p className="mt-0.5 text-sm text-ink-faint">{formatPrice(item.price)}</p>
                           <div className="mt-auto flex items-center justify-between pt-2">
                             <QuantityStepper
                               size="sm"
@@ -155,7 +155,7 @@ export function CartDrawer() {
                   >
                     Checkout via WhatsApp <IconArrowRight className="h-4 w-4" />
                   </Button>
-                  <p className="pt-3 text-center text-xs text-ink-muted">
+                  <p className="pt-3 text-center text-xs text-ink-faint">
                     You'll review your order before sending — no payment is taken here.
                   </p>
                 </div>

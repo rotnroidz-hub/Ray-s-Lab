@@ -28,12 +28,12 @@ export function Catalog() {
       <header className="py-10 sm:py-14">
         <p className="eyebrow">The catalog</p>
         <h1 className="mt-2 font-display text-3xl font-semibold sm:text-4xl">All products</h1>
-        <p className="mt-3 max-w-xl text-sm text-ink-muted">
+        <p className="mt-3 max-w-xl text-sm text-ink-faint">
           Every item we currently carry. Filter by category or brand, or search for something specific.
         </p>
       </header>
 
-      <div className="sticky top-16 z-30 -mx-4 mb-8 space-y-2.5 border-b border-ink/8 bg-canvas/90 px-4 py-3 backdrop-blur sm:top-20">
+      <div className="sticky top-16 z-30 -mx-4 mb-8 space-y-2.5 border-b border-ink/8 bg-paper/90 px-4 py-3 backdrop-blur sm:top-20">
         <FacetRow label="Category">
           <FacetChip label="All" active={!category} onClick={() => setCategory(undefined)} />
           {categories.map((c) => (
@@ -69,7 +69,7 @@ export function Catalog() {
         <div className="py-24 text-center">
           <IconSearch className="mx-auto h-10 w-10 text-ink/25" />
           <p className="mt-4 font-display text-xl text-ink">Nothing here yet</p>
-          <p className="mt-2 text-sm text-ink-muted">
+          <p className="mt-2 text-sm text-ink-faint">
             Products matching this combination haven't been added yet.
           </p>
           <div className="mt-6">

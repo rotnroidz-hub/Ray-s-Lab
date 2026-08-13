@@ -4,39 +4,46 @@ export default {
   theme: {
     extend: {
       colors: {
-        canvas: {
-          DEFAULT: '#F6F2E9',
-          deep: '#EFE8DA',
+        paper: {
+          DEFAULT: '#F5F4EF',
+          '2': '#FAF9F5',
         },
+        card: '#FFFFFF',
         ink: {
-          DEFAULT: '#191D19',
-          soft: '#4B5249',
-          muted: '#7C8378',
+          DEFAULT: '#0E1013',
+          '2': '#1B1E23',
+          soft: '#5B6169',
+          faint: '#8A9099',
         },
-        pine: {
-          DEFAULT: '#2F4A3C',
-          dark: '#22352B',
-          deep: '#18251F',
-          soft: '#E6EDE6',
-          line: '#C8D4C6',
+        blue: {
+          DEFAULT: '#0A9BF5',
+          deep: '#0B5FA8',
+          lite: '#5EC2FF',
         },
-        brass: {
-          DEFAULT: '#B07D3F',
-          dark: '#8F6330',
-          soft: '#F1E5CE',
+        stock: {
+          ok: '#177E47',
+          'ok-soft': '#E5F5E9',
+          no: '#B3402F',
+          'no-soft': '#F9E9E7',
         },
-        clay: {
-          DEFAULT: '#A4402F',
-          soft: '#F6E3DE',
+        line: {
+          DEFAULT: 'rgba(14, 16, 19, 0.10)',
+          soft: 'rgba(14, 16, 19, 0.05)',
         },
       },
       fontFamily: {
-        display: ['Fraunces', 'Georgia', 'serif'],
-        sans: ['Manrope', 'system-ui', 'sans-serif'],
+        display: ['Bricolage Grotesque Variable', 'Georgia', 'serif'],
+        sans: ['Geist Variable', 'system-ui', 'sans-serif'],
+        mono: ['Geist Mono Variable', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+      },
+      borderRadius: {
+        card: '14px',
+        tile: '14px',
       },
       boxShadow: {
-        card: '0 1px 2px rgba(25, 29, 25, 0.05), 0 8px 24px -12px rgba(25, 29, 25, 0.18)',
-        lift: '0 2px 4px rgba(25, 29, 25, 0.06), 0 18px 40px -16px rgba(25, 29, 25, 0.28)',
+        card: '0 1px 2px rgba(14, 16, 19, 0.04)',
+        lift: '0 10px 30px rgba(14, 16, 19, 0.08)',
+        drawer: '0 12px 34px rgba(14, 16, 19, 0.24)',
       },
       letterSpacing: {
         wide2: '0.18em',

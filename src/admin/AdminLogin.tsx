@@ -37,12 +37,12 @@ export function AdminLogin() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center bg-pine-deep px-4">
+    <div className="grid min-h-screen place-items-center bg-ink px-4">
       <div className="w-full max-w-sm">
-        <div className="rounded-3xl bg-canvas p-8 shadow-lift">
+        <div className="rounded-3xl bg-paper p-8 shadow-lift">
           <p className="eyebrow">Restricted area</p>
           <h1 className="mt-1 font-display text-2xl font-semibold text-ink">Admin sign in</h1>
-          <p className="mt-1.5 text-sm text-ink-muted">
+          <p className="mt-1.5 text-sm text-ink-faint">
             This area is for store staff only. Customers don't need accounts.
           </p>
 
@@ -55,7 +55,7 @@ export function AdminLogin() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-2xl border border-ink/15 bg-canvas-deep px-4 py-3 text-sm text-ink placeholder:text-ink-muted focus:border-pine focus:bg-canvas"
+                className="w-full rounded-2xl border border-ink/15 bg-paper-2 px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:border-ink focus:bg-paper"
                 placeholder="admin@example.com"
               />
             </label>
@@ -67,13 +67,13 @@ export function AdminLogin() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-2xl border border-ink/15 bg-canvas-deep px-4 py-3 text-sm text-ink placeholder:text-ink-muted focus:border-pine focus:bg-canvas"
+                className="w-full rounded-2xl border border-ink/15 bg-paper-2 px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:border-ink focus:bg-paper"
                 placeholder="••••••••"
               />
             </label>
 
             {error && (
-              <p role="alert" className="rounded-xl bg-clay/10 px-4 py-3 text-sm text-clay">
+              <p role="alert" className="rounded-xl bg-stock-no/10 px-4 py-3 text-sm text-stock-no">
                 {error}
               </p>
             )}
@@ -87,7 +87,7 @@ export function AdminLogin() {
         <div className="mt-6 text-center">
           <a
             href="/"
-            className={buttonClass({ variant: 'ghost', size: 'sm', className: 'text-canvas/70 hover:bg-canvas/10 hover:text-canvas' })}
+            className={buttonClass({ variant: 'ghost', size: 'sm', className: 'text-paper/70 hover:bg-paper/10 hover:text-paper' })}
           >
             <IconLogOut className="h-4 w-4" /> Back to storefront
           </a>

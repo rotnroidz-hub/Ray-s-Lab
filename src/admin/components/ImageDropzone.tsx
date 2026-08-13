@@ -63,16 +63,16 @@ export function ImageDropzone({ value, onChange, max = 8 }: ImageDropzoneProps) 
         }}
         className={
           'flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors ' +
-          (dragging ? 'border-pine bg-pine-soft' : 'border-ink/20 bg-canvas hover:border-pine/60')
+          (dragging ? 'border-ink bg-paper-2' : 'border-ink/20 bg-paper hover:border-ink/60')
         }
       >
-        <span className="grid h-11 w-11 place-items-center rounded-full bg-canvas-deep text-pine">
+        <span className="grid h-11 w-11 place-items-center rounded-full bg-paper-2 text-ink">
           <IconUpload className="h-5 w-5" />
         </span>
         <span className="text-sm font-semibold text-ink">
           {uploading ? 'Uploading…' : 'Drop images here or click to browse'}
         </span>
-        <span className="text-xs text-ink-muted">
+        <span className="text-xs text-ink-faint">
           JPG, PNG or WebP — {value.length}/{max} added
         </span>
         <input
@@ -107,16 +107,16 @@ export function ImageDropzone({ value, onChange, max = 8 }: ImageDropzoneProps) 
                 type="button"
                 onClick={() => void remove(url)}
                 aria-label={`Remove image ${i + 1}`}
-                className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-ink/60 text-canvas opacity-0 backdrop-blur transition-opacity hover:bg-clay group-hover:opacity-100"
+                className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-ink/60 text-paper opacity-0 backdrop-blur transition-opacity hover:bg-stock-no group-hover:opacity-100"
               >
                 <IconTrash className="h-3.5 w-3.5" />
               </button>
               {i === 0 && (
-                <span className="absolute bottom-1.5 left-1.5 rounded-full bg-ink/60 px-2 py-0.5 text-[10px] font-semibold text-canvas backdrop-blur">
+                <span className="absolute bottom-1.5 left-1.5 rounded-full bg-ink/60 px-2 py-0.5 text-[10px] font-semibold text-paper backdrop-blur">
                   Cover
                 </span>
               )}
-              {!url && <span className="grid h-full w-full place-items-center bg-pine-soft"><IconImage className="h-5 w-5 text-pine" /></span>}
+              {!url && <span className="grid h-full w-full place-items-center bg-paper-2"><IconImage className="h-5 w-5 text-ink" /></span>}
             </motion.li>
           ))}
         </ul>

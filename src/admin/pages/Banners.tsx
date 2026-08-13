@@ -107,7 +107,7 @@ export default function Banners() {
         <div>
           <p className="eyebrow">Home page</p>
           <h1 className="mt-1 font-display text-3xl font-semibold text-ink">Banners</h1>
-          <p className="mt-1 text-sm text-ink-muted">
+          <p className="mt-1 text-sm text-ink-faint">
             The hero carousel on the storefront home page. First item shows first.
           </p>
         </div>
@@ -121,13 +121,13 @@ export default function Banners() {
       </div>
 
       {error && (
-        <p role="alert" className="mt-6 rounded-2xl bg-clay/10 px-4 py-3 text-sm text-clay">
+        <p role="alert" className="mt-6 rounded-2xl bg-stock-no/10 px-4 py-3 text-sm text-stock-no">
           {error}
         </p>
       )}
 
       {editing && (
-        <div className="mt-6 space-y-4 rounded-3xl border border-pine/30 bg-canvas-deep p-5">
+        <div className="mt-6 space-y-4 rounded-3xl border border-ink/30 bg-paper-2 p-5">
           <h2 className="font-display text-lg font-semibold text-ink">
             {draft.id ? 'Edit banner' : 'New banner'}
           </h2>
@@ -150,14 +150,14 @@ export default function Banners() {
         )}
 
         {banners?.map((b, i) => (
-          <li key={b.id} className="flex items-start gap-3 rounded-2xl border border-ink/10 bg-canvas-deep p-3">
+          <li key={b.id} className="flex items-start gap-3 rounded-2xl border border-ink/10 bg-paper-2 p-3">
             <div className="flex flex-col pt-1">
               <button
                 type="button"
                 onClick={() => move(i, -1)}
                 disabled={i === 0 || busy}
                 aria-label="Move up"
-                className="grid h-6 w-8 place-items-center rounded text-ink-muted hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
               >
                 <IconChevronUp className="h-4 w-4" />
               </button>
@@ -166,7 +166,7 @@ export default function Banners() {
                 onClick={() => move(i, 1)}
                 disabled={i === (banners?.length ?? 0) - 1 || busy}
                 aria-label="Move down"
-                className="grid h-6 w-8 place-items-center rounded text-ink-muted hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
               >
                 <IconChevronDown className="h-4 w-4" />
               </button>
@@ -180,7 +180,7 @@ export default function Banners() {
                   className="aspect-[21/9] w-full rounded-xl object-cover"
                 />
               ) : (
-                <span className="grid aspect-[21/9] w-full place-items-center rounded-xl bg-pine-soft text-sm text-pine">
+                <span className="grid aspect-[21/9] w-full place-items-center rounded-xl bg-paper-2 text-sm text-ink">
                   No image
                 </span>
               )}
@@ -189,7 +189,7 @@ export default function Banners() {
                   <span className="block truncate text-sm font-semibold text-ink">
                     {b.title || 'Untitled'}
                   </span>
-                  <span className="block truncate text-xs text-ink-muted">
+                  <span className="block truncate text-xs text-ink-faint">
                     {b.subtitle || 'No subtitle'} · {b.is_active ? 'Live' : 'Hidden'}
                   </span>
                 </p>
@@ -213,7 +213,7 @@ export default function Banners() {
                   type="button"
                   onClick={() => void remove(b.id)}
                   disabled={busy}
-                  className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-clay/10 hover:text-clay disabled:opacity-40"
+                  className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no disabled:opacity-40"
                   aria-label={`Delete banner ${b.title}`}
                 >
                   <IconTrash className="h-4 w-4" />
@@ -225,7 +225,7 @@ export default function Banners() {
       </ul>
 
       {banners?.length === 0 && (
-        <p className="rounded-2xl border border-ink/10 p-10 text-center text-sm text-ink-muted">
+        <p className="rounded-2xl border border-ink/10 p-10 text-center text-sm text-ink-faint">
           No banners yet. The home page falls back to a simple default hero.
         </p>
       )}

@@ -12,7 +12,7 @@ function Logo() {
   return (
     <Link to="/" className="font-display text-xl font-semibold tracking-tight text-ink">
       {words.map((w, i) => (
-        <span key={i} className={i === words.length - 1 ? 'text-brass' : ''}>
+        <span key={i} className={i === words.length - 1 ? 'text-blue-deep' : ''}>
           {w}
           {i < words.length - 1 ? ' ' : ''}
         </span>
@@ -43,9 +43,9 @@ function SearchForm() {
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search products…"
         aria-label="Search products"
-        className="w-full rounded-full border border-ink/15 bg-canvas-deep py-2.5 pl-11 pr-4 text-sm text-ink placeholder:text-ink-muted focus:border-pine focus:bg-canvas"
+        className="w-full rounded-full border border-ink/15 bg-paper-2 py-2.5 pl-11 pr-4 text-sm text-ink placeholder:text-ink-faint focus:border-ink focus:bg-paper"
       />
-      <IconSearch className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-ink-muted" />
+      <IconSearch className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-ink-faint" />
     </form>
   )
 }
@@ -64,7 +64,7 @@ export function Header() {
   }, [location.pathname, location.search])
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/8 bg-canvas/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-ink/8 bg-paper/85 backdrop-blur-md">
       <div className="container-site">
         <div className="flex h-16 items-center justify-between gap-4 sm:h-20">
           <button
@@ -115,7 +115,7 @@ export function Header() {
               type="button"
               onClick={openCart}
               id={CART_TARGET_ID}
-              className="relative grid h-10 w-10 place-items-center rounded-full bg-pine text-canvas shadow-[0_8px_20px_-10px_rgba(47,74,60,0.7)] transition-transform active:scale-95"
+              className="relative grid h-10 w-10 place-items-center rounded-full bg-ink text-paper shadow-[0_8px_20px_-10px_rgba(47,74,60,0.7)] transition-transform active:scale-95"
               aria-label={`Open cart, ${totalQty} item${totalQty === 1 ? '' : 's'}`}
             >
               <IconCart className="h-5 w-5" />
@@ -127,7 +127,7 @@ export function Header() {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.6, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                    className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-brass px-1 text-[11px] font-bold text-canvas"
+                    className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-blue-deep px-1 text-[11px] font-bold text-paper"
                   >
                     {totalQty}
                   </motion.span>
@@ -146,7 +146,7 @@ export function Header() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-t border-ink/8 bg-canvas"
+            className="overflow-hidden border-t border-ink/8 bg-paper"
           >
             <div className="container-site py-3">
               <SearchForm />
@@ -163,7 +163,7 @@ export function Header() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-t border-ink/8 bg-canvas lg:hidden"
+            className="overflow-hidden border-t border-ink/8 bg-paper lg:hidden"
             aria-label="Mobile"
           >
             <div className="container-site flex flex-col py-3">
@@ -171,7 +171,7 @@ export function Header() {
                 to="/catalog"
                 className="flex items-center justify-between rounded-xl px-3 py-3 text-base font-semibold text-ink hover:bg-ink/5"
               >
-                All Products <IconChevronRight className="h-4 w-4 text-ink-muted" />
+                All Products <IconChevronRight className="h-4 w-4 text-ink-faint" />
               </Link>
               {categories.map((c) => (
                 <Link
@@ -179,7 +179,7 @@ export function Header() {
                   to={`/category/${c.slug}`}
                   className="flex items-center justify-between rounded-xl px-3 py-3 text-base font-medium text-ink-soft hover:bg-ink/5"
                 >
-                  {c.name} <IconChevronRight className="h-4 w-4 text-ink-muted" />
+                  {c.name} <IconChevronRight className="h-4 w-4 text-ink-faint" />
                 </Link>
               ))}
             </div>

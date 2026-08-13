@@ -26,7 +26,7 @@ export function ProductGrid({ products, loading, skeletonCount = 8, hasMore, onL
           <button
             type="button"
             onClick={onLoadMore}
-            className="rounded-full border border-ink/20 px-8 py-3 text-sm font-semibold text-ink transition-all hover:border-ink hover:bg-ink hover:text-canvas active:scale-[0.98]"
+            className="rounded-full border border-ink/20 px-8 py-3 text-sm font-semibold text-ink transition-all hover:border-ink hover:bg-ink hover:text-paper active:scale-[0.98]"
           >
             Load more products
           </button>

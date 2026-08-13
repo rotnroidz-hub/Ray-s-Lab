@@ -101,7 +101,7 @@ export default function Brands() {
         <div>
           <p className="eyebrow">Filtering</p>
           <h1 className="mt-1 font-display text-3xl font-semibold text-ink">Brands</h1>
-          <p className="mt-1 text-sm text-ink-muted">
+          <p className="mt-1 text-sm text-ink-faint">
             Assign products a brand to enable the catalog filter and /brand pages.
           </p>
         </div>
@@ -111,13 +111,13 @@ export default function Brands() {
       </div>
 
       {error && (
-        <p role="alert" className="mt-6 rounded-2xl bg-clay/10 px-4 py-3 text-sm text-clay">
+        <p role="alert" className="mt-6 rounded-2xl bg-stock-no/10 px-4 py-3 text-sm text-stock-no">
           {error}
         </p>
       )}
 
       {adding && (
-        <div className="mt-6 rounded-3xl border border-pine/30 bg-canvas-deep p-5">
+        <div className="mt-6 rounded-3xl border border-ink/30 bg-paper-2 p-5">
           <h2 className="font-display text-lg font-semibold text-ink">New brand</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Field label="Name" required>
@@ -165,7 +165,7 @@ export default function Brands() {
         )}
 
         {brands?.length === 0 && (
-          <p className="rounded-2xl border border-ink/10 p-10 text-center text-sm text-ink-muted">
+          <p className="rounded-2xl border border-ink/10 p-10 text-center text-sm text-ink-faint">
             No brands yet — add your first one.
           </p>
         )}
@@ -173,7 +173,7 @@ export default function Brands() {
         {brands?.map((b) => {
           const isEditing = editingId === b.id
           return (
-            <li key={b.id} className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-canvas-deep p-3">
+            <li key={b.id} className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-paper-2 p-3">
               {isEditing ? (
                 <div className="flex flex-1 flex-wrap items-end gap-3">
                   <Field label="Name" className="flex-1 basis-40">
@@ -199,13 +199,13 @@ export default function Brands() {
                     {b.image_url ? (
                       <img src={b.image_url} alt="" className="h-12 w-12 rounded-xl object-cover" />
                     ) : (
-                      <span className="grid h-12 w-12 place-items-center rounded-xl bg-pine-soft text-pine">
+                      <span className="grid h-12 w-12 place-items-center rounded-xl bg-paper-2 text-ink">
                         {b.name.trim().charAt(0).toUpperCase()}
                       </span>
                     )}
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-ink">{b.name}</p>
-                      <p className="truncate text-xs text-ink-muted">/brand/{b.slug}</p>
+                      <p className="truncate text-xs text-ink-faint">/brand/{b.slug}</p>
                     </div>
                   </div>
                   <button
@@ -220,7 +220,7 @@ export default function Brands() {
                     type="button"
                     onClick={() => void remove(b.id)}
                     disabled={busy}
-                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-clay/10 hover:text-clay disabled:opacity-40"
+                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no disabled:opacity-40"
                     aria-label={`Delete ${b.name}`}
                   >
                     <IconTrash className="h-4 w-4" />

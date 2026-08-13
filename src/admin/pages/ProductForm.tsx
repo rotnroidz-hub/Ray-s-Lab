@@ -152,7 +152,7 @@ export default function ProductForm() {
   }
 
   if (loading) {
-    return <p className="py-16 text-center text-sm text-ink-muted">Loading product…</p>
+    return <p className="py-16 text-center text-sm text-ink-faint">Loading product…</p>
   }
 
   return (
@@ -166,18 +166,18 @@ export default function ProductForm() {
       <h1 className="mt-2 font-display text-3xl font-semibold text-ink">
         {isEditing ? `Edit ${product?.name ?? 'product'}` : 'New product'}
       </h1>
-      <p className="mt-1 text-sm text-ink-muted">
+      <p className="mt-1 text-sm text-ink-faint">
         Every field lives on this one screen — save once to publish.
       </p>
 
       {error && (
-        <p role="alert" className="mt-6 rounded-2xl bg-clay/10 px-4 py-3 text-sm text-clay">
+        <p role="alert" className="mt-6 rounded-2xl bg-stock-no/10 px-4 py-3 text-sm text-stock-no">
           {error}
         </p>
       )}
 
       <div className="mt-8 space-y-6">
-        <section className="rounded-3xl border border-ink/10 bg-canvas-deep p-5 sm:p-6">
+        <section className="rounded-3xl border border-ink/10 bg-paper-2 p-5 sm:p-6">
           <h2 className="font-display text-lg font-semibold text-ink">Details</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Field label="Name" required className="sm:col-span-2">
@@ -258,9 +258,9 @@ export default function ProductForm() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-ink/10 bg-canvas-deep p-5 sm:p-6">
+        <section className="rounded-3xl border border-ink/10 bg-paper-2 p-5 sm:p-6">
           <h2 className="font-display text-lg font-semibold text-ink">Photos</h2>
-          <p className="mt-1 text-xs text-ink-muted">
+          <p className="mt-1 text-xs text-ink-faint">
             First image is the cover. Uploaded to Supabase Storage.
           </p>
           <div className="mt-4">
@@ -268,7 +268,7 @@ export default function ProductForm() {
           </div>
         </section>
 
-        <section className="space-y-4 rounded-3xl border border-ink/10 bg-canvas-deep p-5 sm:p-6">
+        <section className="space-y-4 rounded-3xl border border-ink/10 bg-paper-2 p-5 sm:p-6">
           <h2 className="font-display text-lg font-semibold text-ink">Status</h2>
           <Toggle
             label="Stock status"

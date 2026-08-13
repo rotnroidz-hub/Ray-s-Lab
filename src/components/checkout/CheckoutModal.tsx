@@ -120,7 +120,7 @@ export function CheckoutModal() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 24, scale: 0.98 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-auto max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-canvas shadow-lift sm:max-h-[85vh] sm:rounded-3xl"
+              className="pointer-events-auto max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-paper shadow-lift sm:max-h-[85vh] sm:rounded-3xl"
             >
               <div className="flex items-start justify-between p-6 pb-4">
                 <div>
@@ -138,7 +138,7 @@ export function CheckoutModal() {
               </div>
 
               {!configured && (
-                <div className="mx-6 mb-2 rounded-2xl border border-clay/30 bg-clay/10 p-4 text-sm text-clay">
+                <div className="mx-6 mb-2 rounded-2xl border border-stock-no/30 bg-stock-no/10 p-4 text-sm text-stock-no">
                   WhatsApp number isn't configured yet. Add <code>VITE_WHATSAPP_NUMBER</code> to your
                   environment variables and rebuild.
                 </div>
@@ -150,9 +150,9 @@ export function CheckoutModal() {
                     {items.map((item) => (
                       <li key={item.product_id} className="flex items-center justify-between gap-4 text-sm">
                         <span className="min-w-0 truncate text-ink">
-                          {item.name} <span className="text-ink-muted">× {item.qty}</span>
+                          {item.name} <span className="text-ink-faint">× {item.qty}</span>
                         </span>
-                        <span className="shrink-0 tabular-nums text-ink-muted">
+                        <span className="shrink-0 tabular-nums text-ink-faint">
                           {formatPrice(item.price * item.qty)}
                         </span>
                       </li>
@@ -176,14 +176,14 @@ export function CheckoutModal() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Your name (optional)"
                       autoComplete="name"
-                      className="w-full rounded-2xl border border-ink/15 bg-canvas-deep px-4 py-3 text-sm text-ink placeholder:text-ink-muted focus:border-pine focus:bg-canvas"
+                      className="w-full rounded-2xl border border-ink/15 bg-paper-2 px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:border-ink focus:bg-paper"
                     />
                     <textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Anything we should know? Size, color, delivery area…"
                       rows={2}
-                      className="w-full resize-none rounded-2xl border border-ink/15 bg-canvas-deep px-4 py-3 text-sm text-ink placeholder:text-ink-muted focus:border-pine focus:bg-canvas"
+                      className="w-full resize-none rounded-2xl border border-ink/15 bg-paper-2 px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:border-ink focus:bg-paper"
                     />
                     <Button
                       type="submit"
@@ -196,7 +196,7 @@ export function CheckoutModal() {
                       Open WhatsApp with my order
                     </Button>
                   </form>
-                  <p className="px-6 pb-6 pt-2 text-center text-xs text-ink-muted">
+                  <p className="px-6 pb-6 pt-2 text-center text-xs text-ink-faint">
                     We'll confirm price, availability and delivery over chat. No payment is taken on
                     the site.
                   </p>
@@ -205,23 +205,23 @@ export function CheckoutModal() {
                 <div className="grid place-items-center px-6 pb-10 pt-4 text-center">
                   {stage === 'completing' ? (
                     <>
-                      <span className="h-8 w-8 animate-spin rounded-full border-2 border-ink/15 border-t-pine" />
+                      <span className="h-8 w-8 animate-spin rounded-full border-2 border-ink/15 border-t-ink" />
                       <p className="mt-4 font-display text-lg font-semibold text-ink">
                         Preparing your order…
                       </p>
-                      <p className="mt-1 text-sm text-ink-muted">
+                      <p className="mt-1 text-sm text-ink-faint">
                         Opening WhatsApp in a moment.
                       </p>
                     </>
                   ) : (
                     <>
-                      <span className="grid h-12 w-12 place-items-center rounded-full bg-pine text-canvas">
+                      <span className="grid h-12 w-12 place-items-center rounded-full bg-ink text-paper">
                         <IconCheck className="h-6 w-6" />
                       </span>
                       <p className="mt-4 font-display text-lg font-semibold text-ink">
                         Order sent!
                       </p>
-                      <p className="mt-1 text-sm text-ink-muted">
+                      <p className="mt-1 text-sm text-ink-faint">
                         We'll confirm price, availability and delivery over chat.
                       </p>
                     </>

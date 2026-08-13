@@ -27,7 +27,7 @@ export function CategoryTile({ category, index = 0 }: CategoryTileProps) {
     >
       <Link
         to={`/category/${category.slug}`}
-        className="group relative block overflow-hidden rounded-2xl bg-pine-deep shadow-card transition-shadow duration-300 hover:shadow-lift"
+        className="group relative block overflow-hidden rounded-2xl bg-ink shadow-card transition-shadow duration-300 hover:shadow-lift"
       >
         <div className="relative aspect-[4/5]">
           {category.image_url ? (
@@ -40,17 +40,17 @@ export function CategoryTile({ category, index = 0 }: CategoryTileProps) {
             />
           ) : (
             <div className="tile-texture relative grid h-full w-full place-items-center">
-              <span className="font-display text-7xl font-medium text-canvas/25 transition-all duration-500 group-hover:text-canvas/40">
+              <span className="font-display text-7xl font-medium text-paper/25 transition-all duration-500 group-hover:text-paper/40">
                 {initial}
               </span>
             </div>
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-pine-deep/85 via-pine-deep/15 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/15 to-transparent" />
 
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4">
-            <span className="font-display text-lg font-semibold text-canvas">{category.name}</span>
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-canvas/15 text-canvas backdrop-blur-sm transition-all duration-300 group-hover:bg-canvas group-hover:text-pine">
+            <span className="font-display text-lg font-semibold text-paper">{category.name}</span>
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-paper/15 text-paper backdrop-blur-sm transition-all duration-300 group-hover:bg-paper group-hover:text-ink">
               <IconArrowRight className="h-4 w-4" />
             </span>
           </div>

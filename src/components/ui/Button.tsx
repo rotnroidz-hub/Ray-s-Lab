@@ -10,11 +10,11 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    'bg-pine text-canvas hover:bg-pine-dark active:scale-[0.98] shadow-[0_8px_20px_-10px_rgba(47,74,60,0.6)]',
+    'bg-ink text-paper hover:bg-ink-2 active:scale-[0.98] shadow-[0_8px_20px_-10px_rgba(47,74,60,0.6)]',
   outline:
-    'border border-ink/20 bg-transparent text-ink hover:border-ink/50 hover:bg-canvas-deep active:scale-[0.98]',
+    'border border-ink/20 bg-transparent text-ink hover:border-ink/50 hover:bg-paper-2 active:scale-[0.98]',
   ghost: 'text-ink hover:bg-ink/5 active:scale-[0.98]',
-  danger: 'bg-clay text-canvas hover:brightness-95 active:scale-[0.98]',
+  danger: 'bg-stock-no text-paper hover:brightness-95 active:scale-[0.98]',
   whatsapp: 'bg-[#1FA559] text-white hover:brightness-95 active:scale-[0.98]',
 }
 
