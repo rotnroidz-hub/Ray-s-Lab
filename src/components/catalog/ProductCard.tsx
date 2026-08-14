@@ -6,8 +6,9 @@ import { formatPrice } from '../../lib/utils'
 import { responsiveImage } from '../../lib/image'
 import { useCart } from '../../hooks/useCart'
 import { useFlyToCart } from '../cart/FlyToCart'
+import { useToast } from '../ui/Toast'
 import { StockBadge } from '../ui/StockBadge'
-import { IconCart, IconPlus } from '../ui/Icons'
+import { IconCart } from '../ui/Icons'
 
 interface ProductCardProps {
   product: Product
@@ -15,8 +16,9 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
-  const { addItem } = useCart()
+  const { addItem, openCheckout } = useCart()
   const fly = useFlyToCart()
+  const { showToast } = useToast()
   const outOfStock = product.stock_status === 'no_stock'
   const image = product.images[0] ?? null
 
@@ -40,8 +42,30 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         },
         1,
       )
+      showToast(`${product.name} added to cart`)
     },
-    [addItem, fly, outOfStock, product, image],
+    [addItem, fly, outOfStock, product, image, showToast],
+  )
+
+  const handleBuyNow = useCallback(
+    (e: React.MouseEvent) => {
+      if (outOfStock) return
+      e.preventDefault()
+      e.stopPropagation()
+      addItem(
+        {
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          price: product.price,
+          image,
+          stock_status: product.stock_status,
+        },
+        1,
+      )
+      openCheckout()
+    },
+    [addItem, openCheckout, outOfStock, product, image],
   )
 
   return (
@@ -91,15 +115,25 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         </div>
       </Link>
 
-      <button
-        type="button"
-        onClick={handleAdd}
-        disabled={outOfStock}
-        aria-label={outOfStock ? `${product.name} is out of stock` : `Add ${product.name} to cart`}
-        className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-paper/95 text-ink shadow-card backdrop-blur transition-all duration-200 hover:bg-ink hover:text-paper active:scale-95 disabled:pointer-events-none disabled:opacity-50"
-      >
-        {outOfStock ? <IconPlus className="h-5 w-5" /> : <IconCart className="h-5 w-5" />}
-      </button>
+      <div className="mt-3 grid grid-cols-[1fr_auto] gap-[7px]">
+        <button
+          type="button"
+          onClick={handleBuyNow}
+          disabled={outOfStock}
+          className="h-10 rounded-full bg-ink px-4 text-[13px] font-medium text-paper-2 transition-colors hover:bg-ink-2 disabled:pointer-events-none disabled:opacity-40"
+        >
+          Buy now
+        </button>
+        <button
+          type="button"
+          onClick={handleAdd}
+          disabled={outOfStock}
+          aria-label={outOfStock ? `${product.name} is out of stock` : `Add ${product.name} to cart`}
+          className="grid h-10 w-10 place-items-center rounded-full border border-line bg-card text-ink transition-colors hover:border-ink disabled:pointer-events-none disabled:opacity-40"
+        >
+          <IconCart className="h-5 w-5" />
+        </button>
+      </div>
     </motion.article>
   )
 }

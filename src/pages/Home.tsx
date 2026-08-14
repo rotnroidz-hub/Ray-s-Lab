@@ -11,6 +11,7 @@ import { Reveal } from '../components/ui/Reveal'
 import { CategoryBento } from '../components/catalog/CategoryBento'
 import { useCart } from '../hooks/useCart'
 import { useFlyToCart } from '../components/cart/FlyToCart'
+import { useToast } from '../components/ui/Toast'
 import { IconArrowRight, IconCart, IconChevronLeft, IconChevronRight } from '../components/ui/Icons'
 import type { Banner, Product } from '../lib/types'
 
@@ -222,16 +223,49 @@ function HeroCarousel() {
 
 /** Handpicked editorial card. Full card links to the product. */
 function FeaturedCard({ product }: { product: Product }) {
+  const { addItem, openCheckout } = useCart()
+  const fly = useFlyToCart()
+  const { showToast } = useToast()
   const brand = product.brands?.name
   const category = product.categories?.name
   const line = [brand, category].filter(Boolean).join(' · ')
   const description = product.description.slice(0, 120)
   const truncated = product.description.length > 120
+  const outOfStock = product.stock_status === 'no_stock'
+  const image = product.images[0] ?? null
+
+  const handleAdd = (e: React.MouseEvent) => {
+    if (outOfStock) return
+    e.preventDefault()
+    e.stopPropagation()
+    const node = (e.currentTarget as HTMLElement).closest<HTMLElement>('.featured-card')
+    const img = node?.querySelector('img')
+    if (img) {
+      const r = img.getBoundingClientRect()
+      fly({ x: r.left, y: r.top, width: r.width, height: r.height }, image)
+    }
+    addItem(
+      { id: product.id, name: product.name, slug: product.slug, price: product.price, image, stock_status: product.stock_status },
+      1,
+    )
+    showToast(`${product.name} added to cart`)
+  }
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    if (outOfStock) return
+    e.preventDefault()
+    e.stopPropagation()
+    addItem(
+      { id: product.id, name: product.name, slug: product.slug, price: product.price, image, stock_status: product.stock_status },
+      1,
+    )
+    openCheckout()
+  }
 
   return (
     <Link
       to={`/product/${product.slug}`}
-      className="group relative flex min-h-[360px] flex-col justify-end overflow-hidden rounded-tile p-[26px_24px] text-paper-2 lg:min-h-[440px]"
+      className="featured-card group relative flex min-h-[360px] flex-col justify-end overflow-hidden rounded-tile p-[26px_24px] text-paper-2 lg:min-h-[440px]"
     >
       {product.images[0] ? (
         <img
@@ -267,8 +301,31 @@ function FeaturedCard({ product }: { product: Product }) {
             {truncated ? '...' : ''}
           </p>
         ) : null}
-        <span className="mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-blue px-6 py-3 text-sm font-medium text-white shadow-[0_6px_20px_rgba(0,144,230,0.28)] transition-colors hover:bg-[#0a9ff5]">
-          View product <IconArrowRight className="h-4 w-4" />
+        <span className="mt-5 inline-flex flex-wrap items-center gap-[7px]">
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            disabled={outOfStock}
+            className="inline-flex h-10 items-center justify-center rounded-full bg-paper-2 px-4 text-[13px] font-medium text-ink transition-colors hover:bg-white disabled:pointer-events-none disabled:opacity-50"
+          >
+            Buy now
+          </button>
+          <button
+            type="button"
+            onClick={handleAdd}
+            disabled={outOfStock}
+            aria-label={outOfStock ? `${product.name} is out of stock` : `Add ${product.name} to cart`}
+            className="grid h-10 w-10 place-items-center rounded-full border border-paper-2/40 bg-paper-2/10 text-paper-2 transition-colors hover:border-paper-2 disabled:pointer-events-none disabled:opacity-50"
+          >
+            <IconCart className="h-5 w-5" />
+          </button>
+          <Link
+            to={`/product/${product.slug}`}
+            onClick={(e) => e.stopPropagation()}
+            className="ml-1 inline-flex h-10 items-center gap-2 rounded-full bg-blue px-6 py-3 text-sm font-medium text-white shadow-[0_6px_20px_rgba(0,144,230,0.28)] transition-colors hover:bg-[#0a9ff5]"
+          >
+            View product <IconArrowRight className="h-4 w-4" />
+          </Link>
         </span>
       </div>
     </Link>
@@ -277,8 +334,9 @@ function FeaturedCard({ product }: { product: Product }) {
 
 /** One rail card: square cover with rank, then brand, name, price and the buy/add pair. */
 function BestSellerCard({ product, rank }: { product: Product; rank: number }) {
-  const { addItem, openCart } = useCart()
+  const { addItem, openCheckout } = useCart()
   const fly = useFlyToCart()
+  const { showToast } = useToast()
   const outOfStock = product.stock_status === 'no_stock'
   const image = product.images[0] ?? null
 
@@ -294,15 +352,18 @@ function BestSellerCard({ product, rank }: { product: Product; rank: number }) {
       { id: product.id, name: product.name, slug: product.slug, price: product.price, image, stock_status: product.stock_status },
       1,
     )
+    showToast(`${product.name} added to cart`)
   }
 
-  const handleBuyNow = () => {
+  const handleBuyNow = (e: React.MouseEvent) => {
     if (outOfStock) return
+    e.preventDefault()
+    e.stopPropagation()
     addItem(
       { id: product.id, name: product.name, slug: product.slug, price: product.price, image, stock_status: product.stock_status },
       1,
     )
-    openCart()
+    openCheckout()
   }
 
   return (

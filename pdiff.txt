@@ -1,0 +1,77 @@
+diff --git a/src/pages/Product.tsx b/src/pages/Product.tsx
+index cf262c1..f4aa272 100644
+--- a/src/pages/Product.tsx
++++ b/src/pages/Product.tsx
+@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
+ import { useProduct, useRelatedProducts } from '../hooks/useData'
+ import { useCart } from '../hooks/useCart'
+ import { useFlyToCart } from '../components/cart/FlyToCart'
++import { useToast } from '../components/ui/Toast'
+ import { productJsonLd, useSeo } from '../lib/seo'
+ import { cn, formatPrice } from '../lib/utils'
+ import { responsiveImage } from '../lib/image'
+@@ -13,7 +14,7 @@ import { Button } from '../components/ui/Button'
+ import { ProductCard } from '../components/catalog/ProductCard'
+ import { TitlePlate } from '../components/ui/TitlePlate'
+ import { Skeleton } from '../components/ui/Skeleton'
+-import { IconChevronLeft, IconImage, IconWhatsApp } from '../components/ui/Icons'
++import { IconChevronLeft, IconImage, IconCart, IconWhatsApp } from '../components/ui/Icons'
+ 
+ function ProductBlock({
+   heading,
+@@ -68,8 +69,9 @@ export function Product() {
+   const { slug = '' } = useParams<{ slug: string }>()
+   const { data: product, loading, error } = useProduct(slug)
+   const related = useRelatedProducts(product)
+-  const { addItem, openCart } = useCart()
++  const { addItem, openCheckout, openCart } = useCart()
+   const fly = useFlyToCart()
++  const { showToast } = useToast()
+   const [qty, setQty] = useState(1)
+   const [activeImage, setActiveImage] = useState(0)
+ 
+@@ -132,6 +134,23 @@ export function Product() {
+       },
+       qty,
+     )
++    showToast(`${product.name} added to cart`)
++  }
++
++  const handleBuyNow = () => {
++    if (outOfStock) return
++    addItem(
++      {
++        id: product.id,
++        name: product.name,
++        slug: product.slug,
++        price: product.price,
++        image: product.images[0] ?? null,
++        stock_status: product.stock_status,
++      },
++      qty,
++    )
++    openCheckout()
+   }
+ 
+   return (
+@@ -227,9 +246,18 @@ export function Product() {
+ 
+             <div className="mb-[26px] flex flex-wrap items-center gap-4">
+               <QuantityStepper value={qty} onChange={setQty} min={1} />
+-              <Button size="lg" className="flex-1 sm:flex-none sm:min-w-56" onClick={handleAdd} disabled={outOfStock}>
+-                {outOfStock ? 'Out of stock' : 'Add to basket'}
++              <Button variant="dark" size="lg" className="flex-1 sm:flex-none sm:min-w-56" onClick={handleBuyNow} disabled={outOfStock}>
++                {outOfStock ? 'Out of stock' : 'Buy now'}
+               </Button>
++              <button
++                type="button"
++                onClick={handleAdd}
++                disabled={outOfStock}
++                aria-label={outOfStock ? `${product.name} is out of stock` : `Add ${product.name} to cart`}
++                className="grid h-[54px] w-[54px] shrink-0 place-items-center rounded-full border border-line bg-card text-ink transition-colors hover:border-ink disabled:pointer-events-none disabled:opacity-40"
++              >
++                <IconCart className="h-6 w-6" />
++              </button>
+             </div>
+ 
+             {!outOfStock && (
