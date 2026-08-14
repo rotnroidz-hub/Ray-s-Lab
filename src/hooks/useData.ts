@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchBanners, fetchBrands, fetchCategories, fetchProducts, fetchRelatedProducts, fetchProductBySlug } from '../lib/api'
+import {
+  fetchBanners,
+  fetchBrandCategoryMap,
+  fetchBrands,
+  fetchCategories,
+  fetchProducts,
+  fetchRelatedProducts,
+  fetchProductBySlug,
+} from '../lib/api'
 import type { Banner, Brand, Category, Product } from '../lib/types'
-import type { ProductPage } from '../lib/api'
+import type { BrandMenuEntry, ProductPage } from '../lib/api'
 
 interface AsyncState<T> {
   data: T
@@ -41,6 +49,10 @@ export function useCategories() {
 
 export function useBrands() {
   return useAsync<Brand[]>(fetchBrands, [], [])
+}
+
+export function useBrandMenu() {
+  return useAsync<BrandMenuEntry[]>(fetchBrandCategoryMap, [], [])
 }
 
 export interface ProductList {

@@ -176,3 +176,62 @@ export async function fetchProductsByIds(ids: string[]): Promise<Product[]> {
   if (error) throw new Error(error.message)
   return ((data as unknown as ProductRow[]) ?? []).map(hydrateProduct)
 }
+
+// --- Brand → category map for the mega menu ---------------------------------
+export type BrandMenuEntry = {
+  brand: { id: string; name: string; slug: string }
+  total: number
+  categories: { name: string; slug: string; count: number }[]
+}
+
+interface BrandMenuRow {
+  brand_id: string | null
+  category_id: string | null
+  brands: { id: string; name: string; slug: string } | null
+  categories: { id: string; name: string; slug: string } | null
+}
+
+// The promise is cached at module level so repeated calls do not refetch.
+let brandMenuPromise: Promise<BrandMenuEntry[]> | null = null
+
+export function fetchBrandCategoryMap(): Promise<BrandMenuEntry[]> {
+  if (!brandMenuPromise) brandMenuPromise = loadBrandCategoryMap()
+  return brandMenuPromise
+}
+
+async function loadBrandCategoryMap(): Promise<BrandMenuEntry[]> {
+  await ensureBrandsCapability()
+  if (!brandsCapable) return []
+
+  const { data, error } = await supabase
+    .from('products')
+    .select('brand_id, category_id, brands(id,name,slug), categories(id,name,slug)')
+    .eq('is_active', true)
+  if (error) throw new Error(error.message)
+
+  const rows = (data as unknown as BrandMenuRow[]) ?? []
+  const byBrand = new Map<string, BrandMenuEntry>()
+  for (const row of rows) {
+    if (!row.brand_id || !row.brands) continue
+    let entry = byBrand.get(row.brand_id)
+    if (!entry) {
+      entry = {
+        brand: { id: row.brands.id, name: row.brands.name, slug: row.brands.slug },
+        total: 0,
+        categories: [],
+      }
+      byBrand.set(row.brand_id, entry)
+    }
+    entry.total += 1
+    if (row.category_id && row.categories) {
+      const cat = entry.categories.find((c) => c.slug === row.categories!.slug)
+      if (cat) cat.count += 1
+      else entry.categories.push({ name: row.categories.name, slug: row.categories.slug, count: 1 })
+    }
+  }
+
+  const list = Array.from(byBrand.values())
+  list.sort((a, b) => b.total - a.total || a.brand.name.localeCompare(b.brand.name))
+  for (const entry of list) entry.categories.sort((a, b) => b.count - a.count)
+  return list
+}
