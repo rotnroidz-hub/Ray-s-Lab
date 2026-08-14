@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Banner, Brand, Category, Product, StockStatus } from './types'
+import type { Banner, Brand, Category, Product, SortKey, StockStatus } from './types'
 
 export interface ProductQuery {
   categorySlug?: string
@@ -8,6 +8,12 @@ export interface ProductQuery {
   page?: number
   pageSize?: number
   featured?: boolean
+  sort?: SortKey
+}
+
+export async function isBrandsCapable(): Promise<boolean> {
+  await ensureBrandsCapability()
+  return brandsCapable
 }
 
 export interface ProductPage {
@@ -76,7 +82,7 @@ export async function fetchBrands(): Promise<Brand[]> {
 
 /** Products joined with their category & brand for breadcrumbs / filtering. */
 export async function fetchProducts(query: ProductQuery = {}): Promise<ProductPage> {
-  const { categorySlug, brandSlug, search, page = 1, pageSize = 12, featured } = query
+  const { categorySlug, brandSlug, search, page = 1, pageSize = 12, featured, sort = 'featured' } = query
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
 
@@ -86,7 +92,10 @@ export async function fetchProducts(query: ProductQuery = {}): Promise<ProductPa
     .from('products')
     .select(productSelect(), { count: 'exact' })
     .eq('is_active', true)
-    .order('created_at', { ascending: false })
+
+  if (sort === 'price_asc') q = q.order('price', { ascending: true })
+  else if (sort === 'price_desc') q = q.order('price', { ascending: false })
+  else q = q.order('created_at', { ascending: false })
 
   if (categorySlug) {
     // Resolve category id first so we can filter on the FK in one query shape.
@@ -190,6 +199,72 @@ export async function fetchProductsByIds(ids: string[]): Promise<Product[]> {
     .eq('is_active', true)
   if (error) throw new Error(error.message)
   return ((data as unknown as ProductRow[]) ?? []).map(hydrateProduct)
+}
+
+interface BestSellersRow {
+  pid: string
+  total_qty: number
+}
+
+/**
+ * Best sellers over the last `p_days`, fully automatic from checkout events.
+ * Never throws: on any error it logs and falls back to the newest active
+ * products so the rail still has content.
+ */
+export async function fetchBestSellers(limit = 6): Promise<Product[]> {
+  try {
+    const { data, error } = await supabase.rpc('best_sellers', { p_days: 7, p_limit: limit })
+    if (error) {
+      console.warn('[best_sellers] RPC failed, falling back to newest products:', error.message)
+    } else {
+      const rows = (data as BestSellersRow[]) ?? []
+      const ids = rows.map((r) => r.pid)
+      const byId = new Map((await fetchProductsByIds(ids)).map((p) => [p.id, p]))
+      const fromRpc = rows
+        .map((r) => byId.get(r.pid))
+        .filter((p): p is Product => Boolean(p))
+      if (fromRpc.length >= limit) return fromRpc.slice(0, limit)
+
+      // Top up with newest active products not already in the list.
+      const owned = new Set(fromRpc.map((p) => p.id))
+      const newest = await fetchProducts({ pageSize: limit * 2 })
+      const filled = [...fromRpc]
+      for (const p of newest.products) {
+        if (filled.length >= limit) break
+        if (!owned.has(p.id)) {
+          owned.add(p.id)
+          filled.push(p)
+        }
+      }
+      return filled
+    }
+  } catch (err) {
+    console.warn('[best_sellers] lookup failed, falling back to newest products:', err)
+  }
+
+  // Any failure path ends here: newest active products only. Guarded so the
+  // function literally never throws, even if Supabase itself is down.
+  try {
+    const newest = await fetchProducts({ pageSize: limit })
+    return newest.products
+  } catch (err) {
+    console.warn('[best_sellers] final fallback failed:', err)
+    return []
+  }
+}
+
+/**
+ * Append a row per line item to `checkout_events`. Fire and forget: swallows
+ * every error so a failed insert never blocks or delays the WhatsApp redirect.
+ */
+export async function logCheckout(items: { product_id: string; qty: number }[]): Promise<void> {
+  if (items.length === 0) return
+  try {
+    const { error } = await supabase.from('checkout_events').insert(items)
+    if (error) console.warn('[checkout] failed to log checkout event:', error.message)
+  } catch (err) {
+    console.warn('[checkout] failed to log checkout event:', err)
+  }
 }
 
 // --- Brand → category map for the mega menu ---------------------------------

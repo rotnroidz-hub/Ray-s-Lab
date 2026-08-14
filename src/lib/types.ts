@@ -1,4 +1,5 @@
 export type StockStatus = 'available' | 'no_stock'
+export type SortKey = 'featured' | 'price_asc' | 'price_desc'
 
 export interface Category {
   id: string

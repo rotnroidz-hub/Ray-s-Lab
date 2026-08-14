@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCart } from '../../hooks/useCart'
+import { logCheckout } from '../../lib/api'
 import { buildCartMessage, whatsappLink, hasWhatsappNumber } from '../../lib/whatsapp'
 import { formatPrice } from '../../lib/utils'
 import { Button } from '../ui/Button'
@@ -84,6 +85,9 @@ export function CheckoutModal() {
 
   function handleSend() {
     if (!configured || stage !== 'idle' || items.length === 0) return
+    // Fire and forget so the rail has data. Never awaited: a failure must not
+    // delay or alter the WhatsApp redirect.
+    void logCheckout(items.map((i) => ({ product_id: i.product_id, qty: i.qty })))
     pendingMessage.current = buildCartMessage(items, name, notes)
     setStage('completing')
   }

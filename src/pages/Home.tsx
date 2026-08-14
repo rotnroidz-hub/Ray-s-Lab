@@ -1,15 +1,18 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useBanners, useCategories, useFeaturedProducts, useProducts } from '../hooks/useData'
+import { useBanners, useBestSellers, useFeaturedProducts } from '../hooks/useData'
 import { useSeo } from '../lib/seo'
 import { responsiveImage } from '../lib/image'
 import { formatPrice } from '../lib/utils'
 import { LinkButton } from '../components/ui/Button'
 import { TitlePlate } from '../components/ui/TitlePlate'
 import { Reveal } from '../components/ui/Reveal'
-import { IconArrowRight, IconChevronLeft, IconChevronRight } from '../components/ui/Icons'
-import type { Banner, Category, Product } from '../lib/types'
+import { CategoryBento } from '../components/catalog/CategoryBento'
+import { useCart } from '../hooks/useCart'
+import { useFlyToCart } from '../components/cart/FlyToCart'
+import { IconArrowRight, IconCart, IconChevronLeft, IconChevronRight } from '../components/ui/Icons'
+import type { Banner, Product } from '../lib/types'
 
 function BannerButtons({ banner }: { banner: Banner }) {
   const cta = banner.cta_label?.trim()
@@ -272,90 +275,149 @@ function FeaturedCard({ product }: { product: Product }) {
   )
 }
 
-/** Category bento tile. Flat ink fallback when the category has no image. */
-function CategoryBentoTile({ category }: { category: Category }) {
-  const { count } = useProducts(category.slug, undefined, 1)
+/** One rail card: square cover with rank, then brand, name, price and the buy/add pair. */
+function BestSellerCard({ product, rank }: { product: Product; rank: number }) {
+  const { addItem, openCart } = useCart()
+  const fly = useFlyToCart()
+  const outOfStock = product.stock_status === 'no_stock'
+  const image = product.images[0] ?? null
+
+  const handleAdd = (e: React.MouseEvent) => {
+    if (outOfStock) return
+    const node = (e.currentTarget as HTMLElement).closest<HTMLElement>('.best-card')
+    const img = node?.querySelector('img')
+    if (img) {
+      const r = img.getBoundingClientRect()
+      fly({ x: r.left, y: r.top, width: r.width, height: r.height }, image)
+    }
+    addItem(
+      { id: product.id, name: product.name, slug: product.slug, price: product.price, image, stock_status: product.stock_status },
+      1,
+    )
+  }
+
+  const handleBuyNow = () => {
+    if (outOfStock) return
+    addItem(
+      { id: product.id, name: product.name, slug: product.slug, price: product.price, image, stock_status: product.stock_status },
+      1,
+    )
+    openCart()
+  }
 
   return (
-    <Link
-      to={`/category/${category.slug}`}
-      className="group relative flex min-h-[190px] items-end overflow-hidden rounded-tile p-6 text-paper-2 lg:h-full"
-    >
-      {category.image_url ? (
-        <img
-          src={responsiveImage(category.image_url, 900)}
-          alt={category.name}
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
-        />
-      ) : (
-        <>
-          <div aria-hidden className="tex-dark absolute inset-0" style={{ opacity: 0.4 }} />
-          <div aria-hidden className="tex-glow absolute inset-0" style={{ opacity: 0.14 }} />
-        </>
-      )}
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(14,16,19,0.18) 0%, rgba(14,16,19,0.5) 45%, rgba(14,16,19,0.9) 100%)',
-        }}
-      />
+    <article className="best-card edge group flex h-full flex-col overflow-hidden rounded-card bg-card transition-shadow duration-200 hover:shadow-lift">
+      <Link to={`/product/${product.slug}`} className="block focus:outline-none" aria-label={product.name}>
+        <div className="relative aspect-square overflow-hidden bg-paper">
+          {image ? (
+            <img
+              src={responsiveImage(image, 600)}
+              alt={product.name}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+            />
+          ) : (
+            <div className="grid h-full w-full place-items-center bg-paper-2 text-ink/25">
+              <span className="font-display text-4xl">·</span>
+            </div>
+          )}
+          <span
+            aria-hidden
+            className="absolute left-[14px] top-[10px] font-display text-[54px] font-extrabold leading-none text-paper-2"
+            style={{ textShadow: '0 2px 18px rgba(14,16,19,0.5)' }}
+          >
+            {rank}
+          </span>
+        </div>
+      </Link>
 
-      <div className="relative z-[2]">
-        <h3 className="font-display text-[24px] text-paper-2">{category.name}</h3>
-        <p className="mt-1 font-mono text-[12px] text-blue-lite">
-          {count} item{count === 1 ? '' : 's'}
-        </p>
+      <div className="flex flex-1 flex-col gap-1 p-[15px_17px_18px]">
+        {product.brands?.name && (
+          <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-faint">
+            {product.brands.name}
+          </span>
+        )}
+        <h3 className="line-clamp-2 text-[14.5px] font-medium leading-snug text-ink">{product.name}</h3>
+        <span className="mt-1.5 font-mono text-base font-medium text-ink">{formatPrice(product.price)}</span>
+        <div className="mt-auto flex gap-[7px] pt-3">
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            disabled={outOfStock}
+            className="inline-flex h-10 items-center justify-center rounded-full bg-ink px-4 text-[13px] font-medium text-paper-2 transition-colors hover:bg-ink-2 disabled:pointer-events-none disabled:opacity-40"
+          >
+            Buy now
+          </button>
+          <button
+            type="button"
+            onClick={handleAdd}
+            disabled={outOfStock}
+            aria-label={`Add ${product.name} to cart`}
+            className="grid h-10 w-10 place-items-center rounded-full border border-line bg-card text-ink transition-colors hover:border-ink disabled:pointer-events-none disabled:opacity-40"
+          >
+            <IconCart className="h-5 w-5" />
+          </button>
+        </div>
       </div>
-    </Link>
+    </article>
   )
 }
 
-/** Category bento grid. Matches the cell count to the category count, never an empty cell. */
-function CategoryBento() {
-  const { data: categories } = useCategories()
-  const total = categories.length
-  if (total === 0) return null
+/** Best sellers rail, fully derived from checkout events. Hidden below 2 items. */
+function BestSellersRail() {
+  const { data: bestSellers } = useBestSellers(6)
+  const railRef = useRef<HTMLDivElement>(null)
+  if (bestSellers.length < 2) return null
 
-  const layout =
-    total === 1
-      ? 'lg:grid-rows-1'
-      : total === 2
-        ? 'lg:grid-cols-2 lg:grid-rows-1'
-        : total === 3
-          ? 'lg:grid-cols-[1.4fr_1fr] lg:grid-rows-2'
-          : 'lg:grid-cols-2 lg:grid-rows-2'
-  const shown = total === 1 ? 1 : total <= 4 ? total : 4
+  const scroll = (dir: 1 | -1) => {
+    railRef.current?.scrollBy({ left: 314 * dir, behavior: 'smooth' })
+  }
 
   return (
     <section className="pb-14">
       <TitlePlate
-        kicker="Browse the store"
-        words={['Shop', 'by', 'category.']}
-        count={total}
-        countLabel="categories"
+        kicker="Moving fastest right now"
+        words={['Best', 'sellers']}
+        count={bestSellers.length}
+        countLabel="this month"
       >
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <p className="max-w-[52ch] text-[15.5px] text-ink-soft">
-            Everything we stock, organised so it is easy to find your thing.
+            Ranked by what actually left the shelf over the last seven days.
           </p>
-          <LinkButton to="/catalog" variant="outline">
-            All products <IconArrowRight className="h-4 w-4" />
-          </LinkButton>
+          <div className="ml-auto flex gap-[7px] [@media(hover:none)]:hidden">
+            <button
+              type="button"
+              onClick={() => scroll(-1)}
+              aria-label="Scroll best sellers left"
+              className="grid h-9 w-9 place-items-center rounded-full border border-line bg-card text-ink transition-colors hover:bg-ink hover:text-paper-2 hover:border-ink"
+            >
+              <IconChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scroll(1)}
+              aria-label="Scroll best sellers right"
+              className="grid h-9 w-9 place-items-center rounded-full border border-line bg-card text-ink transition-colors hover:bg-ink hover:text-paper-2 hover:border-ink"
+            >
+              <IconChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </TitlePlate>
 
-      <div className={`mt-8 grid grid-cols-1 gap-[14px] lg:h-[470px] ${layout}`}>
-        {categories.slice(0, shown).map((c, i) => (
+      <div
+        ref={railRef}
+        className="mt-8 flex snap-x snap-mandatory gap-[14px] overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {bestSellers.map((p, i) => (
           <Reveal
-            key={c.id}
+            key={p.id}
             index={i}
-            className={total === 3 && i === 0 ? 'lg:row-span-2' : undefined}
+            className="flex h-full flex-[0_0_300px] shrink-0 snap-start max-sm:flex-[0_0_78vw]"
           >
-            <CategoryBentoTile category={c} />
+            <BestSellerCard product={p} rank={i + 1} />
           </Reveal>
         ))}
       </div>
@@ -407,6 +469,7 @@ export function Home() {
       )}
 
       <CategoryBento />
+      <BestSellersRail />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   fetchBanners,
+  fetchBestSellers,
   fetchBrandCategoryMap,
   fetchBrands,
   fetchCategories,
@@ -8,8 +9,9 @@ import {
   fetchProducts,
   fetchRelatedProducts,
   fetchProductBySlug,
+  isBrandsCapable,
 } from '../lib/api'
-import type { Banner, Brand, Category, Product } from '../lib/types'
+import type { Banner, Brand, Category, Product, SortKey } from '../lib/types'
 import type { BrandMenuEntry, ProductPage } from '../lib/api'
 
 interface AsyncState<T> {
@@ -60,6 +62,14 @@ export function useFeaturedProducts(limit = 2) {
   return useAsync<Product[]>(() => fetchFeaturedProducts(limit), [limit], [])
 }
 
+export function useBestSellers(limit = 6) {
+  return useAsync<Product[]>(() => fetchBestSellers(limit), [limit], [])
+}
+
+export function useBrandsCapable() {
+  return useAsync<boolean>(isBrandsCapable, [], false)
+}
+
 export interface ProductList {
   data: Product[]
   count: number
@@ -71,18 +81,24 @@ export interface ProductList {
 
 const emptyPage: ProductPage = { products: [], count: 0 }
 
-export function useProducts(categorySlug?: string, search?: string, pageSize = 12, brandSlug?: string): ProductList {
+export function useProducts(
+  categorySlug?: string,
+  search?: string,
+  pageSize = 12,
+  brandSlug?: string,
+  sort: SortKey = 'featured',
+): ProductList {
   const [page, setPage] = useState(1)
   const result = useAsync<ProductPage>(
-    () => fetchProducts({ categorySlug, search, page, pageSize, brandSlug }),
-    [categorySlug, search, page, pageSize, brandSlug],
+    () => fetchProducts({ categorySlug, search, page, pageSize, brandSlug, sort }),
+    [categorySlug, search, page, pageSize, brandSlug, sort],
     emptyPage,
   )
 
   // Reset pagination whenever the query itself changes.
   useEffect(() => {
     setPage(1)
-  }, [categorySlug, search, pageSize, brandSlug])
+  }, [categorySlug, search, pageSize, brandSlug, sort])
 
   const products = result.data.products
   const count = result.data.count
