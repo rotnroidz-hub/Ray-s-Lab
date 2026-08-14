@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Header } from './Header'
@@ -8,11 +8,96 @@ import { CheckoutModal } from '../checkout/CheckoutModal'
 import { FlyToCartProvider } from '../cart/FlyToCart'
 import { ToastProvider } from '../ui/Toast'
 
+const SCROLL_KEY_PREFIX = 'site-scroll:'
+
+function getSavedScroll(pathname: string): number | null {
+  const raw = sessionStorage.getItem(SCROLL_KEY_PREFIX + pathname)
+  if (raw === null) return null
+  const n = Number(raw)
+  return Number.isFinite(n) && n > 0 ? n : null
+}
+
+function clearSavedScrolls() {
+  const stale: string[] = []
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const key = sessionStorage.key(i)
+    if (key && key.startsWith(SCROLL_KEY_PREFIX)) stale.push(key)
+  }
+  stale.forEach((k) => sessionStorage.removeItem(k))
+}
+
+function instantTop() {
+  window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+}
+
+/**
+ * Restore a saved scroll position once the incoming page has rendered tall
+ * enough to hold it, so the restore is never clamped by a short skeleton
+ * frame. Instant (never smooth) and fails safe to the saved value.
+ */
+function restoreScroll(target: number) {
+  const deadline = performance.now() + 2000
+  const tryRestore = () => {
+    const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 0)
+    if (maxScroll >= target || performance.now() >= deadline) {
+      window.scrollTo({ top: target, behavior: 'instant' as ScrollBehavior })
+    } else {
+      requestAnimationFrame(tryRestore)
+    }
+  }
+  tryRestore()
+}
+
+/**
+ * Persist the window scroll position per pathname in sessionStorage on
+ * navigation away, and restore it (instantly, after content renders) when that
+ * pathname is shown again. Keyed by pathname — never by route location.key —
+ * so the header logo/Home link (a fresh navigation to a previously visited
+ * path) still restores, as do the back button and breadcrumb links. A first
+ * page load and any path not yet visited start at the top.
+ */
 function ScrollToTop() {
   const { pathname } = useLocation()
+  const pathRef = useRef(pathname)
+  const scrollByPath = useRef<Record<string, number>>({})
+  const ready = useRef(false)
+
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+    const onScroll = () => {
+      scrollByPath.current[pathRef.current] = window.scrollY
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useLayoutEffect(() => {
+    const from = pathRef.current
+    const to = pathname
+    pathRef.current = to
+
+    // Fresh page load: ignore anything saved by an earlier load in this tab
+    // and settle at the top, just like a brand-new visit.
+    if (!ready.current) {
+      ready.current = true
+      if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'
+      clearSavedScrolls()
+      instantTop()
+      return
+    }
+
+    if (from !== to) {
+      sessionStorage.setItem(
+        SCROLL_KEY_PREFIX + from,
+        String(Math.max(0, Math.round(scrollByPath.current[from] ?? window.scrollY))),
+      )
+    }
+
+    const saved = getSavedScroll(to)
+    if (saved === null) instantTop()
+    else restoreScroll(saved)
   }, [pathname])
+
   return null
 }
 
