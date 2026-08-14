@@ -44,6 +44,10 @@ export interface Banner {
   title: string
   subtitle: string
   link_url: string
+  eyebrow: string | null
+  cta_label: string | null
+  cta2_label: string | null
+  cta2_url: string | null
   sort_order: number
   is_active: boolean
   created_at?: string

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useBanners, useCategories, useProducts } from '../hooks/useData'
 import { useSeo } from '../lib/seo'
 import { responsiveImage } from '../lib/image'
@@ -10,140 +10,209 @@ import { CategoryTile } from '../components/catalog/CategoryTile'
 import { ProductGridSkeleton } from '../components/ui/Skeleton'
 import { Reveal } from '../components/ui/Reveal'
 import { IconArrowRight, IconChevronLeft, IconChevronRight } from '../components/ui/Icons'
+import type { Banner } from '../lib/types'
+
+function BannerButtons({ banner }: { banner: Banner }) {
+  const cta = banner.cta_label?.trim()
+  const cta2 = banner.cta2_label?.trim()
+  const ctaUrl = banner.link_url?.trim()
+  const cta2Url = banner.cta2_url?.trim()
+
+  const render = (label: string | undefined, url: string | undefined, variant: 'primary' | 'ghost-dark') => {
+    if (!label || !url) return null
+    if (/^https?:\/\//i.test(url)) {
+      return (
+        <a
+          href={url}
+          className="inline-flex items-center gap-2 rounded-full bg-blue px-6 py-3 text-sm font-medium text-white shadow-[0_6px_20px_rgba(0,144,230,0.28)] transition-all hover:bg-[#0a9ff5] active:translate-y-[1px]"
+        >
+          {label}
+        </a>
+      )
+    }
+    return <LinkButton to={url} variant={variant}>{label}</LinkButton>
+  }
+
+  return (
+    <div className="flex flex-wrap gap-3">
+      {render(cta, ctaUrl, 'primary')}
+      {render(cta2, cta2Url, 'ghost-dark')}
+    </div>
+  )
+}
 
 function HeroCarousel() {
   const { data: banners } = useBanners()
   const [index, setIndex] = useState(0)
-  const [dir, setDir] = useState(1)
-  const sectionRef = useRef<HTMLElement>(null)
-
-  // Subtle parallax: the banner image drifts up slightly slower than the page.
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start start', 'end start'],
-  })
-  const imageY = useTransform(scrollYProgress, [0, 1], [0, 48])
-  const scrimY = useTransform(scrollYProgress, [0, 1], [0, -24])
+  const [paused, setPaused] = useState(false)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState(0)
+  const reduce = useRef(false)
 
   useEffect(() => {
-    if (banners.length < 2) return
-    const t = window.setInterval(() => {
-      setDir(1)
-      setIndex((i) => (i + 1) % banners.length)
-    }, 6000)
+    reduce.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  }, [])
+
+  useLayoutEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    const measure = () => setWidth(el.offsetWidth)
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  // Auto-advance every 6500ms. Pauses on hover/focus, stops under reduced motion.
+  useEffect(() => {
+    if (banners.length < 2 || paused || reduce.current) return
+    const t = window.setInterval(() => setIndex((i) => (i + 1) % banners.length), 6500)
     return () => window.clearInterval(t)
-  }, [banners.length])
+  }, [banners.length, paused])
 
   if (banners.length === 0) {
     return (
-      <section
-        ref={sectionRef}
-        className="media-frame relative aspect-[4/3] max-h-[70vh] w-full bg-ink sm:aspect-[21/9]"
-      >
-        <div className="absolute inset-0 grid place-items-center p-8 text-center">
-          <div>
-            <p className="eyebrow text-paper/70">The catalog</p>
-            <h1 className="mt-2 font-display text-3xl font-semibold text-paper sm:text-5xl">
-              Add a hero banner in the admin
-            </h1>
-          </div>
+      <section className="relative grid min-h-[440px] place-items-center overflow-hidden rounded-[18px] bg-ink p-8 text-center lg:min-h-[520px]">
+        <div className="tex-dark" aria-hidden style={{ opacity: 0.9 }} />
+        <div className="relative z-[2]">
+          <p className="eyebrow text-paper/70">The catalog</p>
+          <h1 className="mt-2 font-display text-3xl font-semibold text-paper sm:text-5xl">
+            Add a hero banner in the admin
+          </h1>
+          <Link
+            to="/admin/banners"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-blue px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#0a9ff5] active:translate-y-[1px]"
+          >
+            Manage banners <IconArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
     )
   }
 
   const navigate = (next: number) => {
-    setDir(next >= index ? 1 : -1)
-    setIndex((((next % banners.length) + banners.length) % banners.length))
+    setIndex(((next % banners.length) + banners.length) % banners.length)
   }
 
   return (
     <section
-      ref={sectionRef}
-      className="group relative overflow-hidden rounded-3xl bg-ink"
       aria-roledescription="carousel"
+      aria-label="Promotions"
+      className="relative overflow-hidden rounded-[18px] bg-ink"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
     >
-      <div className="relative aspect-[4/3] max-h-[70vh] w-full sm:aspect-[21/9]">
-        <AnimatePresence initial={false} custom={dir} mode="popLayout">
-          <motion.div
-            key={banners[index].id}
-            custom={dir}
-            initial={{ opacity: 0, x: dir * 60 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: dir * -60 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0"
-          >
-            {/* Slight overscan so the parallax drift never reveals an edge. */}
-            <motion.img
-              src={responsiveImage(banners[index].image_url, 1600)}
-              alt=""
-              loading="eager"
-              style={{ y: imageY }}
-              className="h-[112%] w-full -translate-y-[6%] scale-[1.02] object-cover"
-            />
-            <motion.div
-              style={{ y: scrimY }}
-              className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/30 to-transparent"
-            />
-            <div className="absolute inset-x-0 bottom-0 p-6 sm:p-10">
-              <motion.p
-                className="eyebrow text-paper/80"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                {banners[index].subtitle}
-              </motion.p>
-              <h2 className="mt-2 font-display text-3xl font-semibold text-paper sm:text-5xl">
-                {banners[index].title}
-              </h2>
-              {(banners[index].link_url || '').trim() ? (
-                <Link
-                  to={banners[index].link_url}
-                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-paper px-6 py-3 text-sm font-semibold text-ink transition-transform hover:scale-[1.03] active:scale-95"
-                >
-                  Shop now <IconArrowRight className="h-4 w-4" />
-                </Link>
-              ) : null}
+      <motion.div
+        ref={trackRef}
+        className="flex min-h-[440px] lg:min-h-[520px]"
+        animate={{ x: -index * width }}
+        transition={{ type: 'tween', duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.12}
+        dragMomentum={false}
+        onDragEnd={(_, info) => {
+          if (info.offset.x < -50 || info.velocity.x < -300) navigate(index + 1)
+          else if (info.offset.x > 50 || info.velocity.x > 300) navigate(index - 1)
+        }}
+        style={{ touchAction: 'pan-y' }}
+      >
+        {banners.map((b, i) => (
+          <div key={b.id} className="grid w-full shrink-0 grid-cols-1 lg:grid-cols-[1.05fr_0.95fr]">
+            {/* Copy panel – no photo, so the hexagon texture belongs here */}
+            <div className="relative flex min-h-[440px] items-center overflow-hidden bg-ink px-[clamp(30px,4.4vw,62px)] py-16 lg:min-h-[520px]">
+              <div className="tex-dark" aria-hidden style={{ opacity: 0.9 }} />
+              <div className="tex-glow" aria-hidden style={{ opacity: 0.32 }} />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -top-[140px] right-[18%] h-[520px] w-[520px] rounded-full"
+                style={{ background: 'radial-gradient(circle, rgba(0,144,230,0.42), transparent 68%)' }}
+              />
+              <div className="relative z-[2]">
+                {b.eyebrow?.trim() ? (
+                  <p className="mb-[18px] font-mono text-[11.5px] uppercase tracking-[0.16em] text-blue-lite">
+                    {b.eyebrow}
+                  </p>
+                ) : null}
+                <h2 className="font-display text-[clamp(32px,4.3vw,56px)] leading-[1.05] text-paper-2 max-w-[15ch]">
+                  {b.title}
+                </h2>
+                {b.subtitle?.trim() ? (
+                  <p className="mt-4 max-w-[42ch] text-[15.5px] leading-[1.6] text-paper-2/[0.66]">
+                    {b.subtitle}
+                  </p>
+                ) : null}
+                <div className="mt-[28px]">
+                  <BannerButtons banner={b} />
+                </div>
+              </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
 
-      {/* Swipe/directional controls */}
+            {/* Photo – absolutely no hexagon texture over this column */}
+            <div className="relative hidden overflow-hidden lg:block">
+              <img
+                src={responsiveImage(b.image_url, 1600)}
+                alt=""
+                loading={i === 0 ? 'eager' : 'lazy'}
+                fetchPriority={i === 0 ? 'high' : undefined}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0"
+                style={{
+                  background:
+                    'linear-gradient(90deg, #0E1013 0%, rgba(14,16,19,0.35) 45%, transparent 100%)',
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Controls, bottom-left, aligned to the copy padding */}
       {banners.length > 1 && (
-        <>
-          <button
-            type="button"
-            aria-label="Previous slide"
-            onClick={() => navigate(index - 1)}
-            className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-paper/80 text-ink opacity-0 backdrop-blur transition-opacity duration-300 hover:bg-paper group-hover:opacity-100 max-sm:opacity-100"
-          >
-            <IconChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            aria-label="Next slide"
-            onClick={() => navigate(index + 1)}
-            className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-paper/80 text-ink opacity-0 backdrop-blur transition-opacity duration-300 hover:bg-paper group-hover:opacity-100 max-sm:opacity-100"
-          >
-            <IconChevronRight className="h-5 w-5" />
-          </button>
-          <div className="absolute bottom-4 right-6 flex gap-2">
+        <div className="absolute bottom-[26px] left-[clamp(30px,4.4vw,62px)] z-[5] flex items-center gap-[14px]">
+          <div className="flex items-center gap-1">
             {banners.map((b, i) => (
               <button
                 key={b.id}
                 type="button"
-                aria-label={`Go to slide ${i + 1}`}
-                aria-current={i === index}
                 onClick={() => navigate(i)}
-                className="h-1.5 rounded-full bg-paper/40 transition-all duration-300 aria-[current=true]:w-6 aria-[current=true]:bg-paper"
-                style={{ width: i === index ? 24 : 6 }}
-              />
+                aria-current={i === index}
+                aria-label={`Go to slide ${i + 1}`}
+                className="grid h-11 w-11 place-items-center"
+              >
+                <span
+                  className={`block h-2 rounded-full transition-all duration-300 ${
+                    i === index ? 'w-[26px] bg-blue' : 'w-2 bg-paper-2/[0.32]'
+                  }`}
+                />
+              </button>
             ))}
           </div>
-        </>
+
+          <div className="hidden items-center gap-[7px] lg:flex">
+            <button
+              type="button"
+              aria-label="Previous slide"
+              onClick={() => navigate(index - 1)}
+              className="grid h-9 w-9 place-items-center rounded-full border border-white/26 bg-white/[0.07] text-paper-2 transition-colors hover:bg-white/[0.18]"
+            >
+              <IconChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next slide"
+              onClick={() => navigate(index + 1)}
+              className="grid h-9 w-9 place-items-center rounded-full border border-white/26 bg-white/[0.07] text-paper-2 transition-colors hover:bg-white/[0.18]"
+            >
+              <IconChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
       )}
     </section>
   )
