@@ -53,8 +53,8 @@ export function CheckoutModal() {
     }
   }, [])
 
-  // Cart emptied underneath us (last item removed) while the modal is idle —
-  // close via effect, never during render.
+  // Cart emptied underneath us (last item removed) while the modal is idle.
+  // Close via effect, never during render.
   useEffect(() => {
     if (isCheckoutOpen && items.length === 0 && stage === 'idle') {
       closeCheckout()

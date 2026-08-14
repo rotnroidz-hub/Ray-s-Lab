@@ -11,8 +11,33 @@ import { StockBadge } from '../components/ui/StockBadge'
 import { QuantityStepper } from '../components/ui/QuantityStepper'
 import { Button } from '../components/ui/Button'
 import { ProductCard } from '../components/catalog/ProductCard'
+import { TitlePlate } from '../components/ui/TitlePlate'
 import { Skeleton } from '../components/ui/Skeleton'
 import { IconChevronLeft, IconImage, IconWhatsApp } from '../components/ui/Icons'
+
+function ProductBlock({
+  heading,
+  note,
+  body,
+}: {
+  heading: string[]
+  note?: string
+  body: string | null
+}) {
+  if (!body?.trim()) return null
+  return (
+    <TitlePlate words={heading}>
+      {note ? (
+        <em className="mb-3 block font-mono text-[11px] normal-case tracking-[0.02em] text-blue-deep not-italic">
+          {note}
+        </em>
+      ) : null}
+      <p className="max-w-[48ch] whitespace-pre-line text-[14.5px] leading-[1.68] text-ink-soft">
+        {body}
+      </p>
+    </TitlePlate>
+  )
+}
 
 export function Product() {
   const { slug = '' } = useParams<{ slug: string }>()
@@ -86,34 +111,10 @@ export function Product() {
 
   return (
     <div className="container-site pb-20">
-      <nav aria-label="Breadcrumb" className="pt-6 text-xs text-ink-faint">
-        <ol className="flex items-center gap-1.5">
-          <li>
-            <Link to="/" className="hover:text-ink">Home</Link>
-          </li>
-          <li aria-hidden>·</li>
-          <li>
-            <Link to="/catalog" className="hover:text-ink">Catalog</Link>
-          </li>
-          {product.categories && (
-            <>
-              <li aria-hidden>·</li>
-              <li>
-                <Link to={`/category/${product.categories.slug}`} className="hover:text-ink">
-                  {product.categories.name}
-                </Link>
-              </li>
-            </>
-          )}
-          <li aria-hidden>·</li>
-          <li className="text-ink" aria-current="page">{product.name}</li>
-        </ol>
-      </nav>
-
-      <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <div className="mt-6 grid gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
         {/* Gallery */}
-        <div>
-          <div className="media-frame relative aspect-[4/5] w-full">
+        <div className="bg-paper p-[clamp(20px,3vw,40px)]">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-card bg-paper-2">
             <AnimatePresence mode="wait">
               <motion.img
                 key={activeImage}
@@ -133,7 +134,7 @@ export function Product() {
           </div>
 
           {images.length > 1 && (
-            <div className="mt-3 flex gap-3 overflow-x-auto pb-1">
+            <div className="mt-3 grid grid-cols-3 gap-3">
               {images.map((src, i) => (
                 <button
                   key={i}
@@ -141,9 +142,9 @@ export function Product() {
                   onClick={() => setActiveImage(i)}
                   aria-label={`View image ${i + 1}`}
                   className={
-                    'h-20 w-16 shrink-0 overflow-hidden rounded-xl border-2 transition-all ' +
+                    'aspect-square overflow-hidden rounded-[10px] border-2 transition-all ' +
                     (i === activeImage
-                      ? 'border-ink shadow-card'
+                      ? 'border-blue shadow-card'
                       : 'border-transparent opacity-60 hover:opacity-100')
                   }
                 >
@@ -159,48 +160,43 @@ export function Product() {
         </div>
 
         {/* Info */}
-        <div className="flex flex-col">
-          {product.categories && (
-            <Link
-              to={`/category/${product.categories.slug}`}
-              className="eyebrow uppercase transition-colors hover:text-blue-deep"
-            >
-              {product.categories.name}
-            </Link>
-          )}
-          {product.brands && (
-            <Link
-              to={`/brand/${product.brands.slug}`}
-              className="eyebrow uppercase transition-colors hover:text-blue-deep"
-            >
-              {product.brands.name}
-            </Link>
-          )}
-          <h1 className="mt-2 font-display text-3xl font-semibold text-ink sm:text-4xl">
+        <div className="p-[clamp(24px,3vw,46px)]">
+          <nav
+            aria-label="Breadcrumb"
+            className="font-mono text-[11.5px] uppercase tracking-[0.1em] text-ink-faint"
+          >
+            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <li>
+                <Link to="/catalog" className="transition-colors hover:text-ink">Catalog</Link>
+              </li>
+              {product.categories && (
+                <>
+                  <li aria-hidden>/</li>
+                  <li>
+                    <Link to={`/category/${product.categories.slug}`} className="text-blue-deep transition-colors hover:text-ink">
+                      {product.categories.name}
+                    </Link>
+                  </li>
+                </>
+              )}
+            </ol>
+          </nav>
+
+          <h1 className="mt-3 font-display text-[clamp(26px,2.9vw,38px)] leading-[1.05] text-ink">
             {product.name}
           </h1>
-          <div className="mt-4 flex items-center gap-3">
-            <span className="font-display text-2xl text-ink">{formatPrice(product.price)}</span>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span className="font-mono text-[28px] font-medium text-ink">
+              {formatPrice(product.price)}
+            </span>
             <StockBadge status={product.stock_status} />
           </div>
 
           {product.description && (
-            <p className="mt-6 whitespace-pre-line text-[15px] leading-relaxed text-ink-soft">
+            <p className="mt-5 max-w-[48ch] whitespace-pre-line text-[15px] leading-[1.68] text-ink-soft">
               {product.description}
             </p>
-          )}
-
-          {product.tags.length > 0 && (
-            <div className="mt-6 flex flex-wrap gap-2">
-              {product.tags.map((t) => (
-                <span
-                  key={t}
-                  className="rounded-full bg-paper-2 px-3 py-1 text-xs font-medium text-ink-soft"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
           )}
 
           <div className="mt-8 flex flex-wrap items-center gap-4 border-t border-ink/8 pt-6">
@@ -224,18 +220,28 @@ export function Product() {
             </Button>
           )}
 
-          <p className="mt-8 text-xs leading-relaxed text-ink-faint">
-            Checkout happens over WhatsApp — add items to your basket, send your order, and we'll
+          <p className="mt-8 max-w-[48ch] text-xs leading-relaxed text-ink-faint">
+            Checkout happens over WhatsApp: add items to your basket, send your order, and we will
             confirm price, availability and delivery in chat. No online payment.
           </p>
+
+          <div className="mt-8 space-y-6">
+            <ProductBlock heading={['Benefits']} body={product.benefits} />
+            <ProductBlock
+              heading={['Dos', 'and', 'cycle']}
+              note="(for reference only)"
+              body={product.dosage_cycle}
+            />
+            <ProductBlock heading={['Note']} body={product.product_note} />
+          </div>
         </div>
       </div>
 
       {/* Related products */}
       {related.data.length > 0 && (
         <section className="mt-20">
-          <h2 className="font-display text-2xl font-semibold text-ink">You might also like</h2>
-          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
+          <TitlePlate words={['You', 'might', 'also', 'like']} />
+          <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
             {related.data.slice(0, 4).map((p, i) => (
               <ProductCard key={p.id} product={p} index={i} />
             ))}

@@ -33,6 +33,11 @@ export interface Product {
   is_active: boolean
   images: string[]
   tags: string[]
+  benefits: string | null
+  dosage_cycle: string | null
+  product_note: string | null
+  is_featured: boolean
+  featured_order: number
   created_at?: string
   updated_at?: string
   categories?: Pick<Category, 'id' | 'name' | 'slug'> | null

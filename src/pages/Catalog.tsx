@@ -72,7 +72,7 @@ export function Catalog() {
 
   useSeo({
     title: 'All Products',
-    description: 'Browse the full catalog — every product, filterable by category and brand.',
+    description: 'Browse the full catalog. Every product, filterable by category and brand.',
     canonicalPath: '/catalog',
   })
 
