@@ -151,6 +151,21 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
   return hydrateProduct(data as unknown as ProductRow)
 }
 
+/** Handpicked products: active and featured, ordered by featured_order then created_at. */
+export async function fetchFeaturedProducts(limit = 2): Promise<Product[]> {
+  await ensureBrandsCapability()
+  const { data, error } = await supabase
+    .from('products')
+    .select(productSelect())
+    .eq('is_active', true)
+    .eq('is_featured', true)
+    .order('featured_order', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) throw new Error(error.message)
+  return ((data as unknown as ProductRow[]) ?? []).map(hydrateProduct)
+}
+
 export async function fetchRelatedProducts(product: Product, limit = 4): Promise<Product[]> {
   if (!product.category_id) return []
   await ensureBrandsCapability()

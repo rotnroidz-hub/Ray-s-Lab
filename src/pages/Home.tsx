@@ -1,16 +1,15 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useBanners, useCategories, useProducts } from '../hooks/useData'
+import { useBanners, useCategories, useFeaturedProducts, useProducts } from '../hooks/useData'
 import { useSeo } from '../lib/seo'
 import { responsiveImage } from '../lib/image'
+import { formatPrice } from '../lib/utils'
 import { LinkButton } from '../components/ui/Button'
-import { ProductCard } from '../components/catalog/ProductCard'
-import { CategoryTile } from '../components/catalog/CategoryTile'
-import { ProductGridSkeleton } from '../components/ui/Skeleton'
+import { TitlePlate } from '../components/ui/TitlePlate'
 import { Reveal } from '../components/ui/Reveal'
 import { IconArrowRight, IconChevronLeft, IconChevronRight } from '../components/ui/Icons'
-import type { Banner } from '../lib/types'
+import type { Banner, Category, Product } from '../lib/types'
 
 function BannerButtons({ banner }: { banner: Banner }) {
   const cta = banner.cta_label?.trim()
@@ -218,10 +217,156 @@ function HeroCarousel() {
   )
 }
 
+/** Handpicked editorial card. Full card links to the product. */
+function FeaturedCard({ product }: { product: Product }) {
+  const brand = product.brands?.name
+  const category = product.categories?.name
+  const line = [brand, category].filter(Boolean).join(' · ')
+  const description = product.description.slice(0, 120)
+  const truncated = product.description.length > 120
+
+  return (
+    <Link
+      to={`/product/${product.slug}`}
+      className="group relative flex min-h-[360px] flex-col justify-end overflow-hidden rounded-tile p-[26px_24px] text-paper-2 lg:min-h-[440px]"
+    >
+      {product.images[0] ? (
+        <img
+          src={responsiveImage(product.images[0], 1100)}
+          alt={product.name}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+        />
+      ) : null}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(14,16,19,0.28) 0%, rgba(14,16,19,0.62) 48%, rgba(14,16,19,0.96) 100%)',
+        }}
+      />
+      <span className="absolute right-[18px] top-[18px] z-[2] rounded-full bg-white/[0.14] px-3 py-2 font-mono text-[13px] text-paper-2 backdrop-blur-[6px]">
+        {formatPrice(product.price)}
+      </span>
+
+      <div className="relative z-[2]">
+        {line ? (
+          <p className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-paper-2/[0.72]">{line}</p>
+        ) : null}
+        <h3 className="mt-2 font-display text-[clamp(23px,2.4vw,30px)] leading-[1.05] text-paper-2">
+          {product.name}
+        </h3>
+        {product.description ? (
+          <p className="mt-2 max-w-[36ch] text-[14.5px] leading-[1.55] text-paper-2/[0.72]">
+            {description}
+            {truncated ? '...' : ''}
+          </p>
+        ) : null}
+        <span className="mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-blue px-6 py-3 text-sm font-medium text-white shadow-[0_6px_20px_rgba(0,144,230,0.28)] transition-colors hover:bg-[#0a9ff5]">
+          View product <IconArrowRight className="h-4 w-4" />
+        </span>
+      </div>
+    </Link>
+  )
+}
+
+/** Category bento tile. Flat ink fallback when the category has no image. */
+function CategoryBentoTile({ category }: { category: Category }) {
+  const { count } = useProducts(category.slug, undefined, 1)
+
+  return (
+    <Link
+      to={`/category/${category.slug}`}
+      className="group relative flex min-h-[190px] items-end overflow-hidden rounded-tile p-6 text-paper-2 lg:h-full"
+    >
+      {category.image_url ? (
+        <img
+          src={responsiveImage(category.image_url, 900)}
+          alt={category.name}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+        />
+      ) : (
+        <>
+          <div aria-hidden className="tex-dark absolute inset-0" style={{ opacity: 0.4 }} />
+          <div aria-hidden className="tex-glow absolute inset-0" style={{ opacity: 0.14 }} />
+        </>
+      )}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(14,16,19,0.18) 0%, rgba(14,16,19,0.5) 45%, rgba(14,16,19,0.9) 100%)',
+        }}
+      />
+
+      <div className="relative z-[2]">
+        <h3 className="font-display text-[24px] text-paper-2">{category.name}</h3>
+        <p className="mt-1 font-mono text-[12px] text-blue-lite">
+          {count} item{count === 1 ? '' : 's'}
+        </p>
+      </div>
+    </Link>
+  )
+}
+
+/** Category bento grid. Matches the cell count to the category count, never an empty cell. */
+function CategoryBento() {
+  const { data: categories } = useCategories()
+  const total = categories.length
+  if (total === 0) return null
+
+  const layout =
+    total === 1
+      ? 'lg:grid-rows-1'
+      : total === 2
+        ? 'lg:grid-cols-2 lg:grid-rows-1'
+        : total === 3
+          ? 'lg:grid-cols-[1.4fr_1fr] lg:grid-rows-2'
+          : 'lg:grid-cols-2 lg:grid-rows-2'
+  const shown = total === 1 ? 1 : total <= 4 ? total : 4
+
+  return (
+    <section className="pb-14">
+      <TitlePlate
+        kicker="Browse the store"
+        words={['Shop', 'by', 'category.']}
+        count={total}
+        countLabel="categories"
+      >
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <p className="max-w-[52ch] text-[15.5px] text-ink-soft">
+            Everything we stock, organised so it is easy to find your thing.
+          </p>
+          <LinkButton to="/catalog" variant="outline">
+            All products <IconArrowRight className="h-4 w-4" />
+          </LinkButton>
+        </div>
+      </TitlePlate>
+
+      <div className={`mt-8 grid grid-cols-1 gap-[14px] lg:h-[470px] ${layout}`}>
+        {categories.slice(0, shown).map((c, i) => (
+          <Reveal
+            key={c.id}
+            index={i}
+            className={total === 3 && i === 0 ? 'lg:row-span-2' : undefined}
+          >
+            <CategoryBentoTile category={c} />
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export function Home() {
   useSeo({ title: undefined, canonicalPath: '/' })
-  const { data: categories } = useCategories()
-  const products = useProducts(undefined, undefined, 8)
+  const { data: featured } = useFeaturedProducts(2)
+  const showHandpicked = featured.length > 0
 
   return (
     <div className="container-site">
@@ -229,49 +374,39 @@ export function Home() {
         <HeroCarousel />
       </section>
 
-      <section className="section-band -mx-4 rounded-2xl px-4 py-10 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 sm:py-14">
-        <Reveal>
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="eyebrow">Featured</p>
-              <h2 className="mt-1 font-display text-2xl sm:text-3xl">New arrivals</h2>
+      {showHandpicked && (
+        <section className="pb-14">
+          <TitlePlate
+            kicker="Handpicked this week"
+            words={['Chosen,', 'not', 'churned.']}
+            count={featured.length}
+            countLabel="picks"
+          >
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <p className="max-w-[52ch] text-[15.5px] text-ink-soft">
+                The two pieces our customers message about most, week after week.
+              </p>
+              <LinkButton to="/catalog" variant="outline">
+                See all products
+              </LinkButton>
             </div>
-            <LinkButton to="/catalog" variant="ghost" className="text-sm">
-              View all <IconArrowRight className="h-4 w-4" />
-            </LinkButton>
-          </div>
-        </Reveal>
-        <div className="mt-6">
-          {products.loading ? (
-            <ProductGridSkeleton count={4} />
-          ) : (
-            <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
-              {products.data.slice(0, 4).map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+          </TitlePlate>
 
-      <section className="py-16 sm:py-20">
-        <Reveal>
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="eyebrow">Browse</p>
-              <h2 className="mt-1 font-display text-2xl sm:text-3xl">Shop by category</h2>
-            </div>
-            <LinkButton to="/catalog" variant="ghost" className="text-sm">
-              All products <IconArrowRight className="h-4 w-4" />
-            </LinkButton>
+          <div
+            className={`mt-8 grid grid-cols-1 gap-[14px] ${
+              featured.length === 1 ? 'lg:grid-cols-1' : 'lg:grid-cols-[1.35fr_1fr]'
+            }`}
+          >
+            {featured.map((p, i) => (
+              <Reveal key={p.id} index={i}>
+                <FeaturedCard product={p} />
+              </Reveal>
+            ))}
           </div>
-        </Reveal>
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {categories.map((c, i) => (
-            <CategoryTile key={c.id} category={c} index={i} />
-          ))}
-        </div>
-      </section>
+        </section>
+      )}
+
+      <CategoryBento />
     </div>
   )
 }

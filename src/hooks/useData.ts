@@ -4,6 +4,7 @@ import {
   fetchBrandCategoryMap,
   fetchBrands,
   fetchCategories,
+  fetchFeaturedProducts,
   fetchProducts,
   fetchRelatedProducts,
   fetchProductBySlug,
@@ -53,6 +54,10 @@ export function useBrands() {
 
 export function useBrandMenu() {
   return useAsync<BrandMenuEntry[]>(fetchBrandCategoryMap, [], [])
+}
+
+export function useFeaturedProducts(limit = 2) {
+  return useAsync<Product[]>(() => fetchFeaturedProducts(limit), [limit], [])
 }
 
 export interface ProductList {
