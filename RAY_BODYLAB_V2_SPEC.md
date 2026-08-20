@@ -6,6 +6,20 @@
 
 ---
 
+## 0A. OWNER OVERRIDES - THESE BEAT ANYTHING BELOW
+
+Two decisions were changed by the owner after this spec was written. Where this
+section and a later section disagree, this section wins.
+
+1. **Section 13.1 says the "Order this on WhatsApp" button is removed. It is not.**
+   The button and its reassurance microcopy were restored on 14 August and sit below
+   the action row. Do not remove them.
+2. **Section 13 says StockBadge sits top-left over the main product image. It does
+   not.** Commit 10b moved it into the info column, under the price, where it
+   appears once. Do not put it back over the photo.
+
+---
+
 ## 0. RULES FOR THE AGENT - READ BEFORE WRITING ANY CODE
 
 1. **Do not invent values.** Every hex code, class name, column name, file path and
