@@ -306,7 +306,7 @@ function FeaturedCard({ product }: { product: Product }) {
             type="button"
             onClick={handleBuyNow}
             disabled={outOfStock}
-            className="inline-flex h-10 items-center justify-center rounded-full bg-paper-2 px-4 text-[13px] font-medium text-ink transition-colors hover:bg-white disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-paper-2 px-4 text-[13px] font-medium text-ink transition-colors hover:bg-white disabled:pointer-events-none disabled:opacity-50"
           >
             Buy now
           </button>
@@ -315,14 +315,14 @@ function FeaturedCard({ product }: { product: Product }) {
             onClick={handleAdd}
             disabled={outOfStock}
             aria-label={outOfStock ? `${product.name} is out of stock` : `Add ${product.name} to cart`}
-            className="grid h-10 w-10 place-items-center rounded-full border border-paper-2/40 bg-paper-2/10 text-paper-2 transition-colors hover:border-paper-2 disabled:pointer-events-none disabled:opacity-50"
+            className="grid h-11 w-11 place-items-center rounded-full border border-paper-2/40 bg-paper-2/10 text-paper-2 transition-colors hover:border-paper-2 disabled:pointer-events-none disabled:opacity-50"
           >
             <IconCart className="h-5 w-5" />
           </button>
           <Link
             to={`/product/${product.slug}`}
             onClick={(e) => e.stopPropagation()}
-            className="ml-1 inline-flex h-10 items-center gap-2 rounded-full bg-blue px-6 py-3 text-sm font-medium text-white shadow-[0_6px_20px_rgba(0,144,230,0.28)] transition-colors hover:bg-[#0a9ff5]"
+            className="ml-1 inline-flex h-11 items-center gap-2 rounded-full bg-blue px-6 text-sm font-medium text-white shadow-[0_6px_20px_rgba(0,144,230,0.28)] transition-colors hover:bg-[#0a9ff5]"
           >
             View product <IconArrowRight className="h-4 w-4" />
           </Link>
@@ -406,7 +406,7 @@ function BestSellerCard({ product, rank }: { product: Product; rank: number }) {
             type="button"
             onClick={handleBuyNow}
             disabled={outOfStock}
-            className="inline-flex h-10 items-center justify-center rounded-full bg-ink px-4 text-[13px] font-medium text-paper-2 transition-colors hover:bg-ink-2 disabled:pointer-events-none disabled:opacity-40"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-ink px-4 text-[13px] font-medium text-paper-2 transition-colors hover:bg-ink-2 disabled:pointer-events-none disabled:opacity-40"
           >
             Buy now
           </button>
@@ -415,7 +415,7 @@ function BestSellerCard({ product, rank }: { product: Product; rank: number }) {
             onClick={handleAdd}
             disabled={outOfStock}
             aria-label={`Add ${product.name} to cart`}
-            className="grid h-10 w-10 place-items-center rounded-full border border-line bg-card text-ink transition-colors hover:border-ink disabled:pointer-events-none disabled:opacity-40"
+            className="grid h-11 w-11 place-items-center rounded-full border border-line bg-card text-ink transition-colors hover:border-ink disabled:pointer-events-none disabled:opacity-40"
           >
             <IconCart className="h-5 w-5" />
           </button>

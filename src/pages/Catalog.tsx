@@ -19,10 +19,10 @@ const SORT_LABELS: Record<SortKey, string> = {
 const CYCLE: SortKey[] = ['featured', 'price_asc', 'price_desc']
 
 const chipStrip =
-  'flex min-w-0 flex-1 items-center gap-[8px] overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch] snap-x snap-proximity ' +
-  '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden ' +
-  '[mask-image:linear-gradient(90deg,#000_calc(100%_-_24px),transparent)] ' +
-  'lg:flex-wrap lg:overflow-visible lg:snap-none lg:[mask-image:none]'
+  'flex min-w-0 flex-1 flex-wrap items-center gap-[8px] ' +
+  'max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:pb-1 max-sm:[-webkit-overflow-scrolling:touch] max-sm:snap-x max-sm:snap-proximity ' +
+  'max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden ' +
+  'max-sm:[mask-image:linear-gradient(90deg,#000_calc(100%_-_24px),transparent)]'
 
 function chipClass(active: boolean) {
   return cn(

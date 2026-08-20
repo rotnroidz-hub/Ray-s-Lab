@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import { useCart } from '../../hooks/useCart'
-import { formatPrice } from '../../lib/utils'
+import { cn, formatPrice } from '../../lib/utils'
 import { responsiveImage } from '../../lib/image'
 import { QuantityStepper } from '../ui/QuantityStepper'
 import { LinkButton, Button } from '../ui/Button'
@@ -27,6 +27,18 @@ function EmptyCart() {
 
 export function CartDrawer() {
   const { isOpen, closeCart, items, setQty, removeItem, subtotal, totalQty, openCheckout } = useCart()
+  const dragControls = useDragControls()
+  // The drawer is a bottom sheet below 640px and the right-hand drawer at 640px
+  // and up. The slide direction is a framer-motion variant choice driven by a
+  // matchMedia listener, not Tailwind responsive classes, so a reduced-motion /
+  // non-CSS-animation path still slides the sheet up instead of in from the right.
+  const [isSheet, setIsSheet] = useState(() => window.matchMedia('(max-width: 639px)').matches)
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 639px)')
+    const onChange = (e: MediaQueryListEvent) => setIsSheet(e.matches)
+    mql.addEventListener('change', onChange)
+    return () => mql.removeEventListener('change', onChange)
+  }, [])
 
   // Lock body scroll while the drawer is open.
   useEffect(() => {
@@ -35,6 +47,10 @@ export function CartDrawer() {
       document.body.style.overflow = ''
     }
   }, [isOpen])
+
+  const sheet = isSheet
+    ? { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } }
+    : { initial: { x: '100%' }, animate: { x: 0 }, exit: { x: '100%' } }
 
   return (
     <AnimatePresence>
@@ -55,12 +71,34 @@ export function CartDrawer() {
             role="dialog"
             aria-modal="true"
             aria-label="Shopping cart"
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
+            initial={sheet.initial}
+            animate={sheet.animate}
+            exit={sheet.exit}
             transition={{ type: 'spring', stiffness: 320, damping: 34 }}
-            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-paper shadow-lift"
+            drag={isSheet ? 'y' : false}
+            dragListener={false}
+            dragControls={dragControls}
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.6 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 100 || info.velocity.y > 600) closeCart()
+            }}
+            className={cn(
+              'fixed z-50 flex flex-col bg-paper shadow-lift',
+              isSheet
+                ? 'inset-x-0 bottom-0 max-h-[88dvh] w-full rounded-t-[18px] pb-[env(safe-area-inset-bottom)]'
+                : 'inset-y-0 right-0 w-full max-w-md',
+            )}
           >
+            {isSheet && (
+              <div
+                className="flex h-11 shrink-0 cursor-grab touch-none items-center justify-center"
+                onPointerDown={(e) => dragControls.start(e.nativeEvent)}
+              >
+                <span className="h-1 w-9 rounded-full bg-ink/20" />
+              </div>
+            )}
+
             <div className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
               <h2 className="font-display text-lg font-semibold text-ink">
                 Your basket <span className="text-sm font-normal text-ink-faint">({totalQty})</span>
@@ -68,7 +106,7 @@ export function CartDrawer() {
               <button
                 type="button"
                 onClick={closeCart}
-                className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-ink/5"
+                className="grid h-11 w-11 place-items-center rounded-full text-ink transition-colors hover:bg-ink/5"
                 aria-label="Close cart"
               >
                 <IconClose className="h-5 w-5" />
@@ -114,7 +152,7 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => removeItem(item.product_id)}
-                              className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-ink-faint transition-colors hover:bg-stock-no/10 hover:text-stock-no"
+                              className="grid h-11 w-11 shrink-0 place-items-center rounded-md text-ink-faint transition-colors hover:bg-stock-no/10 hover:text-stock-no"
                               aria-label={`Remove ${item.name}`}
                             >
                               <IconTrash className="h-4 w-4" />
@@ -144,6 +182,16 @@ export function CartDrawer() {
                       {formatPrice(subtotal)}
                     </span>
                   </div>
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-sm font-medium text-ink-soft">Delivery</span>
+                    <span className="text-sm font-medium text-ink-faint">Calculated at checkout</span>
+                  </div>
+                  <div className="flex items-center justify-between border-t border-ink/10 py-3">
+                    <span className="text-base font-semibold text-ink">Total</span>
+                    <span className="font-display text-xl font-semibold text-ink">
+                      {formatPrice(subtotal)}
+                    </span>
+                  </div>
                   <Button
                     variant="whatsapp"
                     size="lg"
@@ -156,7 +204,7 @@ export function CartDrawer() {
                     Checkout via WhatsApp <IconArrowRight className="h-4 w-4" />
                   </Button>
                   <p className="pt-3 text-center text-xs text-ink-faint">
-                    You'll review your order before sending — no payment is taken here.
+                    You'll review your order before sending. No payment is taken here.
                   </p>
                 </div>
               </>

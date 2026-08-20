@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useProduct, useRelatedProducts } from '../hooks/useData'
@@ -74,6 +74,22 @@ export function Product() {
   const { showToast } = useToast()
   const [qty, setQty] = useState(1)
   const [activeImage, setActiveImage] = useState(0)
+  const galleryRef = useRef<HTMLDivElement>(null)
+  const [showStickyBar, setShowStickyBar] = useState(false)
+
+  // The sticky action bar (below lg) appears once the main gallery is out of
+  // view. The observer is kept observing (never unobserve) so the bar tracks
+  // scrolling in both directions.
+  useEffect(() => {
+    const el = galleryRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting),
+      { threshold: 0 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [product?.id])
 
   useSeo({
     title: product?.name,
@@ -154,11 +170,11 @@ export function Product() {
   }
 
   return (
-    <div className="container-site pb-20">
+    <div className="container-site pb-24 lg:pb-0">
       <div className="mt-6 overflow-hidden rounded-[18px] bg-paper-2">
         <div className="grid lg:grid-cols-[1.05fr_1fr]">
           {/* Gallery */}
-          <div className="flex flex-col gap-3 bg-paper p-[clamp(20px,3vw,40px)]">
+          <div ref={galleryRef} className="flex flex-col gap-3 bg-paper p-[clamp(20px,3vw,40px)]">
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-card bg-paper-2">
               <AnimatePresence mode="wait">
                 <motion.img
@@ -301,6 +317,37 @@ export function Product() {
           </div>
         </section>
       )}
+
+      {/* Sticky action bar, below lg only. Risen once the gallery is out of view. */}
+      <div
+        className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper-2/95 backdrop-blur transition-transform duration-300 lg:hidden ${
+          showStickyBar ? '' : 'translate-y-full'
+        }`}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <div className="flex items-center gap-3 px-4 py-3">
+          <span className="shrink-0 font-mono text-[17px] font-medium text-ink">
+            {formatPrice(product.price)}
+          </span>
+          <Button
+            variant="outline"
+            className="h-12 min-w-0 flex-1 px-4 text-[13px]"
+            onClick={handleAdd}
+            disabled={outOfStock}
+            aria-label={`Add ${product.name} to cart`}
+          >
+            Add to cart
+          </Button>
+          <Button
+            variant="dark"
+            className="h-12 min-w-0 flex-1 px-4 text-[13px]"
+            onClick={handleBuyNow}
+            disabled={outOfStock}
+          >
+            {outOfStock ? 'No Stock' : 'Buy now'}
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

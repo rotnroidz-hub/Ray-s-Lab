@@ -202,7 +202,7 @@ export function Header() {
           <div className="flex h-16 items-center justify-between gap-4 lg:h-[78px]">
             <button
               type="button"
-              className="grid h-10 w-10 place-items-center rounded-lg text-ink transition-colors hover:bg-ink/5 lg:hidden"
+              className="grid h-11 w-11 place-items-center rounded-lg text-ink transition-colors hover:bg-ink/5 lg:hidden"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen}
@@ -239,7 +239,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setSearchOpen((v) => !v)}
-                className="grid h-10 w-10 place-items-center rounded-lg text-ink transition-colors hover:bg-ink/5 sm:hidden"
+                className="grid h-11 w-11 place-items-center rounded-lg text-ink transition-colors hover:bg-ink/5 sm:hidden"
                 aria-label="Search"
               >
                 <IconSearch className="h-5 w-5" />
@@ -249,7 +249,7 @@ export function Header() {
                 type="button"
                 onClick={openCart}
                 id={CART_TARGET_ID}
-                className="relative grid h-10 w-10 place-items-center rounded-full bg-ink text-paper transition-transform active:scale-95"
+                className="relative grid h-11 w-11 place-items-center rounded-full bg-ink text-paper transition-transform active:scale-95"
                 aria-label={`Open cart, ${totalQty} item${totalQty === 1 ? '' : 's'}`}
               >
                 <IconCart className="h-5 w-5" />

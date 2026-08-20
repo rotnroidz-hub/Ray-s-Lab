@@ -22,8 +22,8 @@ export function QuantityStepper({
   const dec = useCallback(() => onChange(value - 1), [value, onChange])
   const inc = useCallback(() => onChange(value + 1), [value, onChange])
   const btn =
-    'grid place-items-center rounded-lg text-ink transition-colors hover:bg-ink/8 disabled:opacity-30 disabled:hover:bg-transparent'
-  const dims = size === 'sm' ? 'h-8 w-8' : 'h-10 w-10'
+    'grid w-11 place-items-center rounded-lg text-ink transition-colors hover:bg-ink/8 disabled:opacity-30 disabled:hover:bg-transparent'
+  const dims = 'h-11'
 
   return (
     <div

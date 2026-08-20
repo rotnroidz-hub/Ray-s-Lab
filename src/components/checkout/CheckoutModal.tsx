@@ -134,7 +134,7 @@ export function CheckoutModal() {
                 <button
                   type="button"
                   onClick={closeCheckout}
-                  className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-ink/5"
+                  className="grid h-11 w-11 place-items-center rounded-full text-ink transition-colors hover:bg-ink/5"
                   aria-label="Close checkout"
                 >
                   <IconClose className="h-5 w-5" />
