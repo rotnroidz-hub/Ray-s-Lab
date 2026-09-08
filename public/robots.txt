@@ -1,10 +1,10 @@
 # https://www.robotstxt.org/robotstxt.html
 
 User-agent: *
-Allow: /
+Disallow: /
 
 # Admin routes stay out of search results (Section 7).
 Disallow: /admin
 Disallow: /search
 
-Sitemap: https://example.com/sitemap.xml
+Sitemap: https://ray-bodylab.vercel.app/sitemap.xml
