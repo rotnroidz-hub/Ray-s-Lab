@@ -7,6 +7,7 @@ import { IconLogOut } from '../components/ui/Icons'
 const nav = [
   { to: '/admin', label: 'Dashboard', end: true },
   { to: '/admin/products', label: 'Products', end: false },
+  { to: '/admin/featured', label: 'Handpicked', end: false },
   { to: '/admin/categories', label: 'Categories', end: false },
   { to: '/admin/brands', label: 'Brands', end: false },
   { to: '/admin/banners', label: 'Banners', end: false },

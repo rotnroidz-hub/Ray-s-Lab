@@ -19,6 +19,7 @@ const AdminProductForm = lazy(() => import('./admin/pages/ProductForm').then((m)
 const AdminCategories = lazy(() => import('./admin/pages/Categories').then((m) => ({ default: m.default })))
 const AdminBrands = lazy(() => import('./admin/pages/Brands').then((m) => ({ default: m.default })))
 const AdminBanners = lazy(() => import('./admin/pages/Banners').then((m) => ({ default: m.default })))
+const AdminFeatured = lazy(() => import('./admin/pages/Featured').then((m) => ({ default: m.default })))
 
 function withSuspense(node: React.ReactNode) {
   return <Suspense fallback={<PageLoader />}>{node}</Suspense>
@@ -50,6 +51,7 @@ const router = createBrowserRouter([
           { path: 'products', element: withSuspense(<AdminProducts />) },
           { path: 'products/new', element: withSuspense(<AdminProductForm />) },
           { path: 'products/:id', element: withSuspense(<AdminProductForm />) },
+          { path: 'featured', element: withSuspense(<AdminFeatured />) },
           { path: 'categories', element: withSuspense(<AdminCategories />) },
           { path: 'brands', element: withSuspense(<AdminBrands />) },
           { path: 'banners', element: withSuspense(<AdminBanners />) },

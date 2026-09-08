@@ -13,12 +13,14 @@ interface ImageDropzoneProps {
 export function ImageDropzone({ value, onChange, max = 8 }: ImageDropzoneProps) {
   const [dragging, setDragging] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const uploadFiles = useCallback(
     async (files: FileList | null) => {
       if (!files || files.length === 0) return
       setUploading(true)
+      setError(null)
       try {
         const room = max - value.length
         const chosen = Array.from(files).slice(0, Math.max(room, 0))
@@ -26,7 +28,7 @@ export function ImageDropzone({ value, onChange, max = 8 }: ImageDropzoneProps) 
         onChange([...value, ...uploaded.map((u) => u.url)].slice(0, max))
       } catch (err) {
         console.error('Upload failed', err)
-        window.alert('Upload failed — check that your storage bucket policies allow admin uploads.')
+        setError('Upload failed. Check that your storage bucket policies allow admin uploads.')
       } finally {
         setUploading(false)
       }
@@ -75,6 +77,11 @@ export function ImageDropzone({ value, onChange, max = 8 }: ImageDropzoneProps) 
         <span className="text-xs text-ink-faint">
           JPG, PNG or WebP — {value.length}/{max} added
         </span>
+        {error && (
+          <span role="alert" className="text-xs font-medium text-stock-no">
+            {error}
+          </span>
+        )}
         <input
           ref={inputRef}
           type="file"

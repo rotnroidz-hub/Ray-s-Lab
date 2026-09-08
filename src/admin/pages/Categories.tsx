@@ -28,6 +28,7 @@ export default function Categories() {
   const [adding, setAdding] = useState(false)
   const [newCat, setNewCat] = useState<Editable>({ name: '', slug: '', image_url: '' })
   const [busy, setBusy] = useState(false)
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
 
   async function load() {
     try {
@@ -103,7 +104,6 @@ export default function Categories() {
   }
 
   async function remove(id: string) {
-    if (!window.confirm('Delete this category? Products inside it keep their data but lose the category.')) return
     setBusy(true)
     try {
       await deleteCategoryAdmin(id)
@@ -112,6 +112,7 @@ export default function Categories() {
       setError((e as Error).message)
     } finally {
       setBusy(false)
+      setConfirmingId(null)
     }
   }
 
@@ -189,7 +190,9 @@ export default function Categories() {
           return (
             <li
               key={c.id}
-              className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-paper-2 p-3"
+              className={`flex items-center gap-3 rounded-2xl border p-3 ${
+                confirmingId === c.id ? 'border-stock-no/30 bg-stock-no-soft' : 'border-ink/10 bg-paper-2'
+              }`}
             >
               <div className="flex flex-col">
                 <button
@@ -231,6 +234,26 @@ export default function Categories() {
                   <Button size="sm" onClick={() => void saveEdit(c)} disabled={busy}>Save</Button>
                   <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>Cancel</Button>
                 </div>
+              ) : confirmingId === c.id ? (
+                <div className="flex w-full items-center gap-2 text-sm font-semibold text-stock-no">
+                  Delete this?
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingId(null)}
+                    disabled={busy}
+                    className="ml-auto rounded-lg px-2 py-1 font-medium text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void remove(c.id)}
+                    disabled={busy}
+                    className="rounded-lg bg-stock-no px-2 py-1 font-medium text-paper transition-colors hover:brightness-95 disabled:opacity-40"
+                  >
+                    Delete
+                  </button>
+                </div>
               ) : (
                 <>
                   <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -254,9 +277,8 @@ export default function Categories() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => void remove(c.id)}
-                    disabled={busy}
-                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no disabled:opacity-40"
+                    onClick={() => setConfirmingId(c.id)}
+                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no"
                     aria-label={`Delete ${c.name}`}
                   >
                     <IconTrash className="h-4 w-4" />

@@ -28,6 +28,10 @@ interface FormState {
   is_active: boolean
   images: string[]
   tags: string
+  benefits: string
+  dosage_cycle: string
+  product_note: string
+  is_featured: boolean
 }
 
 const emptyForm: FormState = {
@@ -41,6 +45,10 @@ const emptyForm: FormState = {
   is_active: true,
   images: [],
   tags: '',
+  benefits: '',
+  dosage_cycle: '',
+  product_note: '',
+  is_featured: false,
 }
 
 export default function ProductForm() {
@@ -56,6 +64,7 @@ export default function ProductForm() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [slugTouched, setSlugTouched] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   useSeo({
     title: isEditing ? 'Edit product' : 'New product',
@@ -87,6 +96,10 @@ export default function ProductForm() {
           is_active: p.is_active,
           images: p.images,
           tags: p.tags.join(', '),
+          benefits: p.benefits ?? '',
+          dosage_cycle: p.dosage_cycle ?? '',
+          product_note: p.product_note ?? '',
+          is_featured: p.is_featured,
         })
       })
       .catch((e) => setError((e as Error).message))
@@ -121,6 +134,11 @@ export default function ProductForm() {
         .split(',')
         .map((t) => t.trim())
         .filter(Boolean),
+      benefits: form.benefits.trim() || null,
+      dosage_cycle: form.dosage_cycle.trim() || null,
+      product_note: form.product_note.trim() || null,
+      is_featured: form.is_featured,
+      featured_order: form.is_featured ? (product?.featured_order ?? 0) : 0,
     }
   }
 
@@ -140,7 +158,6 @@ export default function ProductForm() {
   }
 
   async function remove() {
-    if (!window.confirm('Delete this product permanently? This cannot be undone.')) return
     setSaving(true)
     try {
       await deleteProductAdmin(id!)
@@ -247,6 +264,45 @@ export default function ProductForm() {
                 placeholder="What makes it special, key specs, materials…"
               />
             </Field>
+            <Field
+              label="Benefits"
+              hint="Shown on the product page under Benefits. Leave blank to show a placeholder."
+              className="sm:col-span-2"
+            >
+              <textarea
+                className={inputClass + ' min-h-32 resize-y'}
+                rows={5}
+                value={form.benefits}
+                onChange={(e) => set('benefits', e.target.value)}
+                placeholder="Each benefit on its own line…"
+              />
+            </Field>
+            <Field
+              label="Dos and cycle"
+              hint={'Shown under "Dos and cycle (for reference only)". Leave blank to show a placeholder.'}
+              className="sm:col-span-2"
+            >
+              <textarea
+                className={inputClass + ' min-h-32 resize-y'}
+                rows={5}
+                value={form.dosage_cycle}
+                onChange={(e) => set('dosage_cycle', e.target.value)}
+                placeholder="Step-by-step usage…"
+              />
+            </Field>
+            <Field
+              label="Note"
+              hint="Shown under Note. Leave blank to show a placeholder."
+              className="sm:col-span-2"
+            >
+              <textarea
+                className={inputClass + ' min-h-24 resize-y'}
+                rows={3}
+                value={form.product_note}
+                onChange={(e) => set('product_note', e.target.value)}
+                placeholder="Anything else the customer should know…"
+              />
+            </Field>
             <Field label="Tags" hint="Comma-separated. Used by search." className="sm:col-span-2">
               <input
                 className={inputClass}
@@ -284,13 +340,42 @@ export default function ProductForm() {
             activeLabel="Visible on the storefront"
             inactiveLabel="Hidden from the storefront"
           />
+          <Toggle
+            label="Handpicked"
+            checked={form.is_featured}
+            onChange={(next) => set('is_featured', next)}
+            activeLabel="Shows in the Handpicked section on the home page. Only the first two are displayed."
+            inactiveLabel="Shows in the Handpicked section on the home page. Only the first two are displayed."
+          />
         </section>
 
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4">
           {isEditing ? (
-            <Button variant="danger" onClick={() => void remove()} disabled={saving}>
-              Delete product
-            </Button>
+            confirmDelete ? (
+              <div className="rounded-2xl bg-stock-no-soft px-4 py-3 text-sm font-semibold text-stock-no">
+                Delete this?{' '}
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(false)}
+                  disabled={saving}
+                  className="ml-3 rounded-lg px-2 py-1 text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void remove()}
+                  disabled={saving}
+                  className="ml-1 rounded-lg bg-stock-no px-2 py-1 text-paper transition-colors hover:brightness-95 disabled:opacity-40"
+                >
+                  Delete
+                </button>
+              </div>
+            ) : (
+              <Button variant="danger" onClick={() => setConfirmDelete(true)} disabled={saving}>
+                Delete product
+              </Button>
+            )
           ) : (
             <span />
           )}

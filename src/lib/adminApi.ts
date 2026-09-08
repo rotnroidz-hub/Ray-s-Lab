@@ -34,6 +34,11 @@ export interface AdminProductInput {
   is_active: boolean
   images: string[]
   tags: string[]
+  benefits: string | null
+  dosage_cycle: string | null
+  product_note: string | null
+  is_featured: boolean
+  featured_order: number
 }
 
 export async function listProductsAdmin(): Promise<Product[]> {
@@ -111,9 +116,13 @@ export async function deleteCategoryAdmin(id: string): Promise<void> {
 }
 
 export async function reorderCategoriesAdmin(orderedIds: string[]): Promise<void> {
-  const updates = orderedIds.map((id, sort_order) => ({ id, sort_order }))
-  const { error } = await supabase.from('categories').upsert(updates)
-  if (error) throw new Error(error.message)
+  const results = await Promise.all(
+    orderedIds.map((id, sort_order) =>
+      supabase.from('categories').update({ sort_order }).eq('id', id),
+    ),
+  )
+  const failed = results.find((r) => r.error)
+  if (failed?.error) throw new Error(failed.error.message)
 }
 
 // --- Brands -----------------------------------------------------------------
@@ -146,9 +155,13 @@ export async function deleteBrandAdmin(id: string): Promise<void> {
 }
 
 export async function reorderBrandsAdmin(orderedIds: string[]): Promise<void> {
-  const updates = orderedIds.map((id, sort_order) => ({ id, sort_order }))
-  const { error } = await supabase.from('brands').upsert(updates)
-  if (error) throw new Error(error.message)
+  const results = await Promise.all(
+    orderedIds.map((id, sort_order) =>
+      supabase.from('brands').update({ sort_order }).eq('id', id),
+    ),
+  )
+  const failed = results.find((r) => r.error)
+  if (failed?.error) throw new Error(failed.error.message)
 }
 
 // --- Banners ----------------------------------------------------------------
@@ -160,6 +173,10 @@ export interface AdminBannerInput {
   link_url: string
   sort_order: number
   is_active: boolean
+  eyebrow: string | null
+  cta_label: string | null
+  cta2_label: string | null
+  cta2_url: string | null
 }
 
 export async function listBannersAdmin(): Promise<Banner[]> {
@@ -171,7 +188,7 @@ export async function listBannersAdmin(): Promise<Banner[]> {
   return data ?? []
 }
 
-export async function upsertBannerAdmin(input: Partial<Banner> & { id?: string }): Promise<Banner> {
+export async function upsertBannerAdmin(input: Partial<AdminBannerInput> & { id?: string }): Promise<Banner> {
   const payload: {
     id?: string
     image_url?: string
@@ -180,6 +197,10 @@ export async function upsertBannerAdmin(input: Partial<Banner> & { id?: string }
     link_url?: string
     sort_order?: number
     is_active?: boolean
+    eyebrow?: string | null
+    cta_label?: string | null
+    cta2_label?: string | null
+    cta2_url?: string | null
   } = { ...input }
   const { data, error } = await supabase.from('banners').upsert(payload).select().single()
   if (error) throw new Error(error.message)
@@ -189,6 +210,59 @@ export async function upsertBannerAdmin(input: Partial<Banner> & { id?: string }
 export async function deleteBannerAdmin(id: string): Promise<void> {
   const { error } = await supabase.from('banners').delete().eq('id', id)
   if (error) throw new Error(error.message)
+}
+
+// --- Featured (Handpicked) ---------------------------------------------------
+
+export async function listFeaturedProductsAdmin(): Promise<Product[]> {
+  await ensureBrandsCapability()
+  const { data, error } = await supabase
+    .from('products')
+    .select(productSelect())
+    .eq('is_featured', true)
+    .order('featured_order', { ascending: true })
+  if (error) throw new Error(error.message)
+  return ((data as unknown as Product[]) ?? []).map((r) => ({ ...r, price: Number(r.price) }))
+}
+
+export async function listNonFeaturedProductsAdmin(): Promise<Product[]> {
+  await ensureBrandsCapability()
+  const { data, error } = await supabase
+    .from('products')
+    .select(productSelect())
+    .eq('is_featured', false)
+    .order('name', { ascending: true })
+  if (error) throw new Error(error.message)
+  return ((data as unknown as Product[]) ?? []).map((r) => ({ ...r, price: Number(r.price) }))
+}
+
+export async function setProductFeatured(id: string, is_featured: boolean, featured_order = 0): Promise<void> {
+  const { error } = await supabase
+    .from('products')
+    .update({ is_featured, featured_order })
+    .eq('id', id)
+  if (error) throw new Error(error.message)
+}
+
+export async function reorderFeatured(rows: { id: string; featured_order: number }[]): Promise<void> {
+  const results = await Promise.all(
+    rows.map((r) =>
+      supabase.from('products').update({ featured_order: r.featured_order }).eq('id', r.id),
+    ),
+  )
+  const failed = results.find((r) => r.error)
+  if (failed?.error) throw new Error(failed.error.message)
+}
+
+// --- Dashboard ---------------------------------------------------------------
+
+export async function countCheckoutsThisWeek(): Promise<number> {
+  const { count, error } = await supabase
+    .from('checkout_events')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+  if (error) throw new Error(error.message)
+  return count ?? 0
 }
 
 // --- Storage ----------------------------------------------------------------

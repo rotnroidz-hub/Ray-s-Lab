@@ -15,9 +15,23 @@ interface Draft {
   subtitle: string
   link_url: string
   is_active: boolean
+  eyebrow: string
+  cta_label: string
+  cta2_label: string
+  cta2_url: string
 }
 
-const emptyDraft: Draft = { image_url: '', title: '', subtitle: '', link_url: '', is_active: true }
+const emptyDraft: Draft = {
+  image_url: '',
+  title: '',
+  subtitle: '',
+  link_url: '',
+  is_active: true,
+  eyebrow: '',
+  cta_label: '',
+  cta2_label: '',
+  cta2_url: '',
+}
 
 export default function Banners() {
   useSeo({ title: 'Banners', robots: 'noindex,follow' })
@@ -25,6 +39,7 @@ export default function Banners() {
   const [error, setError] = useState<string | null>(null)
   const [draft, setDraft] = useState<Draft | null>(null)
   const [busy, setBusy] = useState(false)
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
 
   async function load() {
     try {
@@ -50,6 +65,10 @@ export default function Banners() {
           title: b.title,
           subtitle: b.subtitle,
           link_url: b.link_url,
+          eyebrow: b.eyebrow ?? '',
+          cta_label: b.cta_label ?? '',
+          cta2_label: b.cta2_label ?? '',
+          cta2_url: b.cta2_url ?? '',
         })
       }
     } catch (e) {
@@ -87,7 +106,6 @@ export default function Banners() {
   }
 
   async function remove(id: string) {
-    if (!window.confirm('Delete this banner?')) return
     setBusy(true)
     try {
       await deleteBannerAdmin(id)
@@ -96,6 +114,7 @@ export default function Banners() {
       setError((e as Error).message)
     } finally {
       setBusy(false)
+      setConfirmingId(null)
     }
   }
 
@@ -150,7 +169,12 @@ export default function Banners() {
         )}
 
         {banners?.map((b, i) => (
-          <li key={b.id} className="flex items-start gap-3 rounded-2xl border border-ink/10 bg-paper-2 p-3">
+          <li
+            key={b.id}
+            className={`flex items-start gap-3 rounded-2xl border p-3 ${
+              confirmingId === b.id ? 'border-stock-no/30 bg-stock-no-soft' : 'border-ink/10 bg-paper-2'
+            }`}
+          >
             <div className="flex flex-col pt-1">
               <button
                 type="button"
@@ -193,31 +217,59 @@ export default function Banners() {
                     {b.subtitle || 'No subtitle'} · {b.is_active ? 'Live' : 'Hidden'}
                   </span>
                 </p>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() =>
-                    setDraft({
-                      id: b.id,
-                      image_url: b.image_url,
-                      title: b.title,
-                      subtitle: b.subtitle,
-                      link_url: b.link_url,
-                      is_active: b.is_active,
-                    })
-                  }
-                >
-                  <IconEdit className="h-4 w-4" /> Edit
-                </Button>
-                <button
-                  type="button"
-                  onClick={() => void remove(b.id)}
-                  disabled={busy}
-                  className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no disabled:opacity-40"
-                  aria-label={`Delete banner ${b.title}`}
-                >
-                  <IconTrash className="h-4 w-4" />
-                </button>
+                {confirmingId === b.id ? (
+                  <div className="flex items-center gap-2 text-sm font-semibold text-stock-no">
+                    Delete this?
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingId(null)}
+                      disabled={busy}
+                      className="rounded-lg px-2 py-1 font-medium text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void remove(b.id)}
+                      disabled={busy}
+                      className="rounded-lg bg-stock-no px-2 py-1 font-medium text-paper transition-colors hover:brightness-95 disabled:opacity-40"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() =>
+                        setDraft({
+                          id: b.id,
+                          image_url: b.image_url,
+                          title: b.title,
+                          subtitle: b.subtitle,
+                          link_url: b.link_url,
+                          is_active: b.is_active,
+                          eyebrow: b.eyebrow ?? '',
+                          cta_label: b.cta_label ?? '',
+                          cta2_label: b.cta2_label ?? '',
+                          cta2_url: b.cta2_url ?? '',
+                        })
+                      }
+                    >
+                      <IconEdit className="h-4 w-4" /> Edit
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingId(b.id)}
+                      disabled={busy}
+                      className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no disabled:opacity-40"
+                      aria-label={`Delete banner ${b.title}`}
+                    >
+                      <IconTrash className="h-4 w-4" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </li>
@@ -251,6 +303,14 @@ function BannerFormFields({
           placeholder="https://…/banner.jpg"
         />
       </Field>
+      <Field label="Eyebrow">
+        <input
+          className={inputClass}
+          value={draft.eyebrow}
+          onChange={(e) => set('eyebrow', e.target.value)}
+          placeholder="New season"
+        />
+      </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Title">
           <input
@@ -269,14 +329,42 @@ function BannerFormFields({
           />
         </Field>
       </div>
-      <Field label="Link URL" hint="Where the button goes — e.g. /catalog or /category/audio">
-        <input
-          className={inputClass}
-          value={draft.link_url}
-          onChange={(e) => set('link_url', e.target.value)}
-          placeholder="/catalog"
-        />
-      </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Button label" hint="Leave the label blank to hide that button.">
+          <input
+            className={inputClass}
+            value={draft.cta_label}
+            onChange={(e) => set('cta_label', e.target.value)}
+            placeholder="Shop now"
+          />
+        </Field>
+        <Field label="Link URL" hint="Where the button goes — e.g. /catalog or /category/audio">
+          <input
+            className={inputClass}
+            value={draft.link_url}
+            onChange={(e) => set('link_url', e.target.value)}
+            placeholder="/catalog"
+          />
+        </Field>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Second button label" hint="Leave the label blank to hide that button.">
+          <input
+            className={inputClass}
+            value={draft.cta2_label}
+            onChange={(e) => set('cta2_label', e.target.value)}
+            placeholder="Learn more"
+          />
+        </Field>
+        <Field label="Second button URL">
+          <input
+            className={inputClass}
+            value={draft.cta2_url}
+            onChange={(e) => set('cta2_url', e.target.value)}
+            placeholder="/catalog"
+          />
+        </Field>
+      </div>
       <Toggle
         label="Active"
         checked={draft.is_active}
@@ -284,6 +372,35 @@ function BannerFormFields({
         activeLabel="Shown in the hero carousel"
         inactiveLabel="Hidden from the storefront"
       />
+
+      {/* 21:9 preview, mirrors the storefront hero slide */}
+      <div className="overflow-hidden rounded-2xl bg-ink">
+        <div className="relative flex aspect-[21/9] flex-col justify-center gap-1 px-6 text-paper-2">
+          {draft.eyebrow.trim() && (
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-blue-lite">
+              {draft.eyebrow}
+            </p>
+          )}
+          <p className="font-display text-lg font-semibold leading-tight">
+            {draft.title.trim() || 'Banner title'}
+          </p>
+          {draft.subtitle.trim() && (
+            <p className="text-xs text-paper-2/[0.66]">{draft.subtitle}</p>
+          )}
+          <div className="mt-1 flex flex-wrap gap-2">
+            {draft.cta_label.trim() && (
+              <span className="rounded-full bg-blue px-3 py-1 text-[11px] font-medium text-white">
+                {draft.cta_label}
+              </span>
+            )}
+            {draft.cta2_label.trim() && (
+              <span className="rounded-full border border-paper-2/30 px-3 py-1 text-[11px] font-medium text-paper-2">
+                {draft.cta2_label}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

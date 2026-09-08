@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { listBrandsAdmin, listCategoriesAdmin, listProductsAdmin } from '../../lib/adminApi'
+import {
+  countCheckoutsThisWeek,
+  listBrandsAdmin,
+  listCategoriesAdmin,
+  listProductsAdmin,
+} from '../../lib/adminApi'
 import { useSeo } from '../../lib/seo'
 import { IconArrowRight, IconTag } from '../../components/ui/Icons'
 
@@ -8,11 +13,13 @@ function statCards(
   productCount: number | null,
   categoryCount: number | null,
   brandCount: number | null,
+  checkoutCount: number | null,
 ) {
   return [
     { label: 'Products', value: productCount ?? '—', to: '/admin/products' },
     { label: 'Categories', value: categoryCount ?? '—', to: '/admin/categories' },
     { label: 'Brands', value: brandCount ?? '—', to: '/admin/brands' },
+    { label: 'Checkouts this week', value: checkoutCount ?? '-', to: null },
   ]
 }
 
@@ -21,11 +28,13 @@ export default function Dashboard() {
   const [products, setProducts] = useState<number | null>(null)
   const [categories, setCategories] = useState<number | null>(null)
   const [brands, setBrands] = useState<number | null>(null)
+  const [checkouts, setCheckouts] = useState<number | null>(null)
 
   useEffect(() => {
     listProductsAdmin().then((p) => setProducts(p.length)).catch(() => setProducts(null))
     listCategoriesAdmin().then((c) => setCategories(c.length)).catch(() => setCategories(null))
     listBrandsAdmin().then((b) => setBrands(b.length)).catch(() => setBrands(null))
+    countCheckoutsThisWeek().then(setCheckouts).catch(() => setCheckouts(null))
   }, [])
 
   return (
@@ -36,23 +45,38 @@ export default function Dashboard() {
         Manage your catalog from here. Changes go live on the storefront immediately.
       </p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {statCards(products, categories, brands).map((s) => (
-          <Link
-            key={s.label}
-            to={s.to}
-            className="group rounded-3xl border border-ink/10 bg-paper-2 p-6 transition-all hover:border-ink/40 hover:shadow-card"
-          >
-            <div className="flex items-center justify-between">
-              <span className="grid h-11 w-11 place-items-center rounded-full bg-ink text-paper">
-                <IconTag className="h-5 w-5" />
-              </span>
-              <IconArrowRight className="h-5 w-5 text-ink/25 transition-transform group-hover:translate-x-1 group-hover:text-ink" />
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards(products, categories, brands, checkouts).map((s) =>
+          s.to ? (
+            <Link
+              key={s.label}
+              to={s.to}
+              className="group rounded-3xl border border-ink/10 bg-paper-2 p-6 transition-all hover:border-ink/40 hover:shadow-card"
+            >
+              <div className="flex items-center justify-between">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-ink text-paper">
+                  <IconTag className="h-5 w-5" />
+                </span>
+                <IconArrowRight className="h-5 w-5 text-ink/25 transition-transform group-hover:translate-x-1 group-hover:text-ink" />
+              </div>
+              <p className="mt-5 font-display text-4xl font-semibold text-ink">{s.value}</p>
+              <p className="mt-1 text-sm font-medium text-ink-soft">{s.label}</p>
+            </Link>
+          ) : (
+            <div
+              key={s.label}
+              className="rounded-3xl border border-ink/10 bg-paper-2 p-6"
+            >
+              <div className="flex items-center justify-between">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-ink text-paper">
+                  <IconTag className="h-5 w-5" />
+                </span>
+              </div>
+              <p className="mt-5 font-display text-4xl font-semibold text-ink">{s.value}</p>
+              <p className="mt-1 text-sm font-medium text-ink-soft">{s.label}</p>
             </div>
-            <p className="mt-5 font-display text-4xl font-semibold text-ink">{s.value}</p>
-            <p className="mt-1 text-sm font-medium text-ink-soft">{s.label}</p>
-          </Link>
-        ))}
+          ),
+        )}
 
         <Link
           to="/admin/products/new"
