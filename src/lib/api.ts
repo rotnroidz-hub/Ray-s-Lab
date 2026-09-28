@@ -127,12 +127,47 @@ export async function fetchProducts(query: ProductQuery = {}): Promise<ProductPa
       .replace(/\s+/g, ' ')
       .trim()
     if (term) {
-      // Include brand name in matching: a query like "jbl" surfaces the brand
-      // even when the product title doesn't mention it.
-      const brandClause = brandsCapable ? `,brands.name.ilike.%${term}%` : ''
-      q = q.or(
-        `name.ilike.%${term}%,description.ilike.%${term}%,tags.cs.{${term}}${brandClause}`,
-      )
+      // PostgREST cannot filter on an embedded table's column inside a
+      // top-level `or()` group — it answers 400 PGRST100 "failed to parse
+      // logic tree" — so brand and category names are matched by resolving
+      // their ids first and filtering on the FK columns instead. Resolving ids
+      // (rather than `!inner` joins) also keeps products with no brand or no
+      // category searchable.
+      let brandIds: string[] = []
+      if (brandsCapable) {
+        const { data, error } = await supabase
+          .from('brands')
+          .select('id')
+          .ilike('name', `%${term}%`)
+        if (error) throw new Error(error.message)
+        brandIds = (data ?? []).map((row) => (row as { id: string }).id)
+      }
+
+      const { data: catRows, error: catError } = await supabase
+        .from('categories')
+        .select('id')
+        .ilike('name', `%${term}%`)
+      if (catError) throw new Error(catError.message)
+      const categoryIds = (catRows ?? []).map((row) => (row as { id: string }).id)
+
+      const clauses = [
+        `name.ilike.%${term}%`,
+        `description.ilike.%${term}%`,
+        // `tags.cs` is exact, case-sensitive, whole-element matching: the tag
+        // "Wireless" does not match the term "wireless", and a multi-word term
+        // only matches a single element spelled exactly that way. It is kept
+        // (not dropped) because it is the only tag search PostgREST exposes,
+        // and the element is quoted so a term containing spaces stays one
+        // array element instead of several.
+        `tags.cs.{"${term.replace(/"/g, '')}"}`,
+      ]
+      if (brandIds.length) {
+        clauses.push(`brand_id.in.(${brandIds.map((id) => `"${id}"`).join(',')})`)
+      }
+      if (categoryIds.length) {
+        clauses.push(`category_id.in.(${categoryIds.map((id) => `"${id}"`).join(',')})`)
+      }
+      q = q.or(clauses.join(','))
     }
   }
 

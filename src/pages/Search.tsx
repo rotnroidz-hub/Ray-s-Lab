@@ -37,11 +37,12 @@ export function Search() {
   }, [debounced, params, setParams])
 
   const results = useProducts(undefined, debounced, 12)
+  const failed = Boolean(results.error)
 
   const summary = useMemo(() => {
-    if (!debounced.trim()) return null
+    if (!debounced.trim() || failed) return null
     return results.loading ? 'Searching…' : `${results.count} result${results.count === 1 ? '' : 's'} for “${debounced.trim()}”`
-  }, [debounced, results.loading, results.count])
+  }, [debounced, results.loading, results.count, failed])
 
   useSeo({
     title: debounced.trim() ? `Search: ${debounced.trim()}` : 'Search',
@@ -82,7 +83,20 @@ export function Search() {
         onLoadMore={results.loadMore}
       />
 
-      {!results.loading && debounced.trim() && results.data.length === 0 && (
+      {/* A failed query must never be presented as an empty result set. */}
+      {!results.loading && results.error && (
+        <div className="py-24 text-center">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-paper-2">
+            <IconSearch className="h-7 w-7 text-ink/30" />
+          </div>
+          <p className="mt-4 font-display text-xl text-ink">Search is unavailable right now, please try again</p>
+          <p className="mx-auto mt-2 max-w-sm text-sm text-ink-faint">
+            The search service did not respond, so no results could be loaded. Please try again in a moment.
+          </p>
+        </div>
+      )}
+
+      {!results.loading && !results.error && debounced.trim() && results.data.length === 0 && (
         <div className="py-24 text-center">
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-paper-2">
             <IconSearch className="h-7 w-7 text-ink/30" />
