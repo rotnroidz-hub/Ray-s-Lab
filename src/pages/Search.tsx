@@ -12,24 +12,25 @@ export function Search() {
   const [input, setInput] = useState(initial)
   const debounced = useDebounce(input, 350)
   const previous = useRef(debounced)
-  // The last query we pushed to the URL ourselves, so the URL->input sync
-  // below doesn't fight our own typing (which debounce-writes to the URL).
-  const wroteToUrl = useRef<string | null>(null)
 
   // External navigation landed on /search?q=… while this page was already
-  // mounted (e.g. the header search form). Adopt the URL's query.
+  // mounted (e.g. the header search form, or the browser back button). Adopt
+  // the URL's query only when the param itself changed — never on typing.
   const urlQuery = params.get('q') ?? ''
+  const lastUrlQuery = useRef(urlQuery)
+
   useEffect(() => {
-    if (urlQuery !== input && wroteToUrl.current !== urlQuery) {
+    if (urlQuery !== lastUrlQuery.current) {
+      lastUrlQuery.current = urlQuery
       setInput(urlQuery)
     }
-  }, [urlQuery, input])
+  }, [urlQuery])
 
   // Keep the URL in sync as the user types (debounced-as-you-type).
   useEffect(() => {
     if (debounced === previous.current) return
     previous.current = debounced
-    wroteToUrl.current = debounced.trim()
+    lastUrlQuery.current = debounced.trim()
     const next = new URLSearchParams(params)
     if (debounced.trim()) next.set('q', debounced.trim())
     else next.delete('q')
