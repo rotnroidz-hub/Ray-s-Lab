@@ -22,6 +22,8 @@ function CategoryBentoTile({ category }: { category: Category }) {
           alt={category.name}
           loading="lazy"
           decoding="async"
+          width={900}
+          height={600}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
         />
       ) : (

@@ -93,7 +93,7 @@ export default function Products() {
                   type="button"
                   onClick={() => setConfirmId(null)}
                   disabled={deletingId === p.id}
-                  className="ml-auto rounded-lg px-2 py-1 font-medium text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40"
+                  className="ml-auto rounded-lg px-2 py-1 font-medium text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40 max-lg:min-h-[44px]"
                 >
                   Cancel
                 </button>
@@ -101,7 +101,7 @@ export default function Products() {
                   type="button"
                   onClick={() => void remove(p.id)}
                   disabled={deletingId === p.id}
-                  className="rounded-lg bg-stock-no px-2 py-1 font-medium text-paper transition-colors hover:brightness-95 disabled:opacity-40"
+                  className="rounded-lg bg-stock-no px-2 py-1 font-medium text-paper transition-colors hover:brightness-95 disabled:opacity-40 max-lg:min-h-[44px]"
                 >
                   Delete
                 </button>
@@ -112,6 +112,9 @@ export default function Products() {
                   <img
                     src={responsiveImage(p.images[0], 120)}
                     alt=""
+                    loading="lazy"
+                    width={120}
+                    height={120}
                     className="h-14 w-14 rounded-xl object-cover"
                   />
                 ) : (
@@ -142,7 +145,7 @@ export default function Products() {
                 <div className="flex items-center gap-1">
                   <Link
                     to={`/admin/products/${p.id}`}
-                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink"
+                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink max-lg:h-11 max-lg:w-11"
                     aria-label={`Edit ${p.name}`}
                   >
                     <IconEdit className="h-4 w-4" />
@@ -150,7 +153,7 @@ export default function Products() {
                   <button
                     type="button"
                     onClick={() => setConfirmId(p.id)}
-                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-stock-no/10 hover:text-stock-no"
+                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-stock-no/10 hover:text-stock-no max-lg:h-11 max-lg:w-11"
                     aria-label={`Delete ${p.name}`}
                   >
                     <IconTrash className="h-4 w-4" />

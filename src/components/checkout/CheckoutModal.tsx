@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCart } from '../../hooks/useCart'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { logCheckout } from '../../lib/api'
 import { buildCartMessage, whatsappLink, hasWhatsappNumber } from '../../lib/whatsapp'
 import { formatPrice } from '../../lib/utils'
@@ -28,6 +29,17 @@ export function CheckoutModal() {
   const [stage, setStage] = useState<Stage>('idle')
   const pendingMessage = useRef('')
   const closeTimer = useRef<number | null>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  // Focus is trapped only while the modal is open. The cart drawer closes in
+  // the same click that calls openCheckout(), so its trap deactivates first
+  // (React runs every effect cleanup before the next effect body) and the two
+  // traps are never active together.
+  useFocusTrap({
+    active: isCheckoutOpen,
+    containerRef: panelRef,
+    onEscape: closeCheckout,
+  })
 
   // Reset transient state whenever the modal opens.
   useEffect(() => {
@@ -117,6 +129,8 @@ export function CheckoutModal() {
             className="pointer-events-none fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:p-6"
           >
             <motion.div
+              ref={panelRef}
+              tabIndex={-1}
               role="dialog"
               aria-modal="true"
               aria-label="Checkout via WhatsApp"

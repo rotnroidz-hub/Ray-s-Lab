@@ -21,7 +21,7 @@ export function Brand() {
   useSeo({
     title: brand ? `${brand.name} products` : 'Brand',
     description: brand
-      ? `Shop ${brand.name} at ${SITE_NAME} — browse the range and order over WhatsApp.`
+      ? `Shop ${brand.name} at ${SITE_NAME} - browse the range and order over WhatsApp.`
       : undefined,
     canonicalPath: brand ? `/brand/${brand.slug}` : undefined,
     ogImage: brand?.image_url ?? undefined,
@@ -36,11 +36,11 @@ export function Brand() {
       <nav aria-label="Breadcrumb" className="pt-6 text-xs text-ink-faint">
         <ol className="flex items-center gap-1.5">
           <li>
-            <Link to="/" className="hover:text-ink">Home</Link>
+            <Link to="/" className="hover:text-ink max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center">Home</Link>
           </li>
           <li aria-hidden>·</li>
           <li>
-            <Link to="/catalog" className="hover:text-ink">Catalog</Link>
+            <Link to="/catalog" className="hover:text-ink max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center">Catalog</Link>
           </li>
           <li aria-hidden>·</li>
           <li className="text-ink" aria-current="page">{brand?.name ?? slug}</li>
@@ -54,6 +54,9 @@ export function Brand() {
               <img
                 src={responsiveImage(brand.image_url, 1200)}
                 alt={brand.name}
+                loading="lazy"
+                width={1200}
+                height={480}
                 className="h-full w-full object-cover"
               />
             </div>

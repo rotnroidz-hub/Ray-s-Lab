@@ -155,7 +155,7 @@ export default function Featured() {
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-ink/5 disabled:opacity-40"
                 >
                   {p.images[0] ? (
-                    <img src={responsiveImage(p.images[0], 80)} alt="" className="h-9 w-9 rounded-lg object-cover" />
+                    <img src={responsiveImage(p.images[0], 80)} alt="" loading="lazy" width={80} height={80} className="h-9 w-9 rounded-lg object-cover" />
                   ) : (
                     <span className="grid h-9 w-9 place-items-center rounded-lg bg-paper text-ink">·</span>
                   )}
@@ -198,7 +198,7 @@ export default function Featured() {
                 onClick={() => move(i, -1)}
                 disabled={i === 0 || busy}
                 aria-label="Move up"
-                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30 max-lg:h-11 max-lg:w-11"
               >
                 <IconChevronUp className="h-4 w-4" />
               </button>
@@ -207,7 +207,7 @@ export default function Featured() {
                 onClick={() => move(i, 1)}
                 disabled={i === (featured?.length ?? 0) - 1 || busy}
                 aria-label="Move down"
-                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30 max-lg:h-11 max-lg:w-11"
               >
                 <IconChevronDown className="h-4 w-4" />
               </button>
@@ -215,7 +215,7 @@ export default function Featured() {
 
             <div className="flex min-w-0 flex-1 items-center gap-3">
               {p.images[0] ? (
-                <img src={responsiveImage(p.images[0], 120)} alt="" className="h-14 w-14 rounded-xl object-cover" />
+                <img src={responsiveImage(p.images[0], 120)} alt="" loading="lazy" width={120} height={120} className="h-14 w-14 rounded-xl object-cover" />
               ) : (
                 <span className="grid h-14 w-14 place-items-center rounded-xl bg-paper text-ink">·</span>
               )}
@@ -234,7 +234,7 @@ export default function Featured() {
               type="button"
               onClick={() => void remove(p.id)}
               disabled={busy}
-              className="rounded-lg px-3 py-2 text-sm font-semibold text-stock-no transition-colors hover:bg-stock-no/10 disabled:opacity-40"
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-stock-no transition-colors hover:bg-stock-no/10 disabled:opacity-40 max-lg:min-h-[44px]"
             >
               Remove
             </button>

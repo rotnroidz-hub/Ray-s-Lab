@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useBanners, useBestSellers, useFeaturedProducts } from '../hooks/useData'
 import { useSeo } from '../lib/seo'
@@ -160,6 +160,8 @@ function HeroCarousel() {
                 alt=""
                 loading={i === 0 ? 'eager' : 'lazy'}
                 fetchPriority={i === 0 ? 'high' : undefined}
+                width={1600}
+                height={900}
                 className="absolute inset-0 h-full w-full object-cover"
               />
               <div
@@ -226,6 +228,7 @@ function FeaturedCard({ product }: { product: Product }) {
   const { addItem, openCheckout } = useCart()
   const fly = useFlyToCart()
   const { showToast } = useToast()
+  const navigate = useNavigate()
   const brand = product.brands?.name
   const category = product.categories?.name
   const line = [brand, category].filter(Boolean).join(' · ')
@@ -273,6 +276,8 @@ function FeaturedCard({ product }: { product: Product }) {
           alt={product.name}
           loading="lazy"
           decoding="async"
+          width={1100}
+          height={1100}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
         />
       ) : null}
@@ -319,13 +324,17 @@ function FeaturedCard({ product }: { product: Product }) {
           >
             <IconCart className="h-5 w-5" />
           </button>
-          <Link
-            to={`/product/${product.slug}`}
-            onClick={(e) => e.stopPropagation()}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              navigate(`/product/${product.slug}`)
+            }}
             className="ml-1 inline-flex h-11 items-center gap-2 rounded-full bg-blue px-6 text-sm font-medium text-white shadow-[0_6px_20px_rgba(0,144,230,0.28)] transition-colors hover:bg-[#0a9ff5]"
           >
             View product <IconArrowRight className="h-4 w-4" />
-          </Link>
+          </button>
         </span>
       </div>
     </Link>
@@ -368,7 +377,7 @@ function BestSellerCard({ product, rank }: { product: Product; rank: number }) {
 
   return (
     <article className="best-card edge group flex h-full flex-col overflow-hidden rounded-card bg-card transition-shadow duration-200 hover:shadow-lift">
-      <Link to={`/product/${product.slug}`} className="block focus:outline-none" aria-label={product.name}>
+      <Link to={`/product/${product.slug}`} className="block" aria-label={product.name}>
         <div className="relative aspect-square overflow-hidden bg-paper">
           {image ? (
             <img
@@ -376,6 +385,8 @@ function BestSellerCard({ product, rank }: { product: Product; rank: number }) {
               alt={product.name}
               loading="lazy"
               decoding="async"
+              width={600}
+              height={600}
               className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
             />
           ) : (

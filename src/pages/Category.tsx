@@ -21,7 +21,7 @@ export function Category() {
   useSeo({
     title: category?.name ?? 'Category',
     description: category
-      ? `Browse ${category.name} — shop the collection and order over WhatsApp.`
+      ? `Browse ${category.name} - shop the collection and order over WhatsApp.`
       : undefined,
     canonicalPath: category ? `/category/${category.slug}` : undefined,
     ogImage: category?.image_url ?? undefined,
@@ -40,11 +40,11 @@ export function Category() {
       <nav aria-label="Breadcrumb" className="pt-6 text-xs text-ink-faint">
         <ol className="flex items-center gap-1.5">
           <li>
-            <Link to="/" className="hover:text-ink">Home</Link>
+            <Link to="/" className="hover:text-ink max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center">Home</Link>
           </li>
           <li aria-hidden>·</li>
           <li>
-            <Link to="/catalog" className="hover:text-ink">Catalog</Link>
+            <Link to="/catalog" className="hover:text-ink max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center">Catalog</Link>
           </li>
           <li aria-hidden>·</li>
           <li className="text-ink" aria-current="page">{category?.name ?? slug}</li>
@@ -58,6 +58,9 @@ export function Category() {
               <img
                 src={responsiveImage(category.image_url, 1200)}
                 alt={category.name}
+                loading="lazy"
+                width={1200}
+                height={480}
                 className="h-full w-full object-cover"
               />
             </div>

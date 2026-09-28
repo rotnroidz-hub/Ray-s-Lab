@@ -22,13 +22,13 @@ export function Footer() {
           <p className="eyebrow text-paper/60">Shop</p>
           <ul className="mt-4 space-y-2.5 text-sm">
             <li>
-              <Link to="/catalog" className="transition-colors hover:text-paper">
+              <Link to="/catalog" className="max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center transition-colors hover:text-paper">
                 All Products
               </Link>
             </li>
             {categories.map((c) => (
               <li key={c.id}>
-                <Link to={`/category/${c.slug}`} className="transition-colors hover:text-paper">
+                <Link to={`/category/${c.slug}`} className="max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center transition-colors hover:text-paper">
                   {c.name}
                 </Link>
               </li>
@@ -43,14 +43,14 @@ export function Footer() {
               href={whatsappLink('Hello! I have a question about your catalog.')}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 text-sm transition-colors hover:text-paper"
+              className="mt-4 inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] items-center gap-2 text-sm transition-colors hover:text-paper"
             >
               <IconWhatsApp className="h-5 w-5" />
               Chat with us on WhatsApp
             </a>
           ) : (
             <p className="mt-4 text-sm text-paper/70">
-              Orders &amp; enquiries via WhatsApp — number coming soon.
+              Orders &amp; enquiries via WhatsApp - number coming soon.
             </p>
           )}
         </div>
@@ -58,7 +58,7 @@ export function Footer() {
         <div>
           <p className="eyebrow text-paper/60">Ordering</p>
           <p className="mt-4 text-sm leading-relaxed text-paper/70">
-            No accounts, no payment gateways — build your basket and send it to us. We reply with
+            No accounts, no payment gateways - build your basket and send it to us. We reply with
             pricing, availability and delivery details.
           </p>
         </div>

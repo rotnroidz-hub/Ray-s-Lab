@@ -55,14 +55,14 @@ export function AdminLayout() {
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-xl px-3 py-2 text-sm font-semibold text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink"
+            className="rounded-xl px-3 py-2 text-sm font-semibold text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink max-lg:min-h-[44px]"
           >
             View store ↗
           </a>
           <button
             type="button"
             onClick={() => void signOut()}
-            className="flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-stock-no transition-colors hover:bg-stock-no/10"
+            className="flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-stock-no transition-colors hover:bg-stock-no/10 max-lg:min-h-[44px]"
           >
             <IconLogOut className="h-4 w-4" /> Sign out
           </button>

@@ -80,6 +80,8 @@ export function FlyToCartProvider({ children }: { children: ReactNode }) {
                   alt=""
                   className="h-full w-full rounded-lg object-cover shadow-card"
                   loading="eager"
+                  width={160}
+                  height={160}
                   draggable={false}
                 />
               ) : (

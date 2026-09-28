@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import { useCart } from '../../hooks/useCart'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { cn, formatPrice } from '../../lib/utils'
 import { responsiveImage } from '../../lib/image'
 import { QuantityStepper } from '../ui/QuantityStepper'
@@ -40,6 +41,13 @@ export function CartDrawer() {
     return () => mql.removeEventListener('change', onChange)
   }, [])
 
+  const panelRef = useRef<HTMLElement>(null)
+  useFocusTrap({
+    active: isOpen,
+    containerRef: panelRef,
+    onEscape: closeCart,
+  })
+
   // Lock body scroll while the drawer is open.
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : ''
@@ -68,6 +76,8 @@ export function CartDrawer() {
           />
           <motion.aside
             key="drawer"
+            ref={panelRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Shopping cart"
@@ -134,6 +144,8 @@ export function CartDrawer() {
                               src={responsiveImage(item.image, 160)}
                               alt={item.name}
                               loading="lazy"
+                              width={160}
+                              height={200}
                               className="h-20 w-16 rounded-xl object-cover"
                             />
                           ) : (

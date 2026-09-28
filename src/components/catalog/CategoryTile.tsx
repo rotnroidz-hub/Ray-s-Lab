@@ -36,6 +36,8 @@ export function CategoryTile({ category, index = 0 }: CategoryTileProps) {
               alt={category.name}
               loading="lazy"
               decoding="async"
+              width={600}
+              height={750}
               className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
             />
           ) : (

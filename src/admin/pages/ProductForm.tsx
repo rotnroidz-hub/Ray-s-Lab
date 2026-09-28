@@ -358,7 +358,7 @@ export default function ProductForm() {
                   type="button"
                   onClick={() => setConfirmDelete(false)}
                   disabled={saving}
-                  className="ml-3 rounded-lg px-2 py-1 text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40"
+                  className="ml-3 rounded-lg px-2 py-1 text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40 max-lg:min-h-[44px]"
                 >
                   Cancel
                 </button>
@@ -366,7 +366,7 @@ export default function ProductForm() {
                   type="button"
                   onClick={() => void remove()}
                   disabled={saving}
-                  className="ml-1 rounded-lg bg-stock-no px-2 py-1 text-paper transition-colors hover:brightness-95 disabled:opacity-40"
+                  className="ml-1 rounded-lg bg-stock-no px-2 py-1 text-paper transition-colors hover:brightness-95 disabled:opacity-40 max-lg:min-h-[44px]"
                 >
                   Delete
                 </button>

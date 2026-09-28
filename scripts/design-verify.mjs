@@ -62,8 +62,8 @@ async function main() {
   // Warm home and dump SEO head
   await sleep(3500)
   console.log('SEO @ /', JSON.stringify(await headInfo(), null, 1))
-  console.log('grain overlay present:', await evalJs(`getComputedStyle(document.body, '::after').backgroundImage.includes('svg')`))
-  console.log('hero parallax node:', await evalJs(`!!document.querySelector('.group.relative.overflow-hidden.rounded-3xl img')`))
+  console.log('grain overlay present:', await evalJs(`(() => { const el = document.querySelector('.tex-grain'); return !!el && getComputedStyle(el).backgroundImage.includes('svg') })()`))
+  console.log('banner carousel present:', await evalJs(`!!document.querySelector('section[aria-roledescription="carousel"] img')`))
 
   // Category page (brandless DB should still load fine)
   await clickHref('/category/audio')

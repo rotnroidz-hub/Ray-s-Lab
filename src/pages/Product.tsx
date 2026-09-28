@@ -182,6 +182,9 @@ export function Product() {
                   data-main-image
                   src={current ? responsiveImage(current, 900) : undefined}
                   alt={product.name}
+                  loading="lazy"
+                  width={900}
+                  height={675}
                   initial={{ opacity: 0, scale: 1.02 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
@@ -207,7 +210,7 @@ export function Product() {
                     }
                   >
                     {src ? (
-                      <img src={responsiveImage(src, 200)} alt="" loading="lazy" className="h-full w-full object-cover" />
+                      <img src={responsiveImage(src, 200)} alt="" loading="lazy" width={200} height={200} className="h-full w-full object-cover" />
                     ) : (
                       <span className="grid h-full w-full place-items-center bg-paper-2"><IconImage className="h-5 w-5 text-ink" /></span>
                     )}
@@ -225,13 +228,13 @@ export function Product() {
             >
               <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <li>
-                  <Link to="/catalog" className="transition-colors hover:text-ink">Catalog</Link>
+                  <Link to="/catalog" className="max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center transition-colors hover:text-ink">Catalog</Link>
                 </li>
                 {product.categories && (
                   <>
                     <li aria-hidden>/</li>
                     <li>
-                      <Link to={`/category/${product.categories.slug}`} className="text-blue-deep transition-colors hover:text-ink">
+                      <Link to={`/category/${product.categories.slug}`} className="max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center text-blue-deep transition-colors hover:text-ink">
                         {product.categories.name}
                       </Link>
                     </li>

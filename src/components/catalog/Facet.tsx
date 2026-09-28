@@ -8,7 +8,7 @@ interface ChipProps {
 
 function chip(active: boolean) {
   return cn(
-    'shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all',
+    'inline-flex min-h-[44px] shrink-0 items-center rounded-full px-4 text-sm font-semibold transition-all',
     active
       ? 'bg-ink text-paper shadow-[0_6px_16px_-8px_rgba(47,74,60,0.8)]'
       : 'border border-ink/15 text-ink-soft hover:border-ink/40 hover:text-ink',

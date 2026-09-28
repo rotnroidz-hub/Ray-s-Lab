@@ -108,13 +108,16 @@ export function ImageDropzone({ value, onChange, max = 8 }: ImageDropzoneProps) 
               <img
                 src={responsiveImage(url, 300)}
                 alt={`Image ${i + 1}`}
+                loading="lazy"
+                width={300}
+                height={300}
                 className="h-full w-full object-cover"
               />
               <button
                 type="button"
                 onClick={() => void remove(url)}
                 aria-label={`Remove image ${i + 1}`}
-                className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-ink/60 text-paper opacity-0 backdrop-blur transition-opacity hover:bg-stock-no group-hover:opacity-100"
+                className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-ink/60 text-paper opacity-0 backdrop-blur transition-opacity hover:bg-stock-no group-hover:opacity-100 max-lg:h-11 max-lg:w-11"
               >
                 <IconTrash className="h-3.5 w-3.5" />
               </button>

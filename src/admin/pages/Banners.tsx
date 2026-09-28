@@ -181,7 +181,7 @@ export default function Banners() {
                 onClick={() => move(i, -1)}
                 disabled={i === 0 || busy}
                 aria-label="Move up"
-                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30 max-lg:h-11 max-lg:w-11"
               >
                 <IconChevronUp className="h-4 w-4" />
               </button>
@@ -190,7 +190,7 @@ export default function Banners() {
                 onClick={() => move(i, 1)}
                 disabled={i === (banners?.length ?? 0) - 1 || busy}
                 aria-label="Move down"
-                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30 max-lg:h-11 max-lg:w-11"
               >
                 <IconChevronDown className="h-4 w-4" />
               </button>
@@ -201,6 +201,9 @@ export default function Banners() {
                 <img
                   src={responsiveImage(b.image_url, 600)}
                   alt=""
+                  loading="lazy"
+                  width={630}
+                  height={270}
                   className="aspect-[21/9] w-full rounded-xl object-cover"
                 />
               ) : (
@@ -224,7 +227,7 @@ export default function Banners() {
                       type="button"
                       onClick={() => setConfirmingId(null)}
                       disabled={busy}
-                      className="rounded-lg px-2 py-1 font-medium text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40"
+                      className="rounded-lg px-2 py-1 font-medium text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40 max-lg:min-h-[44px]"
                     >
                       Cancel
                     </button>
@@ -232,7 +235,7 @@ export default function Banners() {
                       type="button"
                       onClick={() => void remove(b.id)}
                       disabled={busy}
-                      className="rounded-lg bg-stock-no px-2 py-1 font-medium text-paper transition-colors hover:brightness-95 disabled:opacity-40"
+                      className="rounded-lg bg-stock-no px-2 py-1 font-medium text-paper transition-colors hover:brightness-95 disabled:opacity-40 max-lg:min-h-[44px]"
                     >
                       Delete
                     </button>
@@ -263,7 +266,7 @@ export default function Banners() {
                       type="button"
                       onClick={() => setConfirmingId(b.id)}
                       disabled={busy}
-                      className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no disabled:opacity-40"
+                      className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no disabled:opacity-40 max-lg:h-11 max-lg:w-11"
                       aria-label={`Delete banner ${b.title}`}
                     >
                       <IconTrash className="h-4 w-4" />

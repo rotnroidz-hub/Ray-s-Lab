@@ -200,7 +200,7 @@ export default function Categories() {
                   onClick={() => move(i, -1)}
                   disabled={i === 0 || busy}
                   aria-label="Move up"
-                  className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                  className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30 max-lg:h-11 max-lg:w-11"
                 >
                   <IconChevronUp className="h-4 w-4" />
                 </button>
@@ -209,7 +209,7 @@ export default function Categories() {
                   onClick={() => move(i, 1)}
                   disabled={i === (categories?.length ?? 0) - 1 || busy}
                   aria-label="Move down"
-                  className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30"
+                  className="grid h-6 w-8 place-items-center rounded text-ink-faint hover:bg-ink/5 hover:text-ink disabled:opacity-30 max-lg:h-11 max-lg:w-11"
                 >
                   <IconChevronDown className="h-4 w-4" />
                 </button>
@@ -241,7 +241,7 @@ export default function Categories() {
                     type="button"
                     onClick={() => setConfirmingId(null)}
                     disabled={busy}
-                    className="ml-auto rounded-lg px-2 py-1 font-medium text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40"
+                    className="ml-auto rounded-lg px-2 py-1 font-medium text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-40 max-lg:min-h-[44px]"
                   >
                     Cancel
                   </button>
@@ -249,7 +249,7 @@ export default function Categories() {
                     type="button"
                     onClick={() => void remove(c.id)}
                     disabled={busy}
-                    className="rounded-lg bg-stock-no px-2 py-1 font-medium text-paper transition-colors hover:brightness-95 disabled:opacity-40"
+                    className="rounded-lg bg-stock-no px-2 py-1 font-medium text-paper transition-colors hover:brightness-95 disabled:opacity-40 max-lg:min-h-[44px]"
                   >
                     Delete
                   </button>
@@ -258,7 +258,7 @@ export default function Categories() {
                 <>
                   <div className="flex min-w-0 flex-1 items-center gap-3">
                     {c.image_url ? (
-                      <img src={c.image_url} alt="" className="h-12 w-12 rounded-xl object-cover" />
+                      <img src={c.image_url} alt="" loading="lazy" width={96} height={96} className="h-12 w-12 rounded-xl object-cover" />
                     ) : (
                       <span className="grid h-12 w-12 place-items-center rounded-xl bg-paper-2 text-ink">·</span>
                     )}
@@ -270,7 +270,7 @@ export default function Categories() {
                   <button
                     type="button"
                     onClick={() => startEdit(c)}
-                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-ink/5 hover:text-ink"
+                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-ink/5 hover:text-ink max-lg:h-11 max-lg:w-11"
                     aria-label={`Edit ${c.name}`}
                   >
                     <IconEdit className="h-4 w-4" />
@@ -278,7 +278,7 @@ export default function Categories() {
                   <button
                     type="button"
                     onClick={() => setConfirmingId(c.id)}
-                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no"
+                    className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-stock-no/10 hover:text-stock-no max-lg:h-11 max-lg:w-11"
                     aria-label={`Delete ${c.name}`}
                   >
                     <IconTrash className="h-4 w-4" />

@@ -80,7 +80,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
     >
       <Link
         to={`/product/${product.slug}`}
-        className="block focus:outline-none"
+        className="block"
         aria-label={product.name}
       >
         <div className="media-frame relative aspect-[4/5] transition-shadow duration-300 group-hover:shadow-lift">
@@ -90,6 +90,8 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
               alt={product.name}
               loading="lazy"
               decoding="async"
+              width={700}
+              height={875}
               className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
             />
           ) : (

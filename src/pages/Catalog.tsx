@@ -92,7 +92,7 @@ export function Catalog() {
     <div className="container-site pb-20 pt-10 sm:pt-14">
       <TitlePlate words={['All', 'products']} count={products.count} countLabel="in stock now">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <div className={chipStrip}>
+          <div className={chipStrip} role="group" aria-label="Category">
             <AllChip active={!category} onSelect={() => setFilter('category', undefined)} />
             {categories.map((c) => (
               <CategoryChip
@@ -114,7 +114,7 @@ export function Catalog() {
         </div>
 
         {brandsCapable && brands.length > 0 && (
-          <div className={cn(chipStrip, 'mt-3')}>
+          <div className={cn(chipStrip, 'mt-3')} role="group" aria-label="Brand">
             {brands.map((b) => (
               <BrandChip
                 key={b.id}

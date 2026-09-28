@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCart } from '../../hooks/useCart'
 import { useBrandMenu, useCategories } from '../../hooks/useData'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { CART_TARGET_ID } from '../cart/FlyToCart'
 import { IconCart, IconChevronDown, IconChevronRight, IconClose, IconMenu, IconSearch } from '../ui/Icons'
 import type { BrandMenuEntry } from '../../lib/api'
@@ -10,7 +11,7 @@ import type { BrandMenuEntry } from '../../lib/api'
 function Logo() {
   return (
     <Link to="/" className="flex items-center gap-[11px] text-ink">
-      <img src="/logo-mark.png" alt="" className="h-[46px] w-auto" />
+      <img src="/logo-mark.png" alt="" loading="lazy" width={474} height={424} className="h-[46px] w-auto" />
       <span className="font-display font-extrabold text-[17px] leading-[1.02] tracking-[-0.02em]">
         RAY<br />
         BODY<em className="not-italic text-blue">LAB</em>
@@ -52,19 +53,48 @@ function SearchForm() {
 function BrandsMegaMenu() {
   const { data: menu } = useBrandMenu()
   const [open, setOpen] = useState(false)
+  // The trap only arms when the menu was opened by click or keyboard, never
+  // from mouse hover alone.
+  const [trapArmed, setTrapArmed] = useState(false)
   const [active, setActive] = useState(0)
   const wrapRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (active >= menu.length) setActive(0)
   }, [menu, active])
 
+  const closeMenu = () => {
+    setOpen(false)
+    setTrapArmed(false)
+  }
+
+  useFocusTrap({
+    active: open && trapArmed,
+    containerRef: panelRef,
+    onEscape: () => {
+      closeMenu()
+      triggerRef.current?.focus()
+    },
+    initialFocus: 'none',
+  })
+
+  // Escape while the menu is open from hover only (trap not armed).
+  useEffect(() => {
+    if (!open || trapArmed) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeMenu()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [open, trapArmed])
+
   if (menu.length === 0) return null
 
   const current = menu[Math.min(active, menu.length - 1)]
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = (e: ReactKeyboardEvent) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
       e.preventDefault()
       setActive((i) => (i + 1) % menu.length)
@@ -72,7 +102,7 @@ function BrandsMegaMenu() {
       e.preventDefault()
       setActive((i) => (i - 1 + menu.length) % menu.length)
     } else if (e.key === 'Escape') {
-      setOpen(false)
+      closeMenu()
       triggerRef.current?.focus()
     }
   }
@@ -81,10 +111,23 @@ function BrandsMegaMenu() {
     <div
       ref={wrapRef}
       className="group relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={() => {
+        // Hover may open the menu, but it must never arm the trap. Do not
+        // disarm a menu that was already opened by click or keyboard.
+        if (!open) setTrapArmed(false)
+        setOpen(true)
+      }}
+      onMouseLeave={closeMenu}
       onBlur={(e) => {
-        if (!wrapRef.current?.contains(e.relatedTarget as Node)) setOpen(false)
+        const next = e.relatedTarget as HTMLElement | null
+        if (wrapRef.current?.contains(next)) return
+        closeMenu()
+        // The trap cleanup returns focus to the trigger on deactivate. When
+        // the user tabbed onward, put focus back on the element they chose so
+        // they are not pulled back into the header.
+        if (next && next.isConnected) {
+          window.setTimeout(() => next.focus({ preventScroll: true }), 0)
+        }
       }}
     >
       <button
@@ -92,7 +135,10 @@ function BrandsMegaMenu() {
         type="button"
         aria-haspopup="true"
         aria-expanded={open}
-        onFocus={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true)
+          setTrapArmed(true)
+        }}
         className="inline-flex items-center gap-1.5 rounded-full border border-transparent px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-line hover:bg-card"
       >
         Brands
@@ -104,6 +150,8 @@ function BrandsMegaMenu() {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={panelRef}
+            tabIndex={-1}
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -172,7 +220,14 @@ export function Header() {
   const [brandsOpen, setBrandsOpen] = useState(false)
   const [expandedBrand, setExpandedBrand] = useState<string | null>(null)
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const mobileNavRef = useRef<HTMLElement>(null)
   const location = useLocation()
+
+  useFocusTrap({
+    active: menuOpen,
+    containerRef: mobileNavRef,
+    onEscape: () => setMenuOpen(false),
+  })
 
   // Close menus on navigation.
   useEffect(() => {
@@ -247,6 +302,12 @@ export function Header() {
 
               <button
                 type="button"
+                onPointerDown={() => {
+                  // Disarm the mobile nav trap on pointerdown so it shuts off
+                  // before the cart trap arms on click; never two at once.
+                  setMenuOpen(false)
+                  setSearchOpen(false)
+                }}
                 onClick={openCart}
                 id={CART_TARGET_ID}
                 className="relative grid h-11 w-11 place-items-center rounded-full bg-ink text-paper transition-transform active:scale-95"
@@ -293,12 +354,16 @@ export function Header() {
         <AnimatePresence>
           {menuOpen && (
             <motion.nav
+              ref={mobileNavRef}
+              tabIndex={-1}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Mobile menu"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="overflow-hidden border-t border-ink/8 bg-paper lg:hidden"
-              aria-label="Mobile"
             >
               <div className="container-site flex flex-col py-3">
                 {brandMenu.length > 0 && (
