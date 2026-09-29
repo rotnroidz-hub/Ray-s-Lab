@@ -9,9 +9,11 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(', ')
 
-function getFocusable(root: HTMLElement): HTMLElement[] {
+function getFocusable(root: HTMLElement, respectTabIndex = false): HTMLElement[] {
   return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-    (el) => el.getClientRects().length > 0 || el === document.activeElement,
+    (el) =>
+      (el.getClientRects().length > 0 || el === document.activeElement) &&
+      (!respectTabIndex || el.tabIndex >= 0),
   )
 }
 
@@ -26,6 +28,12 @@ interface UseFocusTrapOptions {
    * trigger is usually already focused).
    */
   initialFocus?: 'container' | 'first' | 'none'
+  /**
+   * When true, elements whose `tabIndex` is negative (e.g. `tabindex="-1"`
+   * buttons) are dropped from the cycle as well, so only explicitly
+   * tabbable elements take part. Default false: unchanged behaviour.
+   */
+  respectTabIndex?: boolean
 }
 
 /**
@@ -41,6 +49,7 @@ export function useFocusTrap({
   containerRef,
   onEscape,
   initialFocus = 'container',
+  respectTabIndex = false,
 }: UseFocusTrapOptions) {
   const openerRef = useRef<Element | null>(null)
   const onEscapeRef = useRef(onEscape)
@@ -52,7 +61,7 @@ export function useFocusTrap({
     const el = containerRef.current
     if (el && initialFocus !== 'none') {
       if (initialFocus === 'first') {
-        const first = getFocusable(el)[0]
+        const first = getFocusable(el, respectTabIndex)[0]
         if (first) first.focus()
         else el.focus()
       } else {
@@ -78,7 +87,7 @@ export function useFocusTrap({
         return
       }
       if (event.key !== 'Tab') return
-      const focusables = getFocusable(el)
+      const focusables = getFocusable(el, respectTabIndex)
       if (focusables.length === 0) {
         event.preventDefault()
         return

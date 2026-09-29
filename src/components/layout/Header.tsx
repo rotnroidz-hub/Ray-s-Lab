@@ -60,6 +60,7 @@ function BrandsMegaMenu() {
   const wrapRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
+  const brandRefs = useRef<(HTMLButtonElement | null)[]>([])
 
   useEffect(() => {
     if (active >= menu.length) setActive(0)
@@ -78,6 +79,7 @@ function BrandsMegaMenu() {
       triggerRef.current?.focus()
     },
     initialFocus: 'none',
+    respectTabIndex: true,
   })
 
   // Escape while the menu is open from hover only (trap not armed).
@@ -95,12 +97,17 @@ function BrandsMegaMenu() {
   const current = menu[Math.min(active, menu.length - 1)]
 
   const handleKeyDown = (e: ReactKeyboardEvent) => {
+    const index = Math.min(active, menu.length - 1)
     if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
       e.preventDefault()
-      setActive((i) => (i + 1) % menu.length)
+      const next = (index + 1) % menu.length
+      setActive(next)
+      brandRefs.current[next]?.focus()
     } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
       e.preventDefault()
-      setActive((i) => (i - 1 + menu.length) % menu.length)
+      const next = (index - 1 + menu.length) % menu.length
+      setActive(next)
+      brandRefs.current[next]?.focus()
     } else if (e.key === 'Escape') {
       closeMenu()
       triggerRef.current?.focus()
@@ -163,11 +170,14 @@ function BrandsMegaMenu() {
               {menu.map((entry, i) => (
                 <button
                   key={entry.brand.id}
+                  ref={(el) => {
+                    brandRefs.current[i] = el
+                  }}
                   type="button"
                   role="option"
                   aria-selected={i === active}
+                  tabIndex={i === active ? 0 : -1}
                   onMouseEnter={() => setActive(i)}
-                  onFocus={() => setActive(i)}
                   className={`flex w-full items-center justify-between gap-2 rounded-[9px] px-3 py-[9px] text-left text-sm transition-colors duration-150 ${
                     i === active ? 'bg-ink text-paper-2' : 'text-ink hover:bg-ink/5'
                   }`}
