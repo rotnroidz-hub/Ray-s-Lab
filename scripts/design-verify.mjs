@@ -13,7 +13,7 @@ let edge = spawn(EDGE, ['--headless=new', '--disable-gpu', '--remote-debugging-p
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 async function waitFor(tries, fn) {
   for (let i = 0; i < tries; i++) {
-    try { const v = await fn(); if (v) return v } catch {}
+    try { const v = await fn(); if (v) return v } catch { }
     await sleep(250)
   }
   return null
@@ -65,29 +65,29 @@ async function main() {
   console.log('grain overlay present:', await evalJs(`(() => { const el = document.querySelector('.tex-grain'); return !!el && getComputedStyle(el).backgroundImage.includes('svg') })()`))
   console.log('banner carousel present:', await evalJs(`!!document.querySelector('section[aria-roledescription="carousel"] img')`))
 
-  // Category page (brandless DB should still load fine)
-  await clickHref('/category/audio')
+  // Category page (real category slug, loaded from the DB)
+  await clickHref('/category/supplement')
   await sleep(3000)
-  console.log('\nSEO @ /category/audio', JSON.stringify(await headInfo(), null, 1))
-  console.log('category has products:', await evalJs(`document.body.innerText.includes('Aria Wireless Headphones')`))
+  console.log('\nSEO @ /category/supplement', JSON.stringify(await headInfo(), null, 1))
+  console.log('category has products:', await evalJs(`document.body.innerText.includes('Myprotein Impact Whey Protein')`))
   console.log('category has Explore more section:', await evalJs(`document.body.innerText.includes('Explore more categories')`))
 
-  // Brand page on brand-less DB -> brand not found but page must not crash
-  const brandResult = await evalJs(`(async () => { const r = await fetch('/brand/jbl'); const txt = await r.text(); return { status: r.status, hasRoot: txt.includes('id="root"') } })()`)
-  console.log('\n/brand/jbl SSR-ish fetch:', JSON.stringify(brandResult))
+  // Brand page must serve the SPA shell without crashing
+  const brandResult = await evalJs(`(async () => { const r = await fetch('/brand/ox-nutrition'); const txt = await r.text(); return { status: r.status, hasRoot: txt.includes('id="root"') } })()`)
+  console.log('\n/brand/ox-nutrition SSR-ish fetch:', JSON.stringify(brandResult))
 
-  // Catalog page brand facet row should gracefully hide
+  // Catalog brand chip strip: role="group" aria-label="Brand" (src/pages/Catalog.tsx)
   await evalJs(`history.pushState({}, '', '/catalog')`)
   await send('Page.reload', { ignoreCache: true })
   await sleep(3000)
   console.log('\nSEO @ /catalog', JSON.stringify(await headInfo(), null, 1))
-  console.log('catalog has Brand facet row:', await evalJs(`!!document.querySelector('[role="group"][aria-label="Brand"]')`))
-  console.log('catalog brand row shows only "All" (pre-migration):', await evalJs(`(() => { const g = document.querySelector('[role="group"][aria-label="Brand"]'); return g ? [...g.querySelectorAll('button')].map(b => b.innerText).join(',') : null })()`))
+  console.log('catalog has brand chip strip:', await evalJs(`!!document.querySelector('div[role="group"][aria-label="Brand"]')`))
+  console.log('catalog brand chip strip chips:', await evalJs(`(() => { const g = document.querySelector('div[role="group"][aria-label="Brand"]'); return g ? [...g.querySelectorAll('button[aria-pressed]')].map(b => b.innerText).join(',') : null })()`))
 
   // SEO @ /catalog product
-  await clickHref('/product/pulse-portable-speaker')
+  await clickHref('/product/myprotein-impact-whey-protein')
   await sleep(3000)
-  console.log('\nSEO @ /product/pulse', JSON.stringify(await headInfo(), null, 1))
+  console.log('\nSEO @ /product/myprotein-impact-whey-protein', JSON.stringify(await headInfo(), null, 1))
 
   console.log('\n=== console errors ===')
   console.log(consoleLogs.length ? consoleLogs.join('\n') : '(none)')
