@@ -63,7 +63,7 @@ export default function ProductForm() {
   const [loading, setLoading] = useState(isEditing)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [slugTouched, setSlugTouched] = useState(false)
+  const [slugTouched, setSlugTouched] = useState(isEditing)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
   useSeo({
@@ -205,7 +205,14 @@ export default function ProductForm() {
                 placeholder="e.g. Aria Wireless Headphones"
               />
             </Field>
-            <Field label="Slug" hint="Clean URL — auto-generated from the name.">
+            <Field
+              label="Slug"
+              hint={
+                isEditing
+                  ? 'Changing this breaks the old link and any links already shared. It no longer follows the name.'
+                  : 'Clean URL — auto-generated from the name.'
+              }
+            >
               <input
                 className={inputClass}
                 value={form.slug}
