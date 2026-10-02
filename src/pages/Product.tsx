@@ -93,7 +93,7 @@ export function Product() {
 
   useSeo({
     title: product?.name,
-    description: product?.description.slice(0, 160),
+    description: product?.description?.slice(0, 160),
     canonicalPath: product ? `/product/${product.slug}` : undefined,
     ogImage: product?.images[0] ?? undefined,
     jsonLd: product ? productJsonLd(product, `/product/${product.slug}`) : undefined,
@@ -182,7 +182,8 @@ export function Product() {
                   data-main-image
                   src={current ? responsiveImage(current, 900) : undefined}
                   alt={product.name}
-                  loading="lazy"
+                  loading="eager"
+                  fetchPriority="high"
                   width={900}
                   height={675}
                   initial={{ opacity: 0, scale: 1.02 }}
