@@ -39,27 +39,40 @@ function esc(text) {
 
 async function main() {
   const [{ data: products }, { data: categories }, { data: brands }] = await Promise.all([
-    supabase.from('products').select('slug, updated_at').eq('is_active', true),
-    supabase.from('categories').select('slug'),
-    supabase.from('brands').select('slug'),
+    supabase.from('products').select('slug, updated_at, brand_id, category_id').eq('is_active', true),
+    supabase.from('categories').select('id, slug, updated_at'),
+    supabase.from('brands').select('id, slug, updated_at'),
   ])
 
+  // Only emit brands/categories that actually have at least one active product.
+  const categoryIdsWithProducts = new Set(
+    (products ?? []).map((p) => p.category_id).filter(Boolean),
+  )
+  const brandIdsWithProducts = new Set((products ?? []).map((p) => p.brand_id).filter(Boolean))
+
   const urls = [
-    { loc: siteUrl + '/', priority: '1.0' },
-    { loc: siteUrl + '/catalog', priority: '0.9' },
+    { loc: siteUrl + '/' },
+    { loc: siteUrl + '/catalog' },
   ]
 
   for (const c of categories ?? []) {
-    urls.push({ loc: `${siteUrl}/category/${esc(c.slug)}`, priority: '0.8' })
+    if (!categoryIdsWithProducts.has(c.id)) continue
+    urls.push({
+      loc: `${siteUrl}/category/${esc(c.slug)}`,
+      lastmod: c.updated_at ? new Date(c.updated_at).toISOString().slice(0, 10) : undefined,
+    })
   }
   for (const b of brands ?? []) {
-    urls.push({ loc: `${siteUrl}/brand/${esc(b.slug)}`, priority: '0.7' })
+    if (!brandIdsWithProducts.has(b.id)) continue
+    urls.push({
+      loc: `${siteUrl}/brand/${esc(b.slug)}`,
+      lastmod: b.updated_at ? new Date(b.updated_at).toISOString().slice(0, 10) : undefined,
+    })
   }
   for (const p of products ?? []) {
     urls.push({
       loc: `${siteUrl}/product/${esc(p.slug)}`,
       lastmod: p.updated_at ? new Date(p.updated_at).toISOString().slice(0, 10) : undefined,
-      priority: '0.8',
     })
   }
 
@@ -67,8 +80,6 @@ async function main() {
     .map(
       (u) => `  <url>
     <loc>${u.loc}</loc>${u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : ''}
-    <changefreq>daily</changefreq>
-    <priority>${u.priority}</priority>
   </url>`,
     )
     .join('\n')
