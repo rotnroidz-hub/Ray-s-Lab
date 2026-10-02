@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
             The page hit a snag
           </h1>
           <p className="mt-3 text-sm text-ink-faint">
-            An unexpected error interrupted the page. Reload to get back to shopping — your cart is
+            An unexpected error interrupted the page. Reload to get back to shopping. Your cart is
             safe.
           </p>
           {import.meta.env.DEV && error.message && (

@@ -42,8 +42,7 @@ export interface SeoOptions {
 
 /** Branded default description — what the shop actually sells. */
 const DEFAULT_DESCRIPTION =
-  'Ray BodyLab curates premium audio, wearables and everyday accessories. ' +
-  'Browse the catalog, build your order and check out directly over WhatsApp.'
+  'Browse whey protein, creatine, zinc and more from Optimum Nutrition, Myprotein and other popular brands. Pick your products and order via WhatsApp.'
 
 /** Applies SEO side-effects immediately (used on non-React entry too if needed). */
 export function applySeo({ title, description, canonicalPath, robots, ogImage, jsonLd }: SeoOptions) {

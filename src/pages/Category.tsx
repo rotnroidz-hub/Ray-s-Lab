@@ -21,7 +21,7 @@ export function Category() {
   useSeo({
     title: category?.name ?? 'Category',
     description: category
-      ? `Browse ${category.name} - shop the collection and order over WhatsApp.`
+      ? `Browse our ${category.name} range and order over WhatsApp.`
       : undefined,
     canonicalPath: category ? `/category/${category.slug}` : undefined,
     ogImage: category?.image_url ?? undefined,

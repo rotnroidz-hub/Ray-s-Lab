@@ -21,7 +21,7 @@ export function Brand() {
   useSeo({
     title: brand ? `${brand.name} products` : 'Brand',
     description: brand
-      ? `Shop ${brand.name} at ${SITE_NAME} - browse the range and order over WhatsApp.`
+      ? `Shop ${brand.name} at ${SITE_NAME}. Browse the range and order over WhatsApp.`
       : undefined,
     canonicalPath: brand ? `/brand/${brand.slug}` : undefined,
     ogImage: brand?.image_url ?? undefined,

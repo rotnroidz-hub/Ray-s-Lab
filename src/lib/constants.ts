@@ -1,6 +1,6 @@
 export const SITE_NAME = import.meta.env.VITE_SITE_NAME || 'Ray BodyLab'
 export const SITE_TAGLINE =
-  import.meta.env.VITE_SITE_TAGLINE || 'Audio, wearables & everyday essentials — ordered over WhatsApp.'
+  import.meta.env.VITE_SITE_TAGLINE || 'Whey Protein, Creatine & Supplements'
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || '').replace(/\/$/, '')
 export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || ''
 export const WHATSAPP_INTRO =

@@ -50,7 +50,7 @@ export function Footer() {
             </a>
           ) : (
             <p className="mt-4 text-sm text-paper/70">
-              Orders &amp; enquiries via WhatsApp - number coming soon.
+              Orders and enquiries via WhatsApp.
             </p>
           )}
         </div>
@@ -58,8 +58,8 @@ export function Footer() {
         <div>
           <p className="eyebrow text-paper/60">Ordering</p>
           <p className="mt-4 text-sm leading-relaxed text-paper/70">
-            No accounts, no payment gateways - build your basket and send it to us. We reply with
-            pricing, availability and delivery details.
+            No accounts and no payment gateways. Build your basket and send it to us, and we reply
+            with pricing, availability and delivery details.
           </p>
         </div>
       </div>
