@@ -89,23 +89,63 @@ export function useSeo(options: SeoOptions) {
   }, [options.title, options.description, options.canonicalPath, options.robots, options.ogImage])
 }
 
-export function productJsonLd(product: Product, canonicalPath: string) {
-  return {
+/**
+ * Breadcrumb nodes must mirror the visible breadcrumb in Product.tsx exactly:
+ * Catalog / Category / Brand, same labels, same hrefs, same order.
+ */
+function breadcrumbItems(product: Product): { name: string; url: string }[] {
+  const items = [{ name: 'Catalog', url: `${SITE_URL}/catalog` }]
+  if (product.categories) {
+    items.push({ name: product.categories.name, url: `${SITE_URL}/category/${product.categories.slug}` })
+  }
+  if (product.brands) {
+    items.push({ name: product.brands.name, url: `${SITE_URL}/brand/${product.brands.slug}` })
+  }
+  return items
+}
+
+/**
+ * Returns a JSON-LD array of two independent top-level nodes (Product +
+ * BreadcrumbList). A plain array — not `@graph` — because the two nodes share
+ * no relationship and `applySeo` writes exactly one <script id="route-jsonld">,
+ * which an array lets us fill with both.
+ */
+export function productJsonLd(product: Product, canonicalPath: string): unknown[] {
+  const url = `${SITE_URL}${canonicalPath}`
+
+  const productNode: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
+    url,
     description: product.description,
-    image: product.images[0] ?? null,
     sku: product.slug,
     offers: {
       '@type': 'Offer',
-      url: `${SITE_URL}${canonicalPath}`,
-      priceCurrency: import.meta.env.VITE_CURRENCY || 'USD',
-      price: product.price,
+      url,
+      priceCurrency: import.meta.env.VITE_CURRENCY || 'MYR',
+      price: product.price.toFixed(2),
       availability:
         product.stock_status === 'available'
           ? 'https://schema.org/InStock'
           : 'https://schema.org/OutOfStock',
     },
   }
+  if (product.images.length > 0) productNode.image = product.images
+  if (product.brands?.name) {
+    productNode.brand = { '@type': 'Brand', name: product.brands.name }
+  }
+
+  const breadcrumbNode = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems(product).map((crumb, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: crumb.name,
+      item: crumb.url,
+    })),
+  }
+
+  return [productNode, breadcrumbNode]
 }

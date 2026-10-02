@@ -231,16 +231,26 @@ export function Product() {
                 <li>
                   <Link to="/catalog" className="max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center transition-colors hover:text-ink">Catalog</Link>
                 </li>
-                {product.categories && (
-                  <>
-                    <li aria-hidden>/</li>
-                    <li>
-                      <Link to={`/category/${product.categories.slug}`} className="max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center text-blue-deep transition-colors hover:text-ink">
-                        {product.categories.name}
-                      </Link>
-                    </li>
-                  </>
-                )}
+        {product.categories && (
+          <>
+            <li aria-hidden>/</li>
+            <li>
+              <Link to={`/category/${product.categories.slug}`} className="max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center text-blue-deep transition-colors hover:text-ink">
+                {product.categories.name}
+              </Link>
+            </li>
+          </>
+        )}
+        {product.brands && (
+          <>
+            <li aria-hidden>/</li>
+            <li>
+              <Link to={`/brand/${product.brands.slug}`} className="max-lg:inline-flex max-lg:min-h-[44px] max-lg:min-w-[44px] max-lg:items-center text-blue-deep transition-colors hover:text-ink">
+                {product.brands.name}
+              </Link>
+            </li>
+          </>
+        )}
               </ol>
             </nav>
 
