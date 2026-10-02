@@ -7,4 +7,4 @@ Disallow: /
 Disallow: /admin
 Disallow: /search
 
-Sitemap: https://ray-bodylab.vercel.app/sitemap.xml
+Sitemap: https://ray-bodylab.pages.dev/sitemap.xml

@@ -1,83 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ray-bodylab.vercel.app/</loc>
+    <loc>https://ray-bodylab.pages.dev/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/catalog</loc>
+    <loc>https://ray-bodylab.pages.dev/catalog</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/category/audio</loc>
+    <loc>https://ray-bodylab.pages.dev/category/supplement</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/category/wearables</loc>
+    <loc>https://ray-bodylab.pages.dev/category/creatine</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/category/accessories</loc>
+    <loc>https://ray-bodylab.pages.dev/category/zinc</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/brand/jbl</loc>
+    <loc>https://ray-bodylab.pages.dev/brand/ox-nutrition</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/brand/sony</loc>
+    <loc>https://ray-bodylab.pages.dev/brand/on-nutrition</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/brand/garmin</loc>
+    <loc>https://ray-bodylab.pages.dev/brand/my-protein</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/brand/anker</loc>
+    <loc>https://ray-bodylab.pages.dev/brand/muscle-tech</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/product/pulse-portable-speaker</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://ray-bodylab.pages.dev/product/100-whey-gold-standard-optimum-nutrition</loc>
+    <lastmod>2026-09-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/product/ridge-smart-watch</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://ray-bodylab.pages.dev/product/myprotein-impact-whey-protein</loc>
+    <lastmod>2026-09-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/product/trail-runner-band</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://ray-bodylab.pages.dev/product/blackmores-bio-zinc-plus-advanced-90s</loc>
+    <lastmod>2026-09-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ray-bodylab.vercel.app/product/voyage-canvas-backpack</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ray-bodylab.vercel.app/product/arc-desk-lamp</loc>
-    <lastmod>2026-08-14</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ray-bodylab.vercel.app/product/aria-wireless-headphones</loc>
-    <lastmod>2026-08-14</lastmod>
+    <loc>https://ray-bodylab.pages.dev/product/optimum-nutrition-micronized-creatine-powder-er</loc>
+    <lastmod>2026-10-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
