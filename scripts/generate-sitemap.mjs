@@ -1,13 +1,16 @@
 // Generates a fresh sitemap.xml from the Supabase catalog.
 // Usage:  npm run generate:sitemap
-// Reads VITE_SITE_URL, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY from .env.
+// Reads VITE_SITE_URL, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY from the
+// environment, falling back to .env when that file exists.
 // Run it (and commit public/sitemap.xml) whenever products change, or wire it
 // into your CI/Vercel build.
 
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
 
-function loadEnv() {
+/** Parse .env into a plain object (comments skipped, `=` in values kept). */
+function loadEnvFile() {
+  if (!existsSync('.env')) return {}
   const raw = readFileSync('.env', 'utf8')
   const env = {}
   for (const line of raw.split('\n')) {
@@ -17,13 +20,28 @@ function loadEnv() {
   return env
 }
 
+/**
+ * `.env` is gitignored, so it does not exist on the CI build machine. Read it
+ * only when present, and let real environment variables win over file values.
+ */
+function loadEnv() {
+  return { ...loadEnvFile(), ...process.env }
+}
+
 const env = loadEnv()
 const siteUrl = (env.VITE_SITE_URL || '').replace(/\/$/, '')
 const supabaseUrl = env.VITE_SUPABASE_URL
 const anonKey = env.VITE_SUPABASE_ANON_KEY
 
-if (!siteUrl || !supabaseUrl || !anonKey) {
-  console.error('Missing VITE_SITE_URL / VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY in .env')
+const missing = [
+  !siteUrl && 'VITE_SITE_URL',
+  !supabaseUrl && 'VITE_SUPABASE_URL',
+  !anonKey && 'VITE_SUPABASE_ANON_KEY',
+].filter(Boolean)
+
+if (missing.length > 0) {
+  console.error(`Missing required environment variable(s): ${missing.join(', ')}`)
+  console.error('Set them in .env (locally) or in the build environment (CI).')
   process.exit(1)
 }
 
