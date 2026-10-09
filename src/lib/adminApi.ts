@@ -265,6 +265,31 @@ export async function countCheckoutsThisWeek(): Promise<number> {
   return count ?? 0
 }
 
+// --- Publish ---------------------------------------------------------------
+
+/**
+ * Trigger a Cloudflare Pages rebuild so the build-time artifacts that data
+ * edits do not regenerate (sitemap.xml, prerendered per-route meta tags) pick
+ * up the current catalog. The Pages Function re-verifies the admin session
+ * server-side via Supabase rpc/is_admin — the same predicate as the RLS
+ * write policies — and then POSTs to the deploy hook.
+ */
+export async function publishChangesAdmin(): Promise<{ ok: boolean; status: number }> {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  if (!token) throw new Error('Your session has expired. Sign in again to publish.')
+
+  const res = await fetch('/api/publish', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const body = (await res.json().catch(() => null)) as { ok?: boolean; status?: number; error?: string } | null
+  if (!res.ok) {
+    throw new Error(body?.error || `Publish failed (HTTP ${res.status})`)
+  }
+  return { ok: body?.ok === true, status: body?.status ?? res.status }
+}
+
 // --- Storage ----------------------------------------------------------------
 
 const BUCKET = 'product-images'

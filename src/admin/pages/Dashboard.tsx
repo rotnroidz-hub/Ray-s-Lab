@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   countCheckoutsThisWeek,
   listBrandsAdmin,
   listCategoriesAdmin,
   listProductsAdmin,
+  publishChangesAdmin,
 } from '../../lib/adminApi'
 import { useSeo } from '../../lib/seo'
 import { IconArrowRight, IconTag } from '../../components/ui/Icons'
+import { Button } from '../../components/ui/Button'
 
 function statCards(
   productCount: number | null,
@@ -29,6 +31,33 @@ export default function Dashboard() {
   const [categories, setCategories] = useState<number | null>(null)
   const [brands, setBrands] = useState<number | null>(null)
   const [checkouts, setCheckouts] = useState<number | null>(null)
+  const [publishState, setPublishState] = useState<'idle' | 'publishing' | 'success' | 'error'>('idle')
+  const [publishMessage, setPublishMessage] = useState('')
+  const [cooldown, setCooldown] = useState(false)
+  const cooldownTimer = useRef<number | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (cooldownTimer.current !== null) window.clearTimeout(cooldownTimer.current)
+    }
+  }, [])
+
+  async function handlePublish() {
+    if (publishState === 'publishing' || cooldown) return
+    setPublishState('publishing')
+    setPublishMessage('')
+    try {
+      await publishChangesAdmin()
+      setPublishState('success')
+      setPublishMessage('Publish triggered — the new build takes 1–2 minutes to go live.')
+      // Rate-limit: don't let a double-click queue two builds.
+      setCooldown(true)
+      cooldownTimer.current = window.setTimeout(() => setCooldown(false), 60_000)
+    } catch (err) {
+      setPublishState('error')
+      setPublishMessage(err instanceof Error ? err.message : 'Publish failed. Try again.')
+    }
+  }
 
   useEffect(() => {
     listProductsAdmin().then((p) => setProducts(p.length)).catch(() => setProducts(null))
@@ -87,6 +116,39 @@ export default function Dashboard() {
             New product form <IconArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </span>
         </Link>
+      </div>
+
+      <div className="mt-4 rounded-3xl border border-ink/10 bg-paper-2 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-display text-xl font-semibold text-ink">Publish changes</p>
+            <p className="mt-1 text-sm text-ink-faint">
+              Publishes catalog changes to the live site — sitemap and link previews. Takes 1–2 minutes.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="dark"
+            onClick={() => void handlePublish()}
+            disabled={publishState === 'publishing' || cooldown}
+          >
+            {publishState === 'publishing'
+              ? 'Publishing…'
+              : cooldown
+                ? 'Published'
+                : 'Publish changes'}
+          </Button>
+        </div>
+        {publishMessage ? (
+          <p
+            role={publishState === 'error' ? 'alert' : 'status'}
+            className={`mt-4 rounded-xl px-4 py-3 text-sm font-medium ${
+              publishState === 'error' ? 'bg-stock-no/10 text-stock-no' : 'bg-stock-ok-soft text-stock-ok'
+            }`}
+          >
+            {publishMessage}
+          </p>
+        ) : null}
       </div>
     </div>
   )
