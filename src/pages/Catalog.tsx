@@ -2,7 +2,6 @@ import { useSearchParams } from 'react-router-dom'
 import { useBrands, useBrandsCapable, useCategories, useProducts } from '../hooks/useData'
 import { useSeo } from '../lib/seo'
 import { ProductGrid } from '../components/catalog/ProductGrid'
-import { CategoryBento } from '../components/catalog/CategoryBento'
 import { TitlePlate } from '../components/ui/TitlePlate'
 import { LinkButton } from '../components/ui/Button'
 import { IconChevronDown, IconSearch } from '../components/ui/Icons'
@@ -128,15 +127,13 @@ export function Catalog() {
       </TitlePlate>
 
       <div className="mt-10">
-        <CategoryBento />
+        <ProductGrid
+          products={products.data}
+          loading={products.loading}
+          hasMore={products.hasMore}
+          onLoadMore={products.loadMore}
+        />
       </div>
-
-      <ProductGrid
-        products={products.data}
-        loading={products.loading}
-        hasMore={products.hasMore}
-        onLoadMore={products.loadMore}
-      />
 
       {!products.loading && products.data.length === 0 && (
         <div className="py-24 text-center">
