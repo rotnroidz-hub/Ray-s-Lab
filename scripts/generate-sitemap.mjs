@@ -5,28 +5,9 @@
 // Run it (and commit public/sitemap.xml) whenever products change, or wire it
 // into your CI/Vercel build.
 
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { writeFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
-
-/** Parse .env into a plain object (comments skipped, `=` in values kept). */
-function loadEnvFile() {
-  if (!existsSync('.env')) return {}
-  const raw = readFileSync('.env', 'utf8')
-  const env = {}
-  for (const line of raw.split('\n')) {
-    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/)
-    if (m) env[m[1]] = m[2]
-  }
-  return env
-}
-
-/**
- * `.env` is gitignored, so it does not exist on the CI build machine. Read it
- * only when present, and let real environment variables win over file values.
- */
-function loadEnv() {
-  return { ...loadEnvFile(), ...process.env }
-}
+import { fetchActiveCatalog, loadEnv } from './lib/catalog.mjs'
 
 const env = loadEnv()
 const siteUrl = (env.VITE_SITE_URL || '').replace(/\/$/, '')
@@ -56,38 +37,31 @@ function esc(text) {
 }
 
 async function main() {
-  const [{ data: products }, { data: categories }, { data: brands }] = await Promise.all([
-    supabase.from('products').select('slug, updated_at, brand_id, category_id').eq('is_active', true),
-    supabase.from('categories').select('id, slug, updated_at'),
-    supabase.from('brands').select('id, slug, updated_at'),
-  ])
-
-  // Only emit brands/categories that actually have at least one active product.
-  const categoryIdsWithProducts = new Set(
-    (products ?? []).map((p) => p.category_id).filter(Boolean),
-  )
-  const brandIdsWithProducts = new Set((products ?? []).map((p) => p.brand_id).filter(Boolean))
+  // Route set + is_active/FK filtering shared with scripts/prerender-meta.mjs.
+  const { products, categories, brands } = await fetchActiveCatalog(supabase, {
+    product: 'slug, updated_at, brand_id, category_id',
+    category: 'id, slug, updated_at',
+    brand: 'id, slug, updated_at',
+  })
 
   const urls = [
     { loc: siteUrl + '/' },
     { loc: siteUrl + '/catalog' },
   ]
 
-  for (const c of categories ?? []) {
-    if (!categoryIdsWithProducts.has(c.id)) continue
+  for (const c of categories) {
     urls.push({
       loc: `${siteUrl}/category/${esc(c.slug)}`,
       lastmod: c.updated_at ? new Date(c.updated_at).toISOString().slice(0, 10) : undefined,
     })
   }
-  for (const b of brands ?? []) {
-    if (!brandIdsWithProducts.has(b.id)) continue
+  for (const b of brands) {
     urls.push({
       loc: `${siteUrl}/brand/${esc(b.slug)}`,
       lastmod: b.updated_at ? new Date(b.updated_at).toISOString().slice(0, 10) : undefined,
     })
   }
-  for (const p of products ?? []) {
+  for (const p of products) {
     urls.push({
       loc: `${siteUrl}/product/${esc(p.slug)}`,
       lastmod: p.updated_at ? new Date(p.updated_at).toISOString().slice(0, 10) : undefined,
