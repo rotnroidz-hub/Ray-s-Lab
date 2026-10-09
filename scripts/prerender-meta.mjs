@@ -4,15 +4,18 @@
 //
 // Run AFTER `vite build` (wired into `npm run build`): reads dist/index.html
 // as the template, queries Supabase for the same route set
-// generate-sitemap.mjs emits, and writes dist/<route>/index.html — e.g.
-// dist/product/100-whey-gold-standard-optimum-nutrition/index.html, which
-// Cloudflare Pages serves for the extensionless URL.
+// generate-sitemap.mjs emits, and writes dist/<route>.html — e.g.
+// dist/product/100-whey-gold-standard-optimum-nutrition.html. Cloudflare Pages
+// serves `<route>.html` at the extensionless `<route>` with a 200; a
+// dist/<route>/index.html layout would instead 308-redirect every hit to the
+// trailing-slash form, adding a hop before our slash-free canonical/JSON-LD
+// URLs. Top-level (catalog.html) and nested files both work the same way.
 //
 // dist/index.html itself is never written: it stays the homepage.
 //
 // Usage:  node scripts/prerender-meta.mjs
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { createClient } from '@supabase/supabase-js'
 import { fetchActiveCatalog, loadEnv } from './lib/catalog.mjs'
@@ -170,7 +173,18 @@ async function main() {
       console.warn(`prerender-meta: skipped unsafe slug in ${route.path}`)
       continue
     }
-    const file = join('dist', segment, 'index.html')
+    // dist/<route>.html, not dist/<route>/index.html — the directory layout
+    // makes Cloudflare 308 the extensionless URL to its trailing-slash form.
+    const file = join('dist', `${segment}.html`)
+    if (existsSync(file)) {
+      // Re-runs overwrite our own output (identified by the canonical link);
+      // anything else at that path is a build asset and must not be clobbered.
+      const own = !statSync(file).isDirectory() && readFileSync(file, 'utf8').includes('<link rel="canonical"')
+      if (!own) {
+        console.error(`prerender-meta: refusing to overwrite ${file} — collides with existing build output`)
+        process.exit(1)
+      }
+    }
     mkdirSync(dirname(file), { recursive: true })
     writeFileSync(file, render(route))
     counts[kind] = (counts[kind] ?? 0) + 1
