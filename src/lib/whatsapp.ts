@@ -33,7 +33,10 @@ export function buildOrderMessage(lines: OrderLine[], name?: string, notes?: str
 
   const body = parts.join('\n')
   // Tell WhatsApp we want "ta" (all), not the phone contact sheet.
-  return `${body}\n\n— sent from ${location.origin}`
+  // NBSP from Intl currency formatting becomes a plain space so the text
+  // param never carries %C2%A0 (which the wa.me error path re-encodes to
+  // %25C2%25A0).
+  return `${body.replace(/\u00A0/g, ' ')}\n\n— sent from ${location.origin}`
 }
 
 /** Convenience wrapper for a cart snapshot. */
