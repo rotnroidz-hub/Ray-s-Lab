@@ -452,7 +452,7 @@ function BestSellersRail() {
         kicker="Moving fastest right now"
         words={['Best', 'sellers']}
         count={bestSellers.length}
-        countLabel="this month"
+        countLabel="this week"
       >
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <p className="max-w-[52ch] text-[15.5px] text-ink-soft">
