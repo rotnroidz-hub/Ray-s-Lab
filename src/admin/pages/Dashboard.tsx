@@ -71,7 +71,8 @@ export default function Dashboard() {
       <p className="eyebrow">Overview</p>
       <h1 className="mt-1 font-display text-3xl font-semibold text-ink">Welcome back</h1>
       <p className="mt-2 text-sm text-ink-faint">
-        Manage your catalog from here. Changes go live on the storefront immediately.
+        Manage your catalog from here. Product changes appear on the storefront immediately —
+        the sitemap and link previews only refresh after a Publish.
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

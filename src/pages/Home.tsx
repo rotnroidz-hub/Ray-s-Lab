@@ -456,7 +456,7 @@ function BestSellersRail() {
       >
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <p className="max-w-[52ch] text-[15.5px] text-ink-soft">
-            Ranked by what actually left the shelf over the last seven days.
+            Ranked by what people are ordering most this week.
           </p>
           <div className="ml-auto flex gap-[7px] [@media(hover:none)]:hidden">
             <button
@@ -518,7 +518,9 @@ export function Home() {
           >
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
               <p className="max-w-[52ch] text-[15.5px] text-ink-soft">
-                The two pieces our customers message about most, week after week.
+                The{' '}
+                {featured.length === 1 ? 'pick' : `${featured.length} picks`} our customers
+                message about most, week after week.
               </p>
               <LinkButton to="/catalog" variant="outline">
                 See all products
