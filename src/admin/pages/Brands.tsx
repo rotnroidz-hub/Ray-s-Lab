@@ -7,14 +7,15 @@ import {
 } from '../../lib/adminApi'
 import { useSeo } from '../../lib/seo'
 import { cn, slugify } from '../../lib/utils'
+import { brandChipPaint, HEX_COLOR_RE } from '../../lib/brandColor'
 import type { Brand } from '../../lib/types'
 import { Skeleton } from '../../components/ui/Skeleton'
 import { Button } from '../../components/ui/Button'
 import { Field, inputClass } from '../components/Fields'
 import { IconEdit, IconPlus, IconTrash } from '../../components/ui/Icons'
 
-/** Mirrors the DB CHECK (brands_color_*_hex_check): #RRGGBB only. */
-const HEX_RE = /^#[0-9A-Fa-f]{6}$/
+/** Mirrors the DB CHECK (brands_color_*_hex_check) via the shared helper. */
+const HEX_RE = HEX_COLOR_RE
 
 interface Editable {
   name: string
@@ -72,18 +73,18 @@ function ColourField({
 }
 
 function ChipPreview({ label, primary, secondary }: { label: string; primary: string; secondary: string }) {
-  const p = primary.trim()
-  const s = secondary.trim()
-  const gradient = HEX_RE.test(p) && HEX_RE.test(s)
+  // Same helper the storefront chips use, so the preview cannot drift from
+  // what /catalog actually renders.
+  const paint = brandChipPaint(primary.trim() || null, secondary.trim() || null)
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-sm font-semibold text-ink">Preview</span>
       <span
         className={cn(
           'inline-flex min-h-[44px] max-w-[220px] items-center truncate rounded-full border px-4 text-[13.5px] font-medium',
-          gradient ? 'border-ink/10 text-paper-2' : 'border-line bg-card text-ink',
+          paint ? 'border-ink/10' : 'border-line bg-card text-ink',
         )}
-        style={gradient ? { backgroundImage: `linear-gradient(135deg, ${p}, ${s})` } : undefined}
+        style={paint ? { backgroundImage: paint.backgroundImage, color: paint.color } : undefined}
       >
         {label.trim() || 'Brand name'}
       </span>

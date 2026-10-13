@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import { useBrands, useBrandsCapable, useCategories, useProducts } from '../hooks/useData'
 import { useSeo } from '../lib/seo'
+import { brandChipPaint, type BrandChipPaint } from '../lib/brandColor'
 import { ProductGrid } from '../components/catalog/ProductGrid'
 import { TitlePlate } from '../components/ui/TitlePlate'
 import { LinkButton } from '../components/ui/Button'
@@ -23,7 +24,16 @@ const chipStrip =
   'max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden ' +
   'max-sm:[mask-image:linear-gradient(90deg,#000_calc(100%_-_24px),transparent)]'
 
-function chipClass(active: boolean) {
+function chipClass(active: boolean, painted = false) {
+  if (painted) {
+    // The gradient supplies the background and label colour (inline styles).
+    // Active stays unmistakable via a solid ink border plus a ring — no
+    // layout shift, and it reads clearly even over a dark brand gradient.
+    return cn(
+      'inline-flex shrink-0 snap-start min-h-[44px] items-center gap-[7px] rounded-full border bg-transparent px-4 text-[13.5px] font-medium transition-all',
+      active ? 'border-ink ring-2 ring-ink' : 'border-line hover:border-ink/40',
+    )
+  }
   return cn(
     'inline-flex shrink-0 snap-start min-h-[44px] items-center gap-[7px] rounded-full border px-4 text-[13.5px] font-medium transition-all',
     active
@@ -32,11 +42,34 @@ function chipClass(active: boolean) {
   )
 }
 
-function Chip({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
+function Chip({
+  label,
+  count,
+  active,
+  onClick,
+  paint,
+}: {
+  label: string
+  count: number
+  active: boolean
+  onClick: () => void
+  paint?: BrandChipPaint | null
+}) {
   return (
-    <button type="button" onClick={onClick} aria-pressed={active} className={chipClass(active)}>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={chipClass(active, Boolean(paint))}
+      style={paint ? { backgroundImage: paint.backgroundImage, color: paint.color } : undefined}
+    >
       {label}
-      <span className={cn('font-mono text-[11.5px]', active ? 'text-blue' : 'text-ink-faint')}>{count}</span>
+      <span
+        className={cn('font-mono text-[11.5px]', !paint && (active ? 'text-blue' : 'text-ink-faint'))}
+        style={paint ? { color: 'currentColor', opacity: 0.72 } : undefined}
+      >
+        {count}
+      </span>
     </button>
   )
 }
@@ -53,7 +86,8 @@ function CategoryChip({ category, active, onSelect }: { category: Category; acti
 
 function BrandChip({ brand, active, onSelect }: { brand: Brand; active: boolean; onSelect: () => void }) {
   const { count } = useProducts(undefined, undefined, 1, brand.slug)
-  return <Chip label={brand.name} count={count} active={active} onClick={onSelect} />
+  const paint = brandChipPaint(brand.color_primary, brand.color_secondary)
+  return <Chip label={brand.name} count={count} active={active} onClick={onSelect} paint={paint} />
 }
 
 export function Catalog() {
