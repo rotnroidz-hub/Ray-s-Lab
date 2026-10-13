@@ -11,7 +11,12 @@
 // trailing-slash form, adding a hop before our slash-free canonical/JSON-LD
 // URLs. Top-level (catalog.html) and nested files both work the same way.
 //
-// dist/index.html itself is never written: it stays the homepage.
+// dist/index.html IS the homepage: after reading it as the template it is
+// rewritten in place with the same static tags applySeo() produces at runtime
+// for '/' (Home.tsx passes { title: undefined, canonicalPath: '/' }), plus the
+// site-wide default og:image — the homepage is the most-shared URL and
+// WhatsApp's crawler never runs JavaScript. No separate index route file is
+// created.
 //
 // Usage:  node scripts/prerender-meta.mjs
 
@@ -134,6 +139,24 @@ async function main() {
   }
 
   const defaultOg = `${siteUrl}${DEFAULT_OG_PATH}`
+
+  // The homepage is dist/index.html itself: rewrite the template in place with
+  // the tags applySeo() produces for Home.tsx's useSeo({ title: undefined,
+  // canonicalPath: '/' }) — "SITE_NAME | SITE_TAGLINE" title, the default
+  // description, canonical/og:url `${siteUrl}/` — plus the site-wide og:image
+  // so WhatsApp link previews of the most-shared URL show an image. Runtime
+  // applySeo only upserts, never removes og:image, so static and hydrated
+  // tags stay in agreement.
+  writeFileSync(
+    TEMPLATE,
+    render({
+      path: '/',
+      title: undefined,
+      description: DEFAULT_DESCRIPTION,
+      image: defaultOg,
+    }),
+  )
+  console.log(`prerender-meta: rewrote ${TEMPLATE} (home)`)
 
   const routes = [
     {
