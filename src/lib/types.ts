@@ -16,6 +16,10 @@ export interface Brand {
   name: string
   slug: string
   image_url: string | null
+  /** Gradient start colour, #RRGGBB, or null for the default cream pill. */
+  color_primary: string | null
+  /** Gradient end colour, #RRGGBB, or null for the default cream pill. */
+  color_secondary: string | null
   sort_order: number
   created_at?: string
   updated_at?: string

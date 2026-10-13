@@ -6,17 +6,89 @@ import {
   updateBrandAdmin,
 } from '../../lib/adminApi'
 import { useSeo } from '../../lib/seo'
-import { slugify } from '../../lib/utils'
+import { cn, slugify } from '../../lib/utils'
 import type { Brand } from '../../lib/types'
 import { Skeleton } from '../../components/ui/Skeleton'
 import { Button } from '../../components/ui/Button'
 import { Field, inputClass } from '../components/Fields'
 import { IconEdit, IconPlus, IconTrash } from '../../components/ui/Icons'
 
+/** Mirrors the DB CHECK (brands_color_*_hex_check): #RRGGBB only. */
+const HEX_RE = /^#[0-9A-Fa-f]{6}$/
+
 interface Editable {
   name: string
   slug: string
   image_url: string
+  /** '' means unset (saved as null); otherwise a #RRGGBB string. */
+  color_primary: string
+  color_secondary: string
+}
+
+const emptyEditable: Editable = { name: '', slug: '', image_url: '', color_primary: '', color_secondary: '' }
+
+/** Both colours or neither; invalid hex rejected with a message. */
+function colourPairError(primary: string, secondary: string): string | null {
+  const p = primary.trim()
+  const s = secondary.trim()
+  if (!p && !s) return null
+  if (p && !HEX_RE.test(p)) return 'Primary colour must be a hex value like #RRGGBB.'
+  if (s && !HEX_RE.test(s)) return 'Secondary colour must be a hex value like #RRGGBB.'
+  if (Boolean(p) !== Boolean(s)) return 'Set both colours, or clear both to use the default cream pill.'
+  return null
+}
+
+function ColourField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: string
+  onChange: (next: string) => void
+}) {
+  const invalid = value.trim() !== '' && !HEX_RE.test(value.trim())
+  return (
+    <Field label={label} className="flex-1 basis-44">
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          aria-label={`${label} picker`}
+          value={HEX_RE.test(value.trim()) ? value.trim() : '#E3DCCB'}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-11 w-11 shrink-0 cursor-pointer rounded-2xl border border-ink/15 bg-paper p-1"
+        />
+        <input
+          className={cn(inputClass, invalid && 'border-stock-no')}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="#RRGGBB"
+          spellCheck={false}
+        />
+      </div>
+      {invalid && <span className="mt-1.5 block text-xs text-stock-no">Use #RRGGBB, e.g. #0090E6.</span>}
+    </Field>
+  )
+}
+
+function ChipPreview({ label, primary, secondary }: { label: string; primary: string; secondary: string }) {
+  const p = primary.trim()
+  const s = secondary.trim()
+  const gradient = HEX_RE.test(p) && HEX_RE.test(s)
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-sm font-semibold text-ink">Preview</span>
+      <span
+        className={cn(
+          'inline-flex min-h-[44px] max-w-[220px] items-center truncate rounded-full border px-4 text-[13.5px] font-medium',
+          gradient ? 'border-ink/10 text-paper-2' : 'border-line bg-card text-ink',
+        )}
+        style={gradient ? { backgroundImage: `linear-gradient(135deg, ${p}, ${s})` } : undefined}
+      >
+        {label.trim() || 'Brand name'}
+      </span>
+    </div>
+  )
 }
 
 export default function Brands() {
@@ -24,9 +96,9 @@ export default function Brands() {
   const [brands, setBrands] = useState<Brand[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [draft, setDraft] = useState<Editable>({ name: '', slug: '', image_url: '' })
+  const [draft, setDraft] = useState<Editable>(emptyEditable)
   const [adding, setAdding] = useState(false)
-  const [newBrand, setNewBrand] = useState<Editable>({ name: '', slug: '', image_url: '' })
+  const [newBrand, setNewBrand] = useState<Editable>(emptyEditable)
   const [busy, setBusy] = useState(false)
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
 
@@ -44,18 +116,38 @@ export default function Brands() {
 
   function startEdit(b: Brand) {
     setEditingId(b.id)
-    setDraft({ name: b.name, slug: b.slug, image_url: b.image_url ?? '' })
+    setDraft({
+      name: b.name,
+      slug: b.slug,
+      image_url: b.image_url ?? '',
+      color_primary: b.color_primary ?? '',
+      color_secondary: b.color_secondary ?? '',
+    })
+  }
+
+  function clearColours(which: 'draft' | 'new') {
+    const reset = (p: Editable): Editable => ({ ...p, color_primary: '', color_secondary: '' })
+    if (which === 'draft') setDraft(reset)
+    else setNewBrand(reset)
   }
 
   async function saveEdit(b: Brand) {
+    const colours = colourPairError(draft.color_primary, draft.color_secondary)
+    if (colours) {
+      setError(colours)
+      return
+    }
     setBusy(true)
     try {
       await updateBrandAdmin(b.id, {
         name: draft.name.trim() || b.name,
         slug: slugify(draft.slug || draft.name) || b.slug,
         image_url: draft.image_url.trim() || null,
+        color_primary: draft.color_primary.trim() || null,
+        color_secondary: draft.color_secondary.trim() || null,
       })
       setEditingId(null)
+      setError(null)
       await load()
     } catch (e) {
       setError((e as Error).message)
@@ -65,16 +157,24 @@ export default function Brands() {
   }
 
   async function create() {
+    const colours = colourPairError(newBrand.color_primary, newBrand.color_secondary)
+    if (colours) {
+      setError(colours)
+      return
+    }
     setBusy(true)
     try {
       await createBrandAdmin({
         name: newBrand.name.trim(),
         slug: slugify(newBrand.slug || newBrand.name),
         image_url: newBrand.image_url.trim() || null,
+        color_primary: newBrand.color_primary.trim() || null,
+        color_secondary: newBrand.color_secondary.trim() || null,
         sort_order: (brands?.length ?? 0) + 1,
       })
-      setNewBrand({ name: '', slug: '', image_url: '' })
+      setNewBrand(emptyEditable)
       setAdding(false)
+      setError(null)
       await load()
     } catch (e) {
       setError((e as Error).message)
@@ -148,9 +248,39 @@ export default function Brands() {
               />
             </Field>
           </div>
+          <div className="mt-4 flex flex-wrap items-end gap-3">
+            <ColourField
+              label="Primary colour"
+              value={newBrand.color_primary}
+              onChange={(v) => setNewBrand((prev) => ({ ...prev, color_primary: v }))}
+            />
+            <ColourField
+              label="Secondary colour"
+              value={newBrand.color_secondary}
+              onChange={(v) => setNewBrand((prev) => ({ ...prev, color_secondary: v }))}
+            />
+            <ChipPreview label={newBrand.name} primary={newBrand.color_primary} secondary={newBrand.color_secondary} />
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => clearColours('new')}
+              disabled={busy || (!newBrand.color_primary && !newBrand.color_secondary)}
+            >
+              Clear colours
+            </Button>
+          </div>
+          {(() => {
+            const msg = colourPairError(newBrand.color_primary, newBrand.color_secondary)
+            return msg ? (
+              <p role="alert" className="mt-2 text-xs text-stock-no">{msg}</p>
+            ) : null
+          })()}
           <div className="mt-4 flex justify-end gap-3">
             <Button variant="ghost" onClick={() => setAdding(false)}>Cancel</Button>
-            <Button onClick={() => void create()} disabled={busy || !newBrand.name.trim()}>
+            <Button
+              onClick={() => void create()}
+              disabled={busy || !newBrand.name.trim() || Boolean(colourPairError(newBrand.color_primary, newBrand.color_secondary))}
+            >
               Create
             </Button>
           </div>
@@ -181,23 +311,62 @@ export default function Brands() {
               }`}
             >
               {isEditing ? (
-                <div className="flex flex-1 flex-wrap items-end gap-3">
-                  <Field label="Name" className="flex-1 basis-40">
-                    <input
-                      className={inputClass}
-                      value={draft.name}
-                      onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))}
+                <div className="flex-1 space-y-3">
+                  <div className="flex flex-wrap items-end gap-3">
+                    <Field label="Name" className="flex-1 basis-40">
+                      <input
+                        className={inputClass}
+                        value={draft.name}
+                        onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))}
+                      />
+                    </Field>
+                    <Field label="Slug" className="flex-1 basis-40">
+                      <input
+                        className={inputClass}
+                        value={draft.slug}
+                        onChange={(e) => setDraft((p) => ({ ...p, slug: e.target.value }))}
+                      />
+                    </Field>
+                    <Button
+                      size="sm"
+                      onClick={() => void saveEdit(b)}
+                      disabled={busy || Boolean(colourPairError(draft.color_primary, draft.color_secondary))}
+                    >
+                      Save
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>Cancel</Button>
+                  </div>
+                  <div className="flex flex-wrap items-end gap-3">
+                    <ColourField
+                      label="Primary colour"
+                      value={draft.color_primary}
+                      onChange={(v) => setDraft((p) => ({ ...p, color_primary: v }))}
                     />
-                  </Field>
-                  <Field label="Slug" className="flex-1 basis-40">
-                    <input
-                      className={inputClass}
-                      value={draft.slug}
-                      onChange={(e) => setDraft((p) => ({ ...p, slug: e.target.value }))}
+                    <ColourField
+                      label="Secondary colour"
+                      value={draft.color_secondary}
+                      onChange={(v) => setDraft((p) => ({ ...p, color_secondary: v }))}
                     />
-                  </Field>
-                  <Button size="sm" onClick={() => void saveEdit(b)} disabled={busy}>Save</Button>
-                  <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>Cancel</Button>
+                    <ChipPreview
+                      label={draft.name || b.name}
+                      primary={draft.color_primary}
+                      secondary={draft.color_secondary}
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => clearColours('draft')}
+                      disabled={busy || (!draft.color_primary && !draft.color_secondary)}
+                    >
+                      Clear colours
+                    </Button>
+                  </div>
+                  {(() => {
+                    const msg = colourPairError(draft.color_primary, draft.color_secondary)
+                    return msg ? (
+                      <p role="alert" className="text-xs text-stock-no">{msg}</p>
+                    ) : null
+                  })()}
                 </div>
               ) : confirmingId === b.id ? (
                 <div className="flex w-full items-center gap-2 text-sm font-semibold text-stock-no">
