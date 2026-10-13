@@ -35,9 +35,9 @@ export function loadEnv() {
  */
 export async function fetchActiveCatalog(supabase, selects) {
   const [productsRes, categoriesRes, brandsRes] = await Promise.all([
-    supabase.from('products').select(selects.product).eq('is_active', true),
-    supabase.from('categories').select(selects.category),
-    supabase.from('brands').select(selects.brand),
+    supabase.from('products').select(selects.product).eq('is_active', true).order('slug', { ascending: true }),
+    supabase.from('categories').select(selects.category).order('slug', { ascending: true }),
+    supabase.from('brands').select(selects.brand).order('slug', { ascending: true }),
   ])
 
   const error = productsRes.error || categoriesRes.error || brandsRes.error
